@@ -12,6 +12,7 @@
   - they bunch: going through a mirror (?) work like a beam splitter: |1> -> |01> + |10> -> |001> +|010> + |100>, |1> and |1> from different directions give |20> + |02> etc.
   - |0> <-> |1> if X gate is applied
   - superposition collapses if a measurement gate is applied
+- can leave plasma traps for the player!
 - "reproduce" by going through mirrors: they are in more locations and are harder to find and trap
 - shown as a ghost figure, or a couple of them
 - can move towards ghostbuster and if they touch him, he gets minus health?

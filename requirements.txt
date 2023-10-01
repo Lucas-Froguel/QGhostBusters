@@ -1,6 +1,6 @@
-black           23.9.1   # to avoid git diff overcrowd
-flake8          6.1.0   # to avoid git diff overcrowd
-numpy           1.26.0
-pygame          2.5.2
-tmx             1.10
+black==23.9.1   # to avoid git diff overcrowd
+flake8==6.1.0   # to avoid git diff overcrowd
+numpy==1.26.0
+pygame==2.5.2
+tmx==1.10
 

@@ -7,7 +7,6 @@ from pygame.sprite import RenderUpdates, GroupSingle
 from src.Units.player import Player
 from src.Units.ghosts import QGhost
 from src.user_interfaces import GameUserInterface
-from src.Units.utils import is_ghost_in_players_radius
 
 
 class BaseLevel:
@@ -43,24 +42,7 @@ class BaseLevel:
         self.player_group.update(self.user_interface.movePlayerCommand)
         self.visible_ghosts_group.update()
         if self.user_interface.attackCommand:
-            self.do_attack(self._player)
-
-    def do_attack(self, player):
-        """
-        Check whether we are in the zone of application of user's weapon.
-        If so, decrease the number of ghosts.
-        """
-        for qghost in self.ghosts_group:
-            for i, ghost in enumerate(qghost.visible_parts):
-                if is_ghost_in_players_radius(player.position, ghost.position):
-                    # TODO: so far it's classical. Replace by quantum
-                    if qghost.quantum_state[i] == 1:
-                        qghost.quantum_state.pop(i)
-                        self.visible_ghosts_group.remove(qghost.visible_parts.pop(i))
-                    else:
-                        qghost.quantum_state[i] -= 1
-            if not qghost.visible_parts:
-                self.ghosts_group.remove(qghost)
+            self._player.attack(self.ghosts_group, self.visible_ghosts_group)
 
     def render(self):
         self.window.blit(self.surface, (0, 0))

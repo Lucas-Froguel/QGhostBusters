@@ -27,6 +27,9 @@ class BaseLevel:
         self.tmx_map: pytmx.TileMap = None
         self.tmx_data = None
 
+        # ghost-splitters
+        self.splitter_group: RenderUpdates = None
+
         # player and ghosts
         self._player: Player = None
         self.player_group: GroupSingle = None
@@ -66,6 +69,7 @@ class BaseLevel:
         self.window.blit(self.surface, (0, 0))
         self.player_group.draw(self.window)
         self.visible_ghosts_group.draw(self.window)
+        self.splitter_group.draw(self.window)
 
     def load_map(self):
         self.tmx_map = pytmx.TiledMap(self.level_name)

@@ -61,7 +61,7 @@ class Unit(BaseUnit):
             return False
         return True
 
-    def update(self, moveVector: Vector2) -> None:
+    def update(self, moveVector: Vector2 = None) -> None:
         if not moveVector:
             return None
         self.move(moveVector=moveVector)

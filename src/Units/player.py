@@ -11,9 +11,10 @@ class Player(Unit):
         worldSize: Vector2 = None,
         position: Vector2 = None,
     ):
-        """ "
-        :param worldSize: GameState instance that carries all the info about the game
-        :param position: position on the map
+        """
+        :param cellSize: cellSize is the size of each cell/block in the game
+        :param worldSize: size of the map
+        :param position: position on the map (in units of cells)
         """
         super().__init__(cellSize=cellSize, worldSize=worldSize, position=position)
         self.image = load("src/Units/sprites/player.png")

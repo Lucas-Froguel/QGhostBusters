@@ -4,6 +4,7 @@ from pygame.sprite import RenderUpdates, GroupSingle
 from src.Units.player import Player
 from src.Units.ghosts import QGhost
 from src.Levels.base_level import BaseLevel
+from src.Units.splitter import GhostSplitter
 
 
 class TestLevel(BaseLevel):
@@ -39,4 +40,15 @@ class TestLevel(BaseLevel):
         # not good, because if more visible ghosts appear, they won't be here, think more
         self.visible_ghosts_group.add(
             [ghost.visible_parts for ghost in self.ghosts_group]
+        )
+
+        self.splitter_group = RenderUpdates().add(
+            [
+                GhostSplitter(
+                    cellSize=self.cellSize,
+                    worldSize=self.worldSize,
+                    position=Vector2(10, 20),
+                    splitterType="125",
+                )
+            ]
         )

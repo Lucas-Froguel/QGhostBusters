@@ -3,8 +3,9 @@ from pygame import Vector2
 from src.parameters import ATTACK_RADIUS
 
 
-def _ghost_in_players_raduis(player_pos:Vector2, ghost_pos: Vector2):
-    return (player_pos - ghost_pos).length_squared() <= ATTACK_RADIUS
+def _ghost_in_players_raduis(player_pos: Vector2, ghost_pos: Vector2):
+    return (player_pos - ghost_pos).length_squared() <= ATTACK_RADIUS**2
+
 
 class Unit:
     def __init__(self, state, position: Vector2, tile: Vector2):
@@ -30,7 +31,9 @@ class Unit:
         for unit in self.state.units:
             if isinstance(unit, Ghost) and newUnitPos == unit.position:
                 return
-            if isinstance(unit, QGhost) and any([newUnitPos == subghost.position for subghost in unit.visible_parts]):
+            if isinstance(unit, QGhost) and any(
+                [newUnitPos == subghost.position for subghost in unit.visible_parts]
+            ):
                 return
 
         self.position = newUnitPos
@@ -46,14 +49,12 @@ class Ghost(Unit):
     def __init__(self, state, position: Vector2):
         super().__init__(state, position, Vector2(1, 0))
 
-
     def move(self, moveVector: Vector2):
         super().move(moveVector)
-        #self.check_position()
-
+        # self.check_position()
 
     def check_position(self):
-        """"
+        """ "
         Check whether we are in the zone of application of user's weapon
         """
         player = self.state.player
@@ -61,7 +62,6 @@ class Ghost(Unit):
             if _ghost_in_players_raduis(player.position, self.position):
                 # TODO: so far it's classical. Replace by quantum
                 self.state.units.remove(self)
-
 
 
 class QGhost(Unit):
@@ -78,13 +78,15 @@ class QGhost(Unit):
         self.check_position()
 
     def check_position(self):
-        """"
+        """ "
         Check whether we are in the zone of application of user's weapon
         """
         player = self.state.player
         if player.attack:
             for i in range(self.n):
-                if _ghost_in_players_raduis(player.position, self.visible_parts[i].position):
+                if _ghost_in_players_raduis(
+                    player.position, self.visible_parts[i].position
+                ):
                     # TODO: so far it's classical. Replace by quantum
                     if self.quantum_state[i] == 1:
                         self.quantum_state.pop(i)
@@ -93,5 +95,3 @@ class QGhost(Unit):
                         self.quantum_state[i] -= 1
             if not self.visible_parts:
                 self.state.units.remove(self)
-
-

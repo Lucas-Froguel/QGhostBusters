@@ -2,7 +2,7 @@ import numpy as np
 import pygame
 from pygame import Vector2, Rect
 
-from src.Units.units import Ghost, Player, QGhost
+from src.Units.units import Player, QGhost
 from src.parameters import GHOST_SPEED
 
 

@@ -1,2 +1,14 @@
+black==23.9.1
+click==8.1.7
+flake8==6.1.0
+mccabe==0.7.0
+mypy-extensions==1.0.0
+numpy==1.26.0
+packaging==23.1
+pathspec==0.11.2
+platformdirs==3.10.0
+pycodestyle==2.11.0
+pyflakes==3.1.0
 pygame==2.5.2
+python-dotenv==1.0.0
 tmx==1.10

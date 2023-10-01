@@ -2,9 +2,8 @@ import numpy as np
 import pygame
 from pygame import Vector2, Rect
 
-from src.Units.units import Ghost, Player
-
-GHOST_SPEED = 0.1
+from src.Units.units import Ghost, Player, QGhost
+from src.parameters import GHOST_SPEED
 
 
 class GameState:
@@ -12,16 +11,18 @@ class GameState:
         self.worldSize = Vector2(16, 10)
         self.player = Player(self, Vector2(5, 4))
         self.units = [
-            Ghost(self, Vector2(10, 3)),
-            Ghost(self, Vector2(10, 5)),
+            QGhost(self, Vector2(10, 3)),
+            QGhost(self, Vector2(10, 5)),
         ]
 
-    def update(self, movePlayerCommand):
+    def update(self, movePlayerCommand: Vector2, attackCommand: bool):
         self.player.move(movePlayerCommand)
+        self.player.attack = attackCommand
         for unit in self.units:
-            x = GHOST_SPEED * np.random.choice([-1, 0, 1])
-            y = GHOST_SPEED * np.random.choice([-1, 0, 1]) if not x else 0
-            unit.move(Vector2(x, y))
+            for subghost in unit.visible_parts:
+                x = GHOST_SPEED * np.random.choice([-1, 0, 1])
+                y = GHOST_SPEED * np.random.choice([-1, 0, 1]) if not x else 0
+                unit.move(Vector2(x, y))
 
 
 class UserInterface:
@@ -41,6 +42,7 @@ class UserInterface:
         pygame.display.set_caption("QhostBusters")
         pygame.display.set_icon(pygame.image.load("icon.png"))
         self.movePlayerCommand = Vector2(0, 0)
+        self.attackCommand = False
 
         # Loop properties
         self.clock = pygame.time.Clock()
@@ -48,6 +50,7 @@ class UserInterface:
 
     def processInput(self):
         self.movePlayerCommand = Vector2(0, 0)
+        self.attackCommand = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -56,6 +59,7 @@ class UserInterface:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
                     break
+                # movement keys
                 elif event.key == pygame.K_RIGHT:
                     self.movePlayerCommand.x = 1
                 elif event.key == pygame.K_LEFT:
@@ -64,9 +68,14 @@ class UserInterface:
                     self.movePlayerCommand.y = 1
                 elif event.key == pygame.K_UP:
                     self.movePlayerCommand.y = -1
+                # attack key
+                elif event.key == pygame.K_SPACE:
+                    self.attackCommand = True
 
     def update(self):
-        self.gameState.update(self.movePlayerCommand)
+        self.gameState.update(self.movePlayerCommand, self.attackCommand)
+        if not self.gameState.units:
+            self.running = False
 
     def renderUnit(self, unit):
         # Location on screen
@@ -86,7 +95,8 @@ class UserInterface:
         self.window.fill((0, 0, 0))
         self.renderUnit(self.gameState.player)
         for unit in self.gameState.units:
-            self.renderUnit(unit)
+            for subunit in unit.visible_parts:
+                self.renderUnit(subunit)
 
         pygame.display.update()
 

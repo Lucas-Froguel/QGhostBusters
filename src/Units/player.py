@@ -12,5 +12,5 @@ class Player(Unit):
         """
         super().__init__(cellSize=cellSize, worldSize=worldSize, position=position)
         self.attack = False
-        self.image = load("src/Units/sprites/ghost.png")
+        self.image = load("src/Units/sprites/player.png")
         self.image = scale(self.image, self.cellSize)

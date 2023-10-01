@@ -13,7 +13,7 @@ class MainMenu:
 
         self.menu_items = [
             {
-                'title': 'Level 1',
+                'title': 'Test Level',
                 'action': lambda: TestLevel
             },
             {

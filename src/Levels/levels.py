@@ -1,9 +1,7 @@
-import numpy as np
 import pygame
 from pygame import Vector2, Rect
 
 from src.Units.units import Player, QGhost
-from src.parameters import GHOST_SPEED
 
 
 class GameState:
@@ -19,10 +17,7 @@ class GameState:
         self.player.move(movePlayerCommand)
         self.player.attack = attackCommand
         for unit in self.units:
-            for subghost in unit.visible_parts:
-                x = GHOST_SPEED * np.random.choice([-1, 0, 1])
-                y = GHOST_SPEED * np.random.choice([-1, 0, 1]) if not x else 0
-                unit.move(Vector2(x, y))
+            unit.move()
 
 
 class UserInterface:

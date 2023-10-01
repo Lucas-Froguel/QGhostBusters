@@ -1,4 +1,3 @@
-import numpy as np
 from pygame import Vector2, Rect
 from pygame.sprite import Sprite
 
@@ -50,9 +49,9 @@ class Unit(BaseUnit):
     def is_unit_in_map(self) -> bool:
         if (
             self.rect.x < 0
-            or self.rect.right >= self.worldSize.x * self.cellSize.x
+            or self.rect.right > self.worldSize.x * self.cellSize.x
             or self.rect.y < 0
-            or self.rect.bottom >= self.worldSize.y * self.cellSize.y
+            or self.rect.bottom > self.worldSize.y * self.cellSize.y
         ):
             return False
         return True

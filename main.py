@@ -1,8 +1,8 @@
 import pygame
 
-from src.Levels.levels import UserInterface
+from src.game_state import GameState
 
-userInterface = UserInterface()
-userInterface.run()
+game = GameState()
+game.run()
 
 pygame.quit()

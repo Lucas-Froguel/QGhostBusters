@@ -16,14 +16,16 @@ class MainMenu:
         ]
         self.current_menu_item = 0
         # Font
-        self.titleFont = pygame.font.Font("fonts/BD_Cartoon_Shout.ttf", 72)
-        self.itemFont = pygame.font.Font("fonts/BD_Cartoon_Shout.ttf", 48)
-        self.menuCursor = pygame.image.load("src/Units/sprites/ghost.png")
+        self.titleFont = pygame.font.Font("fonts/Baskic8.otf", 72)
+        self.itemFont = pygame.font.Font("fonts/Baskic8.otf", 48)
+        self.menuCursor = pygame.image.load("src/Units/sprites/new_ghost2.png")
         self.menuCursor = scale(self.menuCursor, Vector2(48, 48))
 
         self.user_interface = MenuUserInterface(
             current_menu_item=self.current_menu_item, menu_items=self.menu_items
         )
+
+        self.music_name = "src/Music/top-down-fantasy-1.mp3"
 
     def render(self):
         x, y = self.draw_menu_title()
@@ -70,7 +72,7 @@ class MainMenu:
             # Cursor
             if index == self.current_menu_item:
                 cursorX = x - self.menuCursor.get_width() - 10
-                cursorY = y + (surface.get_height() - self.menuCursor.get_height()) // 2
+                cursorY = y + (surface.get_height() - self.menuCursor.get_height()) // 2 - 10
                 self.window.blit(self.menuCursor, (cursorX, cursorY))
 
             y += (120 * surface.get_height()) // 100

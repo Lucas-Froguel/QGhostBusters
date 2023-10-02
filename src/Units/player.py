@@ -30,7 +30,7 @@ class Player(Unit):
         :param position: position on the map (in units of cells)
         """
         super().__init__(cellSize=cellSize, worldSize=worldSize, position=position)
-        self.image = load("src/Units/sprites/player.png")
+        self.image = load("src/Units/sprites/enemy1.png")
         self.image = scale(self.image, self.cellSize)
         self.direction: Vector2 = Vector2(1, 0)
 

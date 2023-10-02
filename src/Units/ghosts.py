@@ -31,7 +31,7 @@ class Ghost(Unit):
         :param qghost: meta-ghost of which this one is a part
         """
         super().__init__(cellSize=cellSize, worldSize=worldSize, position=position)
-        self.image = load("src/Units/sprites/ghost.png")
+        self.image = load("src/Units/sprites/new_ghost2.png")
         self.image = scale(self.image, self.cellSize)
         self.qghost = qghost
 

@@ -15,6 +15,7 @@ class TestLevel(BaseLevel):
 
         self.level_name = "src/Levels/levels/simple_map.tmx"
         self.level_title = "Test Level"
+        self.music_name = "src/Music/top-down-fantasy-1.mp3"
 
     def load_level(self):
         super().load_level()
@@ -48,6 +49,7 @@ class TestLevel(BaseLevel):
                 worldSize=self.worldSize,
                 position=Vector2(5, 15),
                 splitterType="45",
+            )
         ]
 
         self.visible_ghosts_group = RenderUpdates()

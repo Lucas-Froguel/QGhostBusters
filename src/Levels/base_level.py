@@ -26,6 +26,8 @@ class BaseLevel:
         self.tmx_map: pytmx.TileMap = None
         self.tmx_data = None
 
+        self.music_name: str = None
+
         # ghost-splitters
         self.splitter_group: RenderUpdates = None
 

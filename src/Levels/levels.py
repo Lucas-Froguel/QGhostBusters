@@ -60,13 +60,13 @@ class TestLevel(BaseLevel):
                 splitters=splitters,
                 render_group=self.visible_ghosts_group,
             ),
-            QGhost(
-                cellSize=self.cellSize,
-                worldSize=self.worldSize,
-                position=Vector2(10, 16),
-                splitters=splitters,
-                render_group=self.visible_ghosts_group,
-            ),
+            # QGhost(
+            #     cellSize=self.cellSize,
+            #     worldSize=self.worldSize,
+            #     position=Vector2(10, 16),
+            #     splitters=splitters,
+            #     render_group=self.visible_ghosts_group,
+            # ),
         ]
         # not good, because if more visible ghosts appear, they won't be here, think more
         self.visible_ghosts_group.add(

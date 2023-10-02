@@ -5,7 +5,7 @@ from pygame.sprite import RenderUpdates
 from pygame.transform import scale
 from src.Units.base_unit import Unit
 from src.Units.splitter import GhostSplitter
-from src.Units.utils import two_ghost_coming_from_different_size_of_splitter
+from src.Units.utils import two_ghost_coming_from_different_sides_of_splitter
 from src.settings import GHOST_SPEED
 
 DIR_DICT = {"L": (-1, 0), "R": (1, 0), "D": (0, -1), "U": (0, 1)}
@@ -29,8 +29,7 @@ class Ghost(Unit):
         self.image = load("src/Units/sprites/ghost.png")
         self.image = scale(self.image, self.cellSize)
         self.qghost = qghost
-        self.index = 0
-        self.turn = 0
+
         self.last_move = Vector2(-1, 0)
 
     @staticmethod
@@ -47,43 +46,6 @@ class Ghost(Unit):
         moveVector = self.last_move
         super().update(moveVector=moveVector)
         self.last_move = moveVector
-        self.turn += 1
-        qghost = self.qghost
-        print(len(qghost.visible_parts), len(qghost.render_group), qghost.quantum_state)
-        for splitter in qghost.splitters:
-            if np.allclose(splitter.position, self.position, 1e-2):
-                for ghost in qghost.visible_parts:
-                    # check 2 ghosts at the same tile case
-                    if two_ghost_coming_from_different_size_of_splitter(
-                        self, ghost, splitter.splitterType
-                    ):
-                        # still classical
-                        new_number = (
-                            qghost.quantum_state[self.index]
-                            + qghost.quantum_state[ghost.index]
-                        )
-                        qghost.quantum_state[self.index] = new_number
-                        qghost.quantum_state[ghost.index] = new_number
-                else:
-                    new_position = (
-                        self.position
-                        # - moveVector
-                        + (-1) ** (splitter.splitterType == "45")
-                        * Vector2(moveVector.y, moveVector.x)
-                    )
-                    self.position += moveVector
-                    new_visual = Ghost(
-                        cellSize=self.cellSize,
-                        worldSize=self.worldSize,
-                        position=new_position,
-                        qghost=qghost,
-                    )
-                    new_visual.last_move = (-1) ** (
-                        splitter.splitterType == "45"
-                    ) * Vector2(moveVector.y, moveVector.x)
-                    qghost.visible_parts.append(new_visual)
-                    qghost.quantum_state.append(1)
-                    qghost.render_group.add(new_visual)
 
 
 class QGhost(Ghost):
@@ -118,3 +80,42 @@ class QGhost(Ghost):
         self.cellSize = cellSize
         self.splitters = splitters
         self.render_group = render_group
+
+    def update(self):
+        """ "
+        After all the ghosts are in position, we can change their state
+        """
+        seen = set()
+        for splitter in self.splitters:
+            for i, this_ghost in enumerate(self.visible_parts[:]):
+                if i in seen:
+                    continue
+                if np.allclose(splitter.position, this_ghost.position, 1e-2):
+                    is_coincidence = False
+                    for j, other_ghost in enumerate(self.visible_parts[i:]):
+                        # check 2 ghosts at the same tile case
+                        if two_ghost_coming_from_different_sides_of_splitter(
+                            this_ghost, other_ghost, splitter.splitterType
+                        ):
+                            is_coincidence = True
+                            # still classical
+                            new_number = (
+                                self.quantum_state[i] + self.quantum_state[i + j]
+                            )
+                            self.quantum_state[i] = new_number
+                            self.quantum_state[i + j] = new_number
+                            seen |= {i, i + j}
+                    if not is_coincidence:
+                        new_visual = Ghost(
+                            cellSize=self.cellSize,
+                            worldSize=self.worldSize,
+                            position=this_ghost.position,
+                            qghost=self,
+                        )
+                        new_visual.last_move = (-1) ** (
+                            splitter.splitterType == "45"
+                        ) * Vector2(this_ghost.last_move.y, this_ghost.last_move.x)
+
+                        self.visible_parts.append(new_visual)
+                        self.quantum_state.append(1)
+                        self.render_group.add(new_visual)

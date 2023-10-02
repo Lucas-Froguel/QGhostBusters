@@ -46,6 +46,8 @@ class BaseLevel:
         self.visible_ghosts_group.update()
         if self.user_interface.attackCommand:
             self._player.attack(self.ghosts_group, self.visible_ghosts_group)
+        for qghost in self.ghosts_group:
+            qghost.update()
 
     def render(self):
         self.window.blit(self.surface, (0, 0))

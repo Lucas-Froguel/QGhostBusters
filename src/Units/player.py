@@ -3,7 +3,7 @@ from pygame import Vector2
 from pygame.image import load
 from pygame.sprite import RenderUpdates
 from pygame.transform import scale
-from qutip import projection, qeye, num, ket, bra, tensor
+from qutip import qeye, ket, tensor
 
 from src.Units.base_unit import Unit
 from src.Units.ghosts import QGhost
@@ -27,7 +27,7 @@ class Player(Unit):
         self.image = load("src/Units/sprites/player.png")
         self.image = scale(self.image, self.cellSize)
 
-    def attack(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
+    def measure(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
         """
         Check whether we are in the zone of application of user's weapon.
         If so, decrease the number of ghosts.
@@ -37,30 +37,56 @@ class Player(Unit):
         """
         for qghost in ghosts_group:
             n_ghosts = len(qghost.visible_parts)
-            print(len(ghosts_group), n_ghosts, qghost.quantum_state.norm())
+            if n_ghosts == 1:
+                continue
             indices_to_remove = []
-            for i in range(n_ghosts):
-                ghost = qghost.visible_parts[i]
+            for i, ghost in enumerate(qghost.visible_parts):
                 if is_ghost_in_players_radius(self.position, ghost.position):
-                    projector_1 = sum(
-                        [
-                            tensor(
-                                [qeye(MAX_GHOSTS_PER_STATE) if g != i else ket([n], MAX_GHOSTS_PER_STATE).dag()
-                                for g in range(n_ghosts)]
-                            )
-                            for n in range(1, MAX_GHOSTS_PER_STATE)
-                        ]
+                    # <n|psi>
+                    possible_vectors = [
+                        tensor(
+                            [
+                                ket([n], MAX_GHOSTS_PER_STATE).dag()
+                                if g == i
+                                else qeye(MAX_GHOSTS_PER_STATE)
+                                for g in range(n_ghosts)
+                            ]
+                        )
+                        * qghost.quantum_state
+                        for n in range(MAX_GHOSTS_PER_STATE)
+                    ]
+                    norms = [v.norm() for v in possible_vectors]
+                    n_in_state = np.random.choice(
+                        list(range(MAX_GHOSTS_PER_STATE)),
+                        p=np.array(norms) / np.sum(norms),
                     )
-                    projector_0 = tensor(
-                                [qeye(MAX_GHOSTS_PER_STATE) if g != i else ket([0], MAX_GHOSTS_PER_STATE).dag()
-                                for g in range(n_ghosts)]
-                            )
-                    quantum_state_0 = projector_0 * qghost.quantum_state
-                    quantum_state_1 = projector_1 * qghost.quantum_state
-                    if np.random.rand() > quantum_state_1.norm():
-                        qghost.quantum_state = quantum_state_1.unit()
+
+                    qghost.quantum_state = possible_vectors[n_in_state].unit()
+                    if n_in_state == 0:
+                        indices_to_remove.append(i)
                     else:
-                        qghost.quantum_state = quantum_state_0.unit()
-                    visible_ghosts_group.remove(qghost.visible_parts.pop(i))
+                        # probability of |0> in j-th Hilbert space
+                        zero_vectors = np.array(
+                            [
+                                (
+                                    tensor(
+                                        [
+                                            ket([0], MAX_GHOSTS_PER_STATE).dag()
+                                            if g != j
+                                            else qeye(MAX_GHOSTS_PER_STATE)
+                                            for g in range(n_ghosts - 1)
+                                        ]
+                                    )
+                                    * qghost.quantum_state
+                                ).norm()
+                                for j in range(n_ghosts)
+                                if j != i
+                            ]
+                        )
+                        indices_to_remove.append(np.argmin(np.abs(1 - zero_vectors)))
+                    break
+
+            for i in indices_to_remove:
+                visible_ghosts_group.remove(qghost.visible_parts.pop(i))
             if not qghost.visible_parts:
                 ghosts_group.remove(qghost)

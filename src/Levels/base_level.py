@@ -45,7 +45,7 @@ class BaseLevel:
         self.player_group.update(self.user_interface.movePlayerCommand)
         self.visible_ghosts_group.update()
         if self.user_interface.attackCommand:
-            self._player.attack(self.ghosts_group, self.visible_ghosts_group)
+            self._player.measure(self.ghosts_group, self.visible_ghosts_group)
         for qghost in self.ghosts_group:
             qghost.update()
 

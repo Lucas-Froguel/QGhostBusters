@@ -5,8 +5,13 @@ from pygame.sprite import RenderUpdates
 from pygame.transform import scale
 from src.Units.base_unit import Unit
 from src.Units.splitter import GhostSplitter
-from src.Units.utils import two_ghost_coming_from_different_sides_of_splitter
-from src.settings import GHOST_SPEED
+from src.Units.utils import (
+    two_ghost_coming_from_different_sides_of_splitter,
+    beam_splitter,
+)
+from src.settings import GHOST_SPEED, MAX_GHOSTS_PER_STATE
+
+from qutip import ket
 
 DIR_DICT = {"L": (-1, 0), "R": (1, 0), "D": (0, -1), "U": (0, 1)}
 
@@ -70,8 +75,8 @@ class QGhost(Ghost):
         """
         # TODO: it is still classical
         super().__init__(cellSize=cellSize, worldSize=worldSize, position=position)
-        # initialize it in |1>
-        self.quantum_state = [1]
+        # initialize it in |1>. Allow maximum MAX_GHOSTS_PER_STATE ghosts in one state
+        self.quantum_state = ket([1], MAX_GHOSTS_PER_STATE)
         self.visible_parts = [
             Ghost(
                 cellSize=cellSize, worldSize=worldSize, position=position, qghost=self
@@ -98,12 +103,7 @@ class QGhost(Ghost):
                             this_ghost, other_ghost, splitter.splitterType
                         ):
                             is_coincidence = True
-                            # still classical
-                            new_number = (
-                                self.quantum_state[i] + self.quantum_state[i + j]
-                            )
-                            self.quantum_state[i] = new_number
-                            self.quantum_state[i + j] = new_number
+                            self.quantum_state = beam_splitter(self.quantum_state, i, j)
                             seen |= {i, i + j}
                     if not is_coincidence:
                         new_visual = Ghost(
@@ -117,5 +117,5 @@ class QGhost(Ghost):
                         ) * Vector2(this_ghost.last_move.y, this_ghost.last_move.x)
 
                         self.visible_parts.append(new_visual)
-                        self.quantum_state.append(1)
+                        self.quantum_state = beam_splitter(self.quantum_state, i)
                         self.render_group.add(new_visual)

@@ -1,8 +1,11 @@
+from typing import Optional
+
 import numpy as np
 from pygame import Vector2
+from qutip import Qobj, ket, destroy, tensor, qeye
 
 from src.Units.splitter import SplitterType
-from src.settings import ATTACK_RADIUS
+from src.settings import ATTACK_RADIUS, MAX_GHOSTS_PER_STATE
 
 
 def is_ghost_in_players_radius(player_pos: Vector2, ghost_pos: Vector2) -> bool:
@@ -27,3 +30,51 @@ def two_ghost_coming_from_different_sides_of_splitter(
         ):
             return True
     return False
+
+
+a = destroy(MAX_GHOSTS_PER_STATE)
+BS = (1j * np.pi / 4 * (tensor(a, a.dag()) + tensor(a.dag(), a))).expm()
+
+
+def beam_splitter(
+    quantum_state: Qobj,
+    affected_ghost_index: int,
+    other_state_index: Optional[int] = None,
+) -> Qobj:
+    """
+    Perform beam-splitter operation.
+
+    :param quantum_state: one of the two input states
+    :param affected_ghost_index: there may be several systems in the state, choose this one
+    :param other_state_index: index of the otehr state, if two existing ghosts interact. If not given, vacuum.
+    """
+    dim = max(quantum_state.shape)
+    n_systems = len(quantum_state.dims[0])
+    if dim > 1000:
+        raise NotImplementedError("The size of the matrix is too large")
+
+    add_ghost = False
+    if other_state_index is None:
+        other_state = ket([0], MAX_GHOSTS_PER_STATE)
+        quantum_state = tensor(quantum_state, other_state)
+        other_state_index = -1
+        add_ghost = True
+
+    if n_systems > 1:
+        index_order = list(range(n_systems + add_ghost))
+        index_order[affected_ghost_index], index_order[n_systems - 2 + add_ghost] = (
+            index_order[n_systems - 2 + add_ghost],
+            index_order[affected_ghost_index],
+        )
+        index_order[other_state_index], index_order[n_systems - 1 + add_ghost] = (
+            index_order[n_systems - 1 + add_ghost],
+            index_order[other_state_index],
+        )
+
+        expanded_BS = tensor(
+            qeye([MAX_GHOSTS_PER_STATE] * (n_systems - 2 + add_ghost)), BS
+        ).permute(index_order)
+    else:
+        expanded_BS = BS
+
+    return expanded_BS * quantum_state

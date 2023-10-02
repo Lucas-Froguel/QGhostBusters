@@ -3,6 +3,7 @@ import numpy as np
 import math
 from pygame import Vector2
 from pygame.image import load
+from pygame.mixer import Channel
 from pygame.sprite import RenderUpdates
 from pygame.transform import scale, rotate
 from qutip import qeye, ket, tensor
@@ -20,17 +21,18 @@ class Player(Unit):
         cellSize: Vector2 = None,
         worldSize: Vector2 = None,
         position: Vector2 = None,
+        channel: Channel = None
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
         :param worldSize: size of the map
         :param position: position on the map (in units of cells)
         """
-        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position)
+        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position, channel=channel)
         self.image = load("src/Units/sprites/enemy1.png")
         self.image = scale(self.image, self.cellSize)
         self.direction: Vector2 = Vector2(1, 0)
-        self.sound_manager = PlayerSoundManager()
+        self.sound_manager = PlayerSoundManager(channel=self.channel)
 
     def measure(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
         """

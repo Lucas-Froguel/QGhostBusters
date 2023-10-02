@@ -10,6 +10,9 @@ class GameState:
     def __init__(self):
         pygame.init()
         pygame.mixer.init()
+        pygame.mixer.set_num_channels(2)
+        self.window_channel = pygame.mixer.Channel(0)
+        self.units_channel = pygame.mixer.Channel(1)
 
         self.running = True
         self.clock = pygame.time.Clock()
@@ -24,12 +27,16 @@ class GameState:
         # level variables
         self.level: BaseLevel = None
 
-        self.menu = MainMenu(window=self.window)
-        self.setup_game_music(self.menu.music_name)
+        self.menu = MainMenu(window=self.window, channel=self.window_channel)
+        self.setup_game_music(self.menu.music)
 
     def load_level(self, level: BaseLevel):
         self.level = level(
-            cellSize=self.cellSize, worldSize=self.worldSize, window=self.window
+            cellSize=self.cellSize,
+            worldSize=self.worldSize,
+            window=self.window,
+            level_channel=self.window_channel,
+            unit_channel=self.units_channel
         )
         self.level.load_level()
 

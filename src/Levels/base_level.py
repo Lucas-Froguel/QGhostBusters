@@ -1,7 +1,8 @@
 import pytmx
 from pytmx.util_pygame import load_pygame
 import pygame
-from pygame import Vector2
+from pygame import Vector2, Surface
+from pygame.mixer import Channel
 from pygame.sprite import RenderUpdates, GroupSingle
 
 from src.Units.player import Player
@@ -12,7 +13,12 @@ from src.SoundEffects.sound_manager import LevelSoundManager
 
 class BaseLevel:
     def __init__(
-        self, cellSize: Vector2 = None, worldSize: Vector2 = None, window=None
+        self,
+        cellSize: Vector2 = None,
+        worldSize: Vector2 = None,
+        window: Surface = None,
+        level_channel: Channel = None,
+        unit_channel: Channel = None
     ):
         self.keep_running = True
         self.user_interface = GameUserInterface()
@@ -27,6 +33,8 @@ class BaseLevel:
         self.tmx_map: pytmx.TileMap = None
         self.tmx_data = None
 
+        self.level_channel = level_channel
+        self.unit_channel = unit_channel
         self.music: LevelSoundManager = None
 
         # ghost-splitters

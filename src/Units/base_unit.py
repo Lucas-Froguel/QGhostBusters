@@ -1,7 +1,9 @@
 
 from pygame import Vector2, Rect
 from pygame.sprite import Sprite
+from pygame.mixer import Channel
 from src.SoundEffects.sound_manager import BaseSoundManager
+
 
 class BaseUnit(Sprite):
     def move(self):
@@ -27,6 +29,7 @@ class Unit(BaseUnit):
         cellSize: Vector2 = None,
         worldSize: Vector2 = None,
         position: Vector2 = None,
+        channel: Channel = None
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
@@ -43,6 +46,7 @@ class Unit(BaseUnit):
             self.cellSize.x,
             self.cellSize.y,
         )
+        self.channel = channel
         self.sound_manager: BaseSoundManager = None
 
     def move(self, moveVector: Vector2) -> None:

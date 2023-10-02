@@ -1,13 +1,14 @@
 import pygame
 from pygame import Vector2
 from pygame.transform import scale
+from pygame.mixer import Channel
 from src.Levels.levels import TestLevel
 from src.user_interfaces import MenuUserInterface
 from src.SoundEffects.sound_manager import MenuSoundManager
 
 
 class MainMenu:
-    def __init__(self, window=None):
+    def __init__(self, window=None, channel: Channel = None):
         self.keep_running = True
         self.window = window
 
@@ -26,7 +27,7 @@ class MainMenu:
             current_menu_item=self.current_menu_item, menu_items=self.menu_items
         )
 
-        self.music = MenuSoundManager()
+        self.music = MenuSoundManager(channel=channel)
 
     def render(self):
         x, y = self.draw_menu_title()

@@ -60,6 +60,8 @@ def beam_splitter(
         other_state_index = -1
         add_ghost = True
 
+    expanded_BS = BS
+
     if n_systems > 1:
         index_order = list(range(n_systems + add_ghost))
         index_order[affected_ghost_index], index_order[n_systems - 2 + add_ghost] = (
@@ -71,10 +73,13 @@ def beam_splitter(
             index_order[other_state_index],
         )
 
-        expanded_BS = tensor(
-            qeye([MAX_GHOSTS_PER_STATE] * (n_systems - 2 + add_ghost)), BS
-        ).permute(index_order)
-    else:
-        expanded_BS = BS
+        ghosts = [MAX_GHOSTS_PER_STATE] * int(n_systems - 2 + add_ghost)
 
-    return expanded_BS * quantum_state
+        expanded_BS = tensor(qeye(ghosts if ghosts else [0]), BS).permute(index_order)
+
+    try:
+        final_state = expanded_BS * quantum_state
+    except Exception:
+        final_state = BS * quantum_state
+
+    return final_state

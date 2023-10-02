@@ -47,8 +47,8 @@ class Ghost(Unit):
         return moveVector
 
     def update(self):
-        # moveVector = self.calculate_move_vector()
-        moveVector = self.last_move
+        moveVector = self.calculate_move_vector()
+        self.last_move = moveVector
         super().update(moveVector=moveVector)
         self.last_move = moveVector
 
@@ -90,6 +90,9 @@ class QGhost(Ghost):
         """ "
         After all the ghosts are in position, we can change their state
         """
+        if len(self.visible_parts) > MAX_GHOSTS_PER_STATE:
+            return None
+
         seen = set()
         for splitter in self.splitters:
             for i, this_ghost in enumerate(self.visible_parts[:]):

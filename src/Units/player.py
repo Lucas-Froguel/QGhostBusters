@@ -1,4 +1,6 @@
+
 import numpy as np
+import math
 from pygame import Vector2
 from pygame.image import load
 from pygame.sprite import RenderUpdates
@@ -9,6 +11,10 @@ from src.Units.base_unit import Unit
 from src.Units.ghosts import QGhost
 from src.Units.utils import is_ghost_in_players_radius
 from src.settings import MAX_GHOSTS_PER_STATE
+from pygame.transform import rotate
+from src.Units.base_unit import Unit
+from src.Units.ghosts import QGhost
+from src.Units.utils import is_ghost_in_players_radius
 
 
 class Player(Unit):
@@ -26,6 +32,7 @@ class Player(Unit):
         super().__init__(cellSize=cellSize, worldSize=worldSize, position=position)
         self.image = load("src/Units/sprites/player.png")
         self.image = scale(self.image, self.cellSize)
+        self.direction: Vector2 = Vector2(1, 0)
 
     def measure(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
         """
@@ -90,3 +97,11 @@ class Player(Unit):
                 visible_ghosts_group.remove(qghost.visible_parts.pop(i))
             if not qghost.visible_parts:
                 ghosts_group.remove(qghost)
+
+    def move(self, moveVector: Vector2) -> None:
+        super().move(moveVector=moveVector)
+
+        angle = math.acos(self.direction.dot(moveVector) / (self.direction.length() * moveVector.length()))
+        self.direction = moveVector
+        self.image = rotate(self.image, -math.degrees(angle))
+

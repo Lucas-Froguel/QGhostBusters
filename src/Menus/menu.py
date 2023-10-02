@@ -1,5 +1,5 @@
 import pygame
-from pygame import Vector2
+from pygame import Vector2, Surface
 from pygame.transform import scale
 from pygame.mixer import Channel
 from src.Levels.levels import TestLevel
@@ -8,9 +8,10 @@ from src.SoundEffects.sound_manager import MenuSoundManager
 
 
 class MainMenu:
-    def __init__(self, window=None, channel: Channel = None):
+    def __init__(self, window: Surface = None, channel: Channel = None):
         self.keep_running = True
         self.window = window
+        self.music = MenuSoundManager(channel=channel)
 
         self.menu_items = [
             {"title": "Test Level", "action": lambda: TestLevel},
@@ -24,10 +25,9 @@ class MainMenu:
         self.menuCursor = scale(self.menuCursor, Vector2(48, 48))
 
         self.user_interface = MenuUserInterface(
-            current_menu_item=self.current_menu_item, menu_items=self.menu_items
+            current_menu_item=self.current_menu_item, menu_items=self.menu_items, music=self.music
         )
 
-        self.music = MenuSoundManager(channel=channel)
 
     def render(self):
         x, y = self.draw_menu_title()

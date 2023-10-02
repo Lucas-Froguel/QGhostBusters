@@ -8,12 +8,13 @@ class BaseUserInterface:
 
 
 class MenuUserInterface(BaseUserInterface):
-    def __init__(self, current_menu_item: int = None, menu_items: [dict] = None):
+    def __init__(self, current_menu_item: int = None, menu_items: [dict] = None, music=None):
         self.current_menu_item = current_menu_item
         self.menu_items = menu_items
         self.select = False
         self.quit = False
         self.running = True
+        self.music = music
 
     def process_input(self):
         self.select = False
@@ -26,9 +27,11 @@ class MenuUserInterface(BaseUserInterface):
                 if event.key == pygame.K_DOWN:
                     if self.current_menu_item < len(self.menu_items) - 1:
                         self.current_menu_item += 1
+                        self.music.play_select_menu_item_sound()
                 elif event.key == pygame.K_UP:
                     if self.current_menu_item > 0:
                         self.current_menu_item -= 1
+                        self.music.play_select_menu_item_sound()
                 elif event.key == pygame.K_RETURN:
                     self.select = True
         return self.running

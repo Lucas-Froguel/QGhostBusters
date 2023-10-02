@@ -24,7 +24,9 @@ class GameState:
         self.menu = MainMenu(window=self.window)
 
     def load_level(self, level: BaseLevel):
-        self.level = level(cellSize=self.cellSize, worldSize=self.worldSize, window=self.window)
+        self.level = level(
+            cellSize=self.cellSize, worldSize=self.worldSize, window=self.window
+        )
         self.level.load_level()
 
     def unload_level(self):
@@ -36,7 +38,9 @@ class GameState:
         self.window = pygame.display.set_mode((int(windowSize.x), int(windowSize.y)))
         pygame.display.set_caption(self.window_title)
 
-    def update(self,):
+    def update(
+        self,
+    ):
         if self.level:
             self.level.update()
             if not self.level.keep_running:

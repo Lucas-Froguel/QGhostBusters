@@ -1,4 +1,3 @@
-
 from pygame import Vector2
 from src.settings import ATTACK_RADIUS
 

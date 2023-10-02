@@ -1,4 +1,3 @@
-
 import pygame
 from pygame import Vector2
 from pygame.transform import scale
@@ -12,14 +11,8 @@ class MainMenu:
         self.window = window
 
         self.menu_items = [
-            {
-                'title': 'Test Level',
-                'action': lambda: TestLevel
-            },
-            {
-                'title': 'Quit',
-                'action': lambda: self.exit_menu()
-            }
+            {"title": "Test Level", "action": lambda: TestLevel},
+            {"title": "Quit", "action": lambda: self.exit_menu()},
         ]
         self.current_menu_item = 0
         # Font
@@ -29,8 +22,7 @@ class MainMenu:
         self.menuCursor = scale(self.menuCursor, Vector2(48, 48))
 
         self.user_interface = MenuUserInterface(
-            current_menu_item=self.current_menu_item,
-            menu_items=self.menu_items
+            current_menu_item=self.current_menu_item, menu_items=self.menu_items
         )
 
     def render(self):
@@ -44,7 +36,7 @@ class MainMenu:
         self.current_menu_item = self.user_interface.current_menu_item
         if self.user_interface.select:
             menu_item = self.menu_items[self.current_menu_item]
-            level = menu_item['action']()
+            level = menu_item["action"]()
             return level
         elif self.user_interface.quit:
             self.keep_running = False
@@ -62,9 +54,9 @@ class MainMenu:
     def compute_menu_surfaces(self):
         menu_width = 0
         for item in self.menu_items:
-            surface = self.itemFont.render(item['title'], True, (200, 0, 0))
+            surface = self.itemFont.render(item["title"], True, (200, 0, 0))
             menu_width = max(menu_width, surface.get_width())
-            item['surface'] = surface
+            item["surface"] = surface
 
         return menu_width
 
@@ -72,7 +64,7 @@ class MainMenu:
         x = (self.window.get_width() - menu_width) // 2
         for index, item in enumerate(self.menu_items):
             # Item text
-            surface = item['surface']
+            surface = item["surface"]
             self.window.blit(surface, (x, y))
 
             # Cursor

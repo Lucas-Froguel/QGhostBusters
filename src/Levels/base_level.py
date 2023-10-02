@@ -10,7 +10,9 @@ from src.user_interfaces import GameUserInterface
 
 
 class BaseLevel:
-    def __init__(self, cellSize: Vector2 = None, worldSize: Vector2 = None, window=None):
+    def __init__(
+        self, cellSize: Vector2 = None, worldSize: Vector2 = None, window=None
+    ):
         self.keep_running = True
         self.user_interface = GameUserInterface()
         self.window = window
@@ -38,8 +40,9 @@ class BaseLevel:
             self.keep_running = False
 
         self.player_group.update(self.user_interface.movePlayerCommand)
-        self.player_group.sprite.attack = self.user_interface.attackCommand
         self.visible_ghosts_group.update()
+        if self.user_interface.attackCommand:
+            self._player.attack(self.ghosts_group, self.visible_ghosts_group)
 
     def render(self):
         self.window.blit(self.surface, (0, 0))

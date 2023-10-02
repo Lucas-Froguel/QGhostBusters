@@ -22,7 +22,12 @@ class Unit(BaseUnit):
     Base class for player and ghosts.
     """
 
-    def __init__(self, cellSize: Vector2 = None, worldSize: Vector2 = None, position: Vector2 = None):
+    def __init__(
+        self,
+        cellSize: Vector2 = None,
+        worldSize: Vector2 = None,
+        position: Vector2 = None,
+    ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
         :param position: position on the map (in units of cells)
@@ -36,7 +41,7 @@ class Unit(BaseUnit):
             self.position.x * self.cellSize.x,
             self.position.y * self.cellSize.y,
             self.cellSize.x,
-            self.cellSize.y
+            self.cellSize.y,
         )
 
     def move(self, moveVector: Vector2) -> None:

@@ -24,31 +24,54 @@ class TestLevel(BaseLevel):
         self.player_group = GroupSingle()
         self.player_group.add(self._player)
 
+        splitters = [
+            GhostSplitter(
+                cellSize=self.cellSize,
+                worldSize=self.worldSize,
+                position=Vector2(10, 10),
+                splitterType="45",
+            ),
+            GhostSplitter(
+                cellSize=self.cellSize,
+                worldSize=self.worldSize,
+                position=Vector2(10, 15),
+                splitterType="45",
+            ),
+            GhostSplitter(
+                cellSize=self.cellSize,
+                worldSize=self.worldSize,
+                position=Vector2(5, 10),
+                splitterType="45",
+            ),
+            GhostSplitter(
+                cellSize=self.cellSize,
+                worldSize=self.worldSize,
+                position=Vector2(5, 15),
+                splitterType="45",
+            ),
+        ]
+
+        self.visible_ghosts_group = RenderUpdates()
         self.ghosts_group = [
             QGhost(
                 cellSize=self.cellSize,
                 worldSize=self.worldSize,
                 position=Vector2(20, 10),
+                splitters=splitters,
+                render_group=self.visible_ghosts_group,
             ),
             QGhost(
                 cellSize=self.cellSize,
                 worldSize=self.worldSize,
                 position=Vector2(10, 16),
+                splitters=splitters,
+                render_group=self.visible_ghosts_group,
             ),
         ]
-        self.visible_ghosts_group = RenderUpdates()
         # not good, because if more visible ghosts appear, they won't be here, think more
         self.visible_ghosts_group.add(
             [ghost.visible_parts for ghost in self.ghosts_group]
         )
 
-        self.splitter_group = RenderUpdates().add(
-            [
-                GhostSplitter(
-                    cellSize=self.cellSize,
-                    worldSize=self.worldSize,
-                    position=Vector2(10, 20),
-                    splitterType="125",
-                )
-            ]
-        )
+        self.splitter_group = RenderUpdates()
+        self.splitter_group.add(splitters)

@@ -1,7 +1,7 @@
 
 from pygame import Vector2, Rect
 from pygame.sprite import Sprite
-
+from src.SoundEffects.sound_manager import BaseSoundManager
 
 class BaseUnit(Sprite):
     def move(self):
@@ -43,6 +43,7 @@ class Unit(BaseUnit):
             self.cellSize.x,
             self.cellSize.y,
         )
+        self.sound_manager: BaseSoundManager = None
 
     def move(self, moveVector: Vector2) -> None:
         newUnitPos = self.position + moveVector

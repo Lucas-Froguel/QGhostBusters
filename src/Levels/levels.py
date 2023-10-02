@@ -5,6 +5,7 @@ from src.Units.player import Player
 from src.Units.ghosts import QGhost
 from src.Levels.base_level import BaseLevel
 from src.Units.splitter import GhostSplitter
+from src.SoundEffects.sound_manager import LevelSoundManager
 
 
 class TestLevel(BaseLevel):
@@ -12,10 +13,9 @@ class TestLevel(BaseLevel):
         self, cellSize: Vector2 = None, worldSize: Vector2 = None, window=None
     ):
         super().__init__(cellSize=cellSize, worldSize=worldSize, window=window)
-
         self.level_name = "src/Levels/levels/simple_map.tmx"
         self.level_title = "Test Level"
-        self.music_name = "src/Music/top-down-fantasy-1.mp3"
+        self.music = LevelSoundManager(music="src/SoundEffects/top-down-fantasy-1.mp3")
 
     def load_level(self):
         super().load_level()

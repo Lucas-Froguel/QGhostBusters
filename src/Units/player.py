@@ -4,17 +4,14 @@ import math
 from pygame import Vector2
 from pygame.image import load
 from pygame.sprite import RenderUpdates
-from pygame.transform import scale
+from pygame.transform import scale, rotate
 from qutip import qeye, ket, tensor
 
-from src.Units.base_unit import Unit
-from src.Units.ghosts import QGhost
-from src.Units.utils import is_ghost_in_players_radius
 from src.settings import MAX_GHOSTS_PER_STATE
-from pygame.transform import rotate
 from src.Units.base_unit import Unit
 from src.Units.ghosts import QGhost
 from src.Units.utils import is_ghost_in_players_radius
+from src.SoundEffects.sound_manager import PlayerSoundManager
 
 
 class Player(Unit):
@@ -33,6 +30,7 @@ class Player(Unit):
         self.image = load("src/Units/sprites/enemy1.png")
         self.image = scale(self.image, self.cellSize)
         self.direction: Vector2 = Vector2(1, 0)
+        self.sound_manager = PlayerSoundManager()
 
     def measure(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
         """
@@ -94,6 +92,7 @@ class Player(Unit):
                     break
 
             for i in indices_to_remove:
+                self.sound_manager.play_measure_sound()
                 visible_ghosts_group.remove(qghost.visible_parts.pop(i))
             if not qghost.visible_parts:
                 ghosts_group.remove(qghost)

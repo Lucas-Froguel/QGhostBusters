@@ -3,6 +3,7 @@ from pygame import Vector2
 from pygame.transform import scale
 from src.Levels.levels import TestLevel
 from src.user_interfaces import MenuUserInterface
+from src.SoundEffects.sound_manager import MenuSoundManager
 
 
 class MainMenu:
@@ -25,7 +26,7 @@ class MainMenu:
             current_menu_item=self.current_menu_item, menu_items=self.menu_items
         )
 
-        self.music_name = "src/Music/top-down-fantasy-1.mp3"
+        self.music = MenuSoundManager()
 
     def render(self):
         x, y = self.draw_menu_title()

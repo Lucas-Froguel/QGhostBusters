@@ -3,6 +3,7 @@ from pygame import Vector2
 
 from src.Levels.base_level import BaseLevel
 from src.Menus.menu import MainMenu
+from src.SoundEffects.sound_manager import ScreenSoundManager
 
 
 class GameState:
@@ -31,12 +32,11 @@ class GameState:
             cellSize=self.cellSize, worldSize=self.worldSize, window=self.window
         )
         self.level.load_level()
-        self.setup_game_music(self.level.music_name)
 
     def unload_level(self):
         self.level = None
         self.setup_game_window()
-        self.setup_game_music(self.menu.music_name)
+        self.setup_game_music(self.menu.music)
 
     def setup_game_window(self):
         windowSize = self.cellSize.elementwise() * self.worldSize
@@ -44,10 +44,8 @@ class GameState:
         pygame.display.set_caption(self.window_title)
 
     @staticmethod
-    def setup_game_music(music_name: str):
-        pygame.mixer.music.stop()
-        pygame.mixer.music.load(music_name)
-        pygame.mixer.music.play(-1)
+    def setup_game_music(music: ScreenSoundManager):
+        music.play_music()
 
     def update(
         self,

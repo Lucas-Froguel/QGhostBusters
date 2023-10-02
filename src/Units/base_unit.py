@@ -1,6 +1,6 @@
+
 from pygame import Vector2, Rect
 from pygame.sprite import Sprite
-from pygame.transform import rotate
 
 
 class BaseUnit(Sprite):
@@ -63,8 +63,4 @@ class Unit(BaseUnit):
         self.move(moveVector=moveVector)
         if not self.is_unit_in_map():
             self.move(moveVector=-moveVector)
-        
-        
-        angle = math.degrees(math.atan2(moveVector.y, moveVector.x))
-        self.image = pygame.transform.rotate(self.original_image, -angle)
-        self.rect = self.image.get_rect(center=self.rect.center)
+

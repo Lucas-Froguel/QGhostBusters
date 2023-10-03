@@ -171,3 +171,4 @@ class QGhost(Ghost):
             return None
         self.interact_with_splitter()
         self.attack(player)
+

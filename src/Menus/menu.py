@@ -3,7 +3,7 @@ from pygame.image import load
 from pygame.mixer import Channel
 from pygame.transform import scale
 from pygame import Vector2, Surface
-from src.Levels.levels import TestLevel
+from src.Levels.levels import TestLevel, CatacombLevel
 from src.user_interfaces import MenuUserInterface, SettingsMenuUserInterface
 from src.SoundEffects.sound_manager import MenuSoundManager
 
@@ -148,6 +148,7 @@ class LevelsMenu(BaseMenu):
         self.title = "Levels"
         self.menu_items = [
             {"title": "Test Level", "action": lambda: TestLevel},
+            {"title": "The Catacombs", "action": lambda: CatacombLevel},
             {"title": "Back", "action": lambda: self.exit_settings()},
         ]
 

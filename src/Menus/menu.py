@@ -97,11 +97,12 @@ class MenusManager:
         }
 
     def update(self):
-        self.keep_running = self.possible_menus[self.current_menu].keep_running
-        if self.current_menu != self.possible_menus[self.current_menu].current_menu:
-            self.current_menu = self.possible_menus[self.current_menu].current_menu
-            self.possible_menus[self.current_menu].load_menu()
-        level = self.possible_menus[self.current_menu].update()
+        current_menu_class = self.possible_menus[self.current_menu]
+        self.keep_running = current_menu_class.keep_running
+        if self.current_menu != current_menu_class.current_menu:
+            self.current_menu = current_menu_class.current_menu
+            current_menu_class.load_menu()
+        level = current_menu_class.update()
         return level
 
     def render(self):

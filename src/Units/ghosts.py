@@ -122,4 +122,3 @@ class QGhost(Ghost):
                         self.visible_parts.append(new_visual)
                         self.quantum_state = beam_splitter(self.quantum_state, i)
                         self.render_group.add(new_visual)
-

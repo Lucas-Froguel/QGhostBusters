@@ -25,6 +25,6 @@ class GhostSplitter(Unit):
         :param type: type of the ghost splitter aka degree with respect to X axis
         """
         super().__init__(cellSize=cellSize, worldSize=worldSize, position=position)
-        self.image = load(f"src/Units/sprites/splitter{splitterType}.png")
+        self.image = load(f"src/Units/sprites/splitter_portal_{splitterType}.png")
         self.image = rotate(scale(self.image, self.cellSize), 0)
         self.splitterType = splitterType

@@ -2,14 +2,16 @@ import numpy as np
 import math
 from pygame import Vector2
 from pygame.image import load
+from pygame.mixer import Channel
 from pygame.sprite import RenderUpdates
-from pygame.transform import scale
+from pygame.transform import scale, rotate
 from qutip import qeye, ket, tensor
+
 from src.settings import MAX_GHOSTS_PER_STATE
-from pygame.transform import rotate
 from src.Units.base_unit import Unit
 from src.Units.ghosts import QGhost
 from src.Units.utils import is_ghost_in_players_radius
+from src.SoundEffects.sound_manager import PlayerSoundManager
 
 
 class Player(Unit):
@@ -18,16 +20,18 @@ class Player(Unit):
         cellSize: Vector2 = None,
         worldSize: Vector2 = None,
         position: Vector2 = None,
+        channel: Channel = None
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
         :param worldSize: size of the map
         :param position: position on the map (in units of cells)
         """
-        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position)
-        self.image = load("src/Units/sprites/player.png")
+        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position, channel=channel)
+        self.image = load("src/Units/sprites/enemy1.png")
         self.image = scale(self.image, self.cellSize)
         self.direction: Vector2 = Vector2(1, 0)
+        self.sound_manager = PlayerSoundManager(channel=self.channel)
 
     def measure(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
         """
@@ -68,9 +72,10 @@ class Player(Unit):
                     qghost.quantum_state = possible_vectors[surviving_state_idx].unit()
                     break
 
-            for i in range(n_ghosts - 1, -1, -1):
-                if i != surviving_state_idx:
-                    visible_ghosts_group.remove(qghost.visible_parts.pop(i))
+            for i in indices_to_remove:
+                self.sound_manager.play_measure_sound()
+                visible_ghosts_group.remove(qghost.visible_parts.pop(i))
+
             if not qghost.visible_parts:
                 ghosts_group.remove(qghost)
 

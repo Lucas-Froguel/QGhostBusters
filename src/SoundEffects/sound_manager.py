@@ -32,11 +32,24 @@ class MenuSoundManager(ScreenSoundManager):
 
 
 class LevelSoundManager(ScreenSoundManager):
-    def __init__(self, channel: Channel = None, music: str = None):
+    def __init__(
+        self,
+        channel: Channel = None,
+        extra_channel: Channel = None,
+        background_track_path: str = None,
+        music: str = None
+    ):
         super().__init__(channel=channel)
         self.music = music
         self.load_level = Sound("src/SoundEffects/sound_effects/load_level.wav")
         self.game_over = Sound("src/SoundEffects/sound_effects/game_over.wav")
+        self.background_sound = Sound(background_track_path) if background_track_path else None
+        self.extra_channel = extra_channel
+        if self.extra_channel:
+            self.play_background_sound()
+
+    def play_background_sound(self):
+        self.extra_channel.play(self.background_sound, loops=-1)
 
     def play_load_level_sound(self):
         self.channel.play(self.load_level)

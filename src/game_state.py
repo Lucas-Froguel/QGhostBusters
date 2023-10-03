@@ -2,7 +2,7 @@ import pygame
 from pygame import Vector2
 
 from src.Levels.base_level import BaseLevel
-from src.Menus.menu import MainMenu
+from src.Menus.menu import MenusManager
 from src.SoundEffects.sound_manager import ScreenSoundManager
 
 
@@ -10,6 +10,7 @@ class GameState:
     def __init__(self):
         pygame.init()
         pygame.mixer.init()
+        pygame.mixer_music.set_volume(0.5)
         pygame.mixer.set_num_channels(2)
         self.window_channel = pygame.mixer.Channel(0)
         self.units_channel = pygame.mixer.Channel(1)
@@ -27,7 +28,7 @@ class GameState:
         # level variables
         self.level: BaseLevel = None
 
-        self.menu = MainMenu(window=self.window, channel=self.window_channel)
+        self.menu = MenusManager(window=self.window, channel=self.window_channel)
         self.setup_game_music(self.menu.music)
 
     def load_level(self, level: BaseLevel):

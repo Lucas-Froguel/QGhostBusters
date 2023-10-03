@@ -130,4 +130,3 @@ class QGhost(Ghost):
 
                         self.add_visible_ghost(start_position=this_ghost.position, last_move=last_move)
                         self.quantum_state = beam_splitter(self.quantum_state, i)
-                        self.render_group.add(new_visual)

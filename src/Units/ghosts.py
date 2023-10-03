@@ -8,10 +8,16 @@ from src.Units.splitter import GhostSplitter
 from src.Units.utils import (
     two_ghost_coming_from_different_sides_of_splitter,
     beam_splitter,
+    is_in_attack_radius,
 )
-from src.settings import GHOST_SPEED, MAX_GHOSTS_PER_STATE
+from src.settings import (
+    GHOST_SPEED,
+    MAX_GHOSTS_PER_STATE,
+    GHOST_ATTACK_RADIUS,
+    PROB_GHOST_ATTACK,
+)
 
-from qutip import ket
+from qutip import ket, tensor, qeye
 
 DIR_DICT = {"L": (-1, 0), "R": (1, 0), "D": (0, -1), "U": (0, 1)}
 
@@ -48,6 +54,7 @@ class Ghost(Unit):
 
     def update(self):
         moveVector = self.calculate_move_vector()
+        moveVector = self.last_move
         self.last_move = moveVector
         super().update(moveVector=moveVector)
         self.last_move = moveVector
@@ -86,13 +93,34 @@ class QGhost(Ghost):
         self.splitters = splitters
         self.render_group = render_group
 
-    def update(self):
-        """ "
-        After all the ghosts are in position, we can change their state
+    def attack(self, player) -> None:
         """
-        if len(self.visible_parts) > MAX_GHOSTS_PER_STATE:
-            return None
+        If a ghost is near the player, it attacks.
+        All the parts of the superposition attack equally.
+        """
+        # prob that attack happens at all
+        if np.random.random() <= PROB_GHOST_ATTACK:
+            attack_prob = 0
+            for i, ghost in enumerate(self.visible_parts):
+                if is_in_attack_radius(
+                    player.position, ghost.position, GHOST_ATTACK_RADIUS
+                ):
+                    p_not_here = (
+                        tensor(
+                            [
+                                ket([0], MAX_GHOSTS_PER_STATE).dag()
+                                if g == i
+                                else qeye(MAX_GHOSTS_PER_STATE)
+                                for g in range(len(self.visible_parts))
+                            ]
+                        )
+                        * self.quantum_state
+                    ).norm()
+                    attack_prob += 1 - p_not_here
+            if np.random.random() <= attack_prob:
+                player.health -= 1
 
+    def interact_with_splitter(self) -> None:
         seen = set()
         for splitter in self.splitters:
             for i, this_ghost in enumerate(self.visible_parts[:]):
@@ -122,3 +150,16 @@ class QGhost(Ghost):
                         self.visible_parts.append(new_visual)
                         self.quantum_state = beam_splitter(self.quantum_state, i)
                         self.render_group.add(new_visual)
+
+    def update(self, player) -> None:
+        """
+        After all the ghosts are in position, we can:
+            1. change their state if they hit the splitter
+            2. let them attack the player
+
+        :param player: instance of the Player class carrying information about player's position and health
+        """
+        if len(self.visible_parts) > MAX_GHOSTS_PER_STATE:
+            return None
+        self.interact_with_splitter()
+        self.attack(player)

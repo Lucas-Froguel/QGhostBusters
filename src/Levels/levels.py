@@ -60,13 +60,13 @@ class TestLevel(BaseLevel):
                 splitters=splitters,
                 render_group=self.visible_ghosts_group,
             ),
-            QGhost(
-                cellSize=self.cellSize,
-                worldSize=self.worldSize,
-                position=Vector2(10, 16),
-                splitters=splitters,
-                render_group=self.visible_ghosts_group,
-            ),
+            # QGhost(
+            #     cellSize=self.cellSize,
+            #     worldSize=self.worldSize,
+            #     position=Vector2(10, 16),
+            #     splitters=splitters,
+            #     render_group=self.visible_ghosts_group,
+            # ),
         ]
         self.visible_ghosts_group.add(
             [ghost.visible_parts for ghost in self.ghosts_group]

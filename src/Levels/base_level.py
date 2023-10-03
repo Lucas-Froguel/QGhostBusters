@@ -36,24 +36,37 @@ class BaseLevel:
         self.ghosts_group: [QGhost] = None
         self.visible_ghosts_group: RenderUpdates = None
 
+        # to use text blocks
+        pygame.font.init()
+        self.health_bar_font = pygame.font.SysFont("arial", 30)
+
     def update(self):
         self.keep_running = self.user_interface.process_input()
 
         if not self.ghosts_group:
             self.keep_running = False
+            print("You won")
+            return
 
         self.player_group.update(self.user_interface.movePlayerCommand)
         self.visible_ghosts_group.update()
         if self.user_interface.attackCommand:
             self._player.measure(self.ghosts_group, self.visible_ghosts_group)
         for qghost in self.ghosts_group:
-            qghost.update()
+            qghost.update(self._player)
+        if self._player.health <= 0:
+            self.keep_running = False
+            print("You died")
 
     def render(self):
         self.window.blit(self.surface, (0, 0))
         self.player_group.draw(self.window)
         self.visible_ghosts_group.draw(self.window)
         self.splitter_group.draw(self.window)
+        health_bar = self.health_bar_font.render(
+            str(self._player.health), False, (0, 0, 0)
+        )
+        self.window.blit(health_bar, (0, 0))
 
     def load_map(self):
         self.tmx_map = pytmx.TiledMap(self.level_name)

@@ -3,11 +3,17 @@ from pygame import Vector2
 
 from src.Levels.base_level import BaseLevel
 from src.Menus.menu import MainMenu
+from src.SoundEffects.sound_manager import ScreenSoundManager
 
 
 class GameState:
     def __init__(self):
         pygame.init()
+        pygame.mixer.init()
+        pygame.mixer.set_num_channels(2)
+        self.window_channel = pygame.mixer.Channel(0)
+        self.units_channel = pygame.mixer.Channel(1)
+
         self.running = True
         self.clock = pygame.time.Clock()
 
@@ -21,22 +27,32 @@ class GameState:
         # level variables
         self.level: BaseLevel = None
 
-        self.menu = MainMenu(window=self.window)
+        self.menu = MainMenu(window=self.window, channel=self.window_channel)
+        self.setup_game_music(self.menu.music)
 
     def load_level(self, level: BaseLevel):
         self.level = level(
-            cellSize=self.cellSize, worldSize=self.worldSize, window=self.window
+            cellSize=self.cellSize,
+            worldSize=self.worldSize,
+            window=self.window,
+            level_channel=self.window_channel,
+            unit_channel=self.units_channel
         )
         self.level.load_level()
 
     def unload_level(self):
         self.level = None
         self.setup_game_window()
+        self.setup_game_music(self.menu.music)
 
     def setup_game_window(self):
         windowSize = self.cellSize.elementwise() * self.worldSize
         self.window = pygame.display.set_mode((int(windowSize.x), int(windowSize.y)))
         pygame.display.set_caption(self.window_title)
+
+    @staticmethod
+    def setup_game_music(music: ScreenSoundManager):
+        music.play_music()
 
     def update(
         self,

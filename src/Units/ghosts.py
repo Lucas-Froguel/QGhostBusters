@@ -1,6 +1,7 @@
 import numpy as np
 from pygame import Vector2
 from pygame.image import load
+from pygame.mixer import Channel
 from pygame.sprite import RenderUpdates
 from pygame.transform import scale
 from src.Units.base_unit import Unit
@@ -11,11 +12,11 @@ from src.Units.utils import (
     is_in_attack_radius,
 )
 from src.settings import (
-    GHOST_SPEED,
-    MAX_GHOSTS_PER_STATE,
     GHOST_ATTACK_RADIUS,
     PROB_GHOST_ATTACK,
 )
+from src.settings import GHOST_SPEED, MAX_GHOSTS_PER_STATE
+from src.SoundEffects.sound_manager import GhostSoundManager
 
 from qutip import ket, tensor, qeye
 
@@ -28,6 +29,8 @@ class Ghost(Unit):
         cellSize: Vector2 = None,
         worldSize: Vector2 = None,
         position: Vector2 = None,
+        last_move: Vector2 = None,
+        channel: Channel = None,
         qghost=None,
     ):
         """
@@ -36,12 +39,13 @@ class Ghost(Unit):
         :param position: position on the map (in units of cells)
         :param qghost: meta-ghost of which this one is a part
         """
-        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position)
-        self.image = load("src/Units/sprites/ghost.png")
+        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position, channel=channel)
+        self.image = load("src/Units/sprites/new_ghost2.png")
         self.image = scale(self.image, self.cellSize)
         self.qghost = qghost
 
-        self.last_move = Vector2(-1, 0)
+        self.sound_manager = GhostSoundManager(channel=self.channel)
+        self.last_move = last_move if last_move else Vector2(-1, 0)
 
     @staticmethod
     def calculate_move_vector() -> Vector2:
@@ -73,6 +77,7 @@ class QGhost(Ghost):
         position: Vector2 = None,
         splitters: list[GhostSplitter] = None,
         render_group: RenderUpdates = None,
+        channel: Channel = None
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
@@ -81,17 +86,26 @@ class QGhost(Ghost):
         :param render_group: a pointer to the visualisation parameters
         """
         # TODO: it is still classical
-        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position)
+        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position, channel=channel)
         # initialize it in |1>. Allow maximum MAX_GHOSTS_PER_STATE ghosts in one state
         self.quantum_state = ket([1], MAX_GHOSTS_PER_STATE)
-        self.visible_parts = [
-            Ghost(
-                cellSize=cellSize, worldSize=worldSize, position=position, qghost=self
-            )
-        ]
+        self.visible_parts = []
         self.cellSize = cellSize
         self.splitters = splitters
         self.render_group = render_group
+        self.add_visible_ghost(start_position=position)
+
+    def add_visible_ghost(self, start_position: Vector2 = None, last_move: Vector2 = None):
+        ghost = Ghost(
+            cellSize=self.cellSize,
+            worldSize=self.worldSize,
+            position=start_position,
+            last_move=last_move,
+            qghost=self,
+            channel=self.channel
+        )
+        self.visible_parts.append(ghost)
+        self.render_group.add(ghost)
 
     def attack(self, player) -> None:
         """
@@ -119,6 +133,7 @@ class QGhost(Ghost):
                     attack_prob += 1 - p_not_here
             if np.random.random() <= attack_prob:
                 player.health -= 1
+                self.sound_manager.play_attack_sound()
 
     def interact_with_splitter(self) -> None:
         seen = set()
@@ -137,19 +152,12 @@ class QGhost(Ghost):
                             self.quantum_state = beam_splitter(self.quantum_state, i, j)
                             seen |= {i, i + j}
                     if not is_coincidence:
-                        new_visual = Ghost(
-                            cellSize=self.cellSize,
-                            worldSize=self.worldSize,
-                            position=this_ghost.position,
-                            qghost=self,
-                        )
-                        new_visual.last_move = (-1) ** (
+                        last_move = (-1) ** (
                             splitter.splitterType == "45"
                         ) * Vector2(this_ghost.last_move.y, this_ghost.last_move.x)
 
-                        self.visible_parts.append(new_visual)
+                        self.add_visible_ghost(start_position=this_ghost.position, last_move=last_move)
                         self.quantum_state = beam_splitter(self.quantum_state, i)
-                        self.render_group.add(new_visual)
 
     def update(self, player) -> None:
         """

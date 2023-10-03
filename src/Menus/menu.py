@@ -1,14 +1,17 @@
 import pygame
-from pygame import Vector2
+from pygame import Vector2, Surface
 from pygame.transform import scale
+from pygame.mixer import Channel
 from src.Levels.levels import TestLevel
 from src.user_interfaces import MenuUserInterface
+from src.SoundEffects.sound_manager import MenuSoundManager
 
 
 class MainMenu:
-    def __init__(self, window=None):
+    def __init__(self, window: Surface = None, channel: Channel = None):
         self.keep_running = True
         self.window = window
+        self.music = MenuSoundManager(channel=channel)
 
         self.menu_items = [
             {"title": "Test Level", "action": lambda: TestLevel},
@@ -16,14 +19,15 @@ class MainMenu:
         ]
         self.current_menu_item = 0
         # Font
-        self.titleFont = pygame.font.Font("fonts/BD_Cartoon_Shout.ttf", 72)
-        self.itemFont = pygame.font.Font("fonts/BD_Cartoon_Shout.ttf", 48)
-        self.menuCursor = pygame.image.load("src/Units/sprites/ghost.png")
+        self.titleFont = pygame.font.Font("fonts/Baskic8.otf", 72)
+        self.itemFont = pygame.font.Font("fonts/Baskic8.otf", 48)
+        self.menuCursor = pygame.image.load("src/Units/sprites/new_ghost2.png")
         self.menuCursor = scale(self.menuCursor, Vector2(48, 48))
 
         self.user_interface = MenuUserInterface(
-            current_menu_item=self.current_menu_item, menu_items=self.menu_items
+            current_menu_item=self.current_menu_item, menu_items=self.menu_items, music=self.music
         )
+
 
     def render(self):
         x, y = self.draw_menu_title()
@@ -70,7 +74,7 @@ class MainMenu:
             # Cursor
             if index == self.current_menu_item:
                 cursorX = x - self.menuCursor.get_width() - 10
-                cursorY = y + (surface.get_height() - self.menuCursor.get_height()) // 2
+                cursorY = y + (surface.get_height() - self.menuCursor.get_height()) // 2 - 10
                 self.window.blit(self.menuCursor, (cursorX, cursorY))
 
             y += (120 * surface.get_height()) // 100

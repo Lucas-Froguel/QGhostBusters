@@ -1,17 +1,24 @@
 import pytmx
 from pytmx.util_pygame import load_pygame
 import pygame
-from pygame import Vector2
+from pygame import Vector2, Surface
+from pygame.mixer import Channel
 from pygame.sprite import RenderUpdates, GroupSingle
 
 from src.Units.player import Player
 from src.Units.ghosts import QGhost
 from src.user_interfaces import GameUserInterface
+from src.SoundEffects.sound_manager import LevelSoundManager
 
 
 class BaseLevel:
     def __init__(
-        self, cellSize: Vector2 = None, worldSize: Vector2 = None, window=None
+        self,
+        cellSize: Vector2 = None,
+        worldSize: Vector2 = None,
+        window: Surface = None,
+        level_channel: Channel = None,
+        unit_channel: Channel = None
     ):
         self.keep_running = True
         self.user_interface = GameUserInterface()
@@ -25,6 +32,10 @@ class BaseLevel:
         self.level_name: str = None
         self.tmx_map: pytmx.TileMap = None
         self.tmx_data = None
+
+        self.level_channel = level_channel
+        self.unit_channel = unit_channel
+        self.music: LevelSoundManager = None
 
         # ghost-splitters
         self.splitter_group: RenderUpdates = None
@@ -46,6 +57,7 @@ class BaseLevel:
         if not self.ghosts_group:
             self.keep_running = False
             print("You won")
+            self.music.play_game_over_sound()
             return
 
         self.player_group.update(self.user_interface.movePlayerCommand)
@@ -56,6 +68,7 @@ class BaseLevel:
             qghost.update(self._player)
         if self._player.health <= 0:
             self.keep_running = False
+            self.music.play_game_over_sound()
             print("You died")
 
     def render(self):
@@ -73,6 +86,7 @@ class BaseLevel:
         self.tmx_data = load_pygame(self.level_name)
 
     def load_level(self):
+        self.music.play_load_level_sound()
         self.load_map()
         self.cellSize = Vector2(self.tmx_data.tilewidth, self.tmx_data.tileheight)
         self.worldSize = Vector2(self.tmx_data.width, self.tmx_data.height)
@@ -85,3 +99,5 @@ class BaseLevel:
             if isinstance(layer, pytmx.TiledTileLayer):
                 for x, y, image in layer.tiles():
                     self.surface.blit(image, (x * self.cellSize.x, y * self.cellSize.y))
+
+        self.music.play_music()

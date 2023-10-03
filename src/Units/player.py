@@ -2,9 +2,12 @@ import numpy as np
 import math
 from pygame import Vector2
 from pygame.image import load
+from pygame.mixer import Channel
 from pygame.sprite import RenderUpdates
 from pygame.transform import scale
 from qutip import ket
+
+from src.SoundEffects.sound_manager import PlayerSoundManager
 from src.settings import MAX_GHOSTS_PER_STATE, PLAYER_MEASURE_RADIUS, INITIAL_HEALTH
 from pygame.transform import rotate
 from src.Units.base_unit import Unit
@@ -18,16 +21,18 @@ class Player(Unit):
         cellSize: Vector2 = None,
         worldSize: Vector2 = None,
         position: Vector2 = None,
+        channel: Channel = None
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
         :param worldSize: size of the map
         :param position: position on the map (in units of cells)
         """
-        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position)
-        self.image = load("src/Units/sprites/player.png")
+        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position, channel=channel)
+        self.image = load("src/Units/sprites/enemy1.png")
         self.image = scale(self.image, self.cellSize)
         self.direction: Vector2 = Vector2(1, 0)
+        self.sound_manager = PlayerSoundManager(channel=self.channel)
         self.health = INITIAL_HEALTH
 
     def attack(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
@@ -80,6 +85,7 @@ class Player(Unit):
                     surviving_state_indices = set(
                         np.where(numbers_of_ghosts_here > 0)[0]
                     )
+                    self.sound_manager.play_attack_sound()
                     break
             for i in range(n_ghosts - 1, -1, -1):
                 if i not in surviving_state_indices:

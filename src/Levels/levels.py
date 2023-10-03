@@ -34,7 +34,7 @@ class TestLevel(BaseLevel):
     def load_level(self):
         super().load_level()
         self._player = Player(
-            cellSize=self.cellSize, worldSize=self.worldSize, position=Vector2(5, 4), channel=self.unit_channel
+            cellSize=self.cellSize, worldSize=self.worldSize, position=Vector2(5, 4), channel=self.unit_channel, map_data=self.tmx_data
         )
         self.player_group = GroupSingle()
         self.player_group.add(self._player)

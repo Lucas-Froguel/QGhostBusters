@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from pytmx import TiledMap
 from pygame import Vector2
 from pygame.image import load
 from pygame.mixer import Channel
@@ -21,7 +22,8 @@ class Player(Unit):
         cellSize: Vector2 = None,
         worldSize: Vector2 = None,
         position: Vector2 = None,
-        channel: Channel = None
+        channel: Channel = None,
+        map_data: TiledMap = None
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
@@ -34,6 +36,7 @@ class Player(Unit):
         self.direction: Vector2 = Vector2(1, 0)
         self.sound_manager = PlayerSoundManager(channel=self.channel)
         self.health = INITIAL_HEALTH
+        self.map_data = map_data
 
     def attack(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
         """
@@ -91,12 +94,25 @@ class Player(Unit):
                 if i not in surviving_state_indices:
                     visible_ghosts_group.remove(qghost.visible_parts.pop(i))
 
-    def move(self, moveVector: Vector2) -> None:
+    def move(self, moveVector: Vector2, does_rotate: bool = True) -> None:
         super().move(moveVector=moveVector)
 
-        angle = math.acos(
-            self.direction.dot(moveVector)
-            / (self.direction.length() * moveVector.length())
-        )
-        self.direction = moveVector
-        self.image = rotate(self.image, -math.degrees(angle))
+        if does_rotate:
+            angle = math.acos(
+                self.direction.dot(moveVector)
+                / (self.direction.length() * moveVector.length())
+            )
+            self.direction = moveVector
+            self.image = rotate(self.image, -math.degrees(angle))
+
+    def collides_with_wall(self):
+        walls = self.map_data.layernames["Walls"].tiles()
+        for x, y, _ in walls:
+            if self.position == Vector2(x, y):
+                return True
+        return False
+
+    def update(self, moveVector: Vector2 = None) -> None:
+        super().update(moveVector=moveVector)
+        if self.collides_with_wall():
+            self.move(moveVector=-moveVector, does_rotate=False)

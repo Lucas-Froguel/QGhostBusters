@@ -77,7 +77,7 @@ class BaseLevel:
         self.visible_ghosts_group.draw(self.window)
         self.splitter_group.draw(self.window)
         health_bar = self.health_bar_font.render(
-            f"Remaining HP:{self._player.health}", False, (0, 0, 0)
+            f"HP:{self._player.health}", False, (255, 0, 0)
         )
         self.window.blit(health_bar, (0, 0))
 

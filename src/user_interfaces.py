@@ -37,6 +37,43 @@ class MenuUserInterface(BaseUserInterface):
         return self.running
 
 
+class SettingsMenuUserInterface(BaseUserInterface):
+    def __init__(self, current_menu_item: int = None, menu_items: [dict] = None, music=None, volume: float = None):
+        self.current_menu_item = current_menu_item
+        self.menu_items = menu_items
+        self.select = False
+        self.quit = False
+        self.running = True
+        self.music = music
+        self.volume = volume
+
+    def process_input(self):
+        self.select = False
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+                break
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    if self.current_menu_item < len(self.menu_items) - 1:
+                        self.current_menu_item += 1
+                        self.music.play_select_menu_item_sound()
+                elif event.key == pygame.K_UP:
+                    if self.current_menu_item > 0:
+                        self.current_menu_item -= 1
+                        self.music.play_select_menu_item_sound()
+                elif event.key == pygame.K_LEFT:
+                    if self.volume > 0:
+                        self.volume -= 5
+                elif event.key == pygame.K_RIGHT:
+                    if self.volume < 100:
+                        self.volume += 5
+                elif event.key == pygame.K_RETURN:
+                    self.select = True
+        return self.running
+
+
 class GameUserInterface(BaseUserInterface):
     def __init__(self):
         self.movePlayerCommand = Vector2(0, 0)

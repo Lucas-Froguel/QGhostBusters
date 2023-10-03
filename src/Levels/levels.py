@@ -73,6 +73,7 @@ class TestLevel(BaseLevel):
                 position=Vector2(20, 10),
                 splitters=splitters,
                 render_group=self.visible_ghosts_group,
+                channel=self.unit_channel,
             ),
             QGhost(
                 cellSize=self.cellSize,
@@ -80,6 +81,7 @@ class TestLevel(BaseLevel):
                 position=Vector2(10, 16),
                 splitters=splitters,
                 render_group=self.visible_ghosts_group,
+                channel=self.unit_channel,
             ),
         ]
 

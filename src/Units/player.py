@@ -4,14 +4,15 @@ from pygame import Vector2
 from pygame.image import load
 from pygame.mixer import Channel
 from pygame.sprite import RenderUpdates
-from pygame.transform import scale, rotate
-from qutip import qeye, ket, tensor
+from pygame.transform import scale
+from qutip import ket
 
-from src.settings import MAX_GHOSTS_PER_STATE
+from src.SoundEffects.sound_manager import PlayerSoundManager
+from src.settings import MAX_GHOSTS_PER_STATE, PLAYER_MEASURE_RADIUS, INITIAL_HEALTH
+from pygame.transform import rotate
 from src.Units.base_unit import Unit
 from src.Units.ghosts import QGhost
-from src.Units.utils import is_ghost_in_players_radius
-from src.SoundEffects.sound_manager import PlayerSoundManager
+from src.Units.utils import is_in_attack_radius, find_tensored_components
 
 
 class Player(Unit):
@@ -32,11 +33,30 @@ class Player(Unit):
         self.image = scale(self.image, self.cellSize)
         self.direction: Vector2 = Vector2(1, 0)
         self.sound_manager = PlayerSoundManager(channel=self.channel)
+        self.health = INITIAL_HEALTH
+
+    def attack(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
+        """
+        Check whether we are in the zone of application of user's weapon.
+        If so, apply the lowering operator on this ghost.
+        As a result, this part of the ghost will become weaker (there can be several ghosts in one spot),
+        and the other parts may become stronger.
+        Examples (a_i acts on i-th state):
+        a_0 (01 + 10)/sqrt(2) -> 10,
+        a_1 (20 + 02) -> 01
+        a_0 (19 + 91)/sqrt(2) -> (09 + 3 * 81)/sqrt(10)
+
+        :param ghosts_group: list of QGhosts present in the game
+        :param visible_ghosts_group: visual information about QGhosts
+        """
+        for qghost in ghosts_group:
+            if not qghost.visible_parts:
+                ghosts_group.remove(qghost)
 
     def measure(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
         """
-        Check whether we are in the zone of application of user's weapon.
-        If so, decrease the number of ghosts.
+        Check whether we are in the zone of application of user's measurement apparatus.
+        If so, collapse the ghosts to one spot.
 
         :param ghosts_group: list of QGhosts present in the game
         :param visible_ghosts_group: visual information about QGhosts
@@ -46,38 +66,30 @@ class Player(Unit):
             if n_ghosts == 1:
                 continue
             for i, ghost in enumerate(qghost.visible_parts):
-                if is_ghost_in_players_radius(self.position, ghost.position):
-                    # projections on |0> for each ghost
-                    possible_vectors = [
-                        tensor(
-                            [
-                                ket([0], MAX_GHOSTS_PER_STATE).dag()
-                                if g == j
-                                else qeye(MAX_GHOSTS_PER_STATE)
-                                for g in range(n_ghosts)
-                            ]
-                        )
-                        * qghost.quantum_state
-                        for j in range(n_ghosts)
-                    ]
-                    # norms of each vector, proportional to probability to measure |n>, n>0 in that state
-                    # max is to trim floating point errors
-                    norms = [max(0, 1 - v.norm()) for v in possible_vectors]
-                    # choose one vector to survive based on probability (1 - P(|0>)) of non-zero state
+                if is_in_attack_radius(
+                    self.position, ghost.position, PLAYER_MEASURE_RADIUS
+                ):
+                    probs = np.abs(qghost.quantum_state.full()[:, 0]) ** 2
+                    # choose one vector to survive based on its probability
                     surviving_state_idx = np.random.choice(
-                        list(range(n_ghosts)),
-                        p=np.array(norms) / np.sum(norms),
+                        list(range(MAX_GHOSTS_PER_STATE**n_ghosts)),
+                        p=probs / np.sum(probs),
                     )
-
-                    qghost.quantum_state = possible_vectors[surviving_state_idx].unit()
+                    numbers_of_ghosts_here = find_tensored_components(
+                        surviving_state_idx, n_ghosts
+                    )
+                    qghost.quantum_state = ket(
+                        numbers_of_ghosts_here[numbers_of_ghosts_here > 0],
+                        MAX_GHOSTS_PER_STATE,
+                    )
+                    surviving_state_indices = set(
+                        np.where(numbers_of_ghosts_here > 0)[0]
+                    )
+                    self.sound_manager.play_attack_sound()
                     break
-
-            for i in indices_to_remove:
-                self.sound_manager.play_measure_sound()
-                visible_ghosts_group.remove(qghost.visible_parts.pop(i))
-
-            if not qghost.visible_parts:
-                ghosts_group.remove(qghost)
+            for i in range(n_ghosts - 1, -1, -1):
+                if i not in surviving_state_indices:
+                    visible_ghosts_group.remove(qghost.visible_parts.pop(i))
 
     def move(self, moveVector: Vector2) -> None:
         super().move(moveVector=moveVector)

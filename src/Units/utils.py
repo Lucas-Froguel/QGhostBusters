@@ -5,14 +5,14 @@ from pygame import Vector2
 from qutip import Qobj, ket, destroy, tensor, qeye
 
 from src.Units.splitter import SplitterType
-from src.settings import ATTACK_RADIUS, MAX_GHOSTS_PER_STATE
+from src.settings import MAX_GHOSTS_PER_STATE
 
 
-def is_ghost_in_players_radius(player_pos: Vector2, ghost_pos: Vector2) -> bool:
+def is_in_attack_radius(player_pos: Vector2, ghost_pos: Vector2, radius: float) -> bool:
     """
     Check whether the ghost is inside player's radius.
     """
-    return (player_pos - ghost_pos).length_squared() <= ATTACK_RADIUS**2
+    return (player_pos - ghost_pos).length_squared() <= radius**2
 
 
 def two_ghost_coming_from_different_sides_of_splitter(
@@ -83,3 +83,15 @@ def beam_splitter(
         final_state = BS * quantum_state
 
     return final_state
+
+
+def find_tensored_components(idx: int, n_comp: int) -> list[int]:
+    res = []
+    n = n_comp - 1
+    while idx > 0:
+        this_power = MAX_GHOSTS_PER_STATE**n
+        this_component = idx // this_power
+        idx -= this_power * this_component
+        res.append(this_component)
+        n -= 1
+    return np.array(res + [0] * (n_comp - len(res)))

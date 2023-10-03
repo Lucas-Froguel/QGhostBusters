@@ -38,14 +38,15 @@ class BaseLevel:
         self.music: LevelSoundManager = None
 
         # ghost-splitters
-        self.splitter_group: RenderUpdates = None
+        self.splitter_group: RenderUpdates = RenderUpdates()
 
         # player and ghosts
         self._player: Player = None
-        self.player_group: GroupSingle = None
+        self.player_group: GroupSingle = GroupSingle()
+        self.shots_group: RenderUpdates = RenderUpdates()
 
         self.ghosts_group: [QGhost] = None
-        self.visible_ghosts_group: RenderUpdates = None
+        self.visible_ghosts_group: RenderUpdates = RenderUpdates()
 
         # to use text blocks
         pygame.font.init()
@@ -62,10 +63,18 @@ class BaseLevel:
 
         self.player_group.update(self.user_interface.movePlayerCommand)
         self.visible_ghosts_group.update(self._player)
-        if self.user_interface.attackCommand:
-            self._player.measure(self.ghosts_group, self.visible_ghosts_group)
+        if self.user_interface.measureCommand:
+            self._player.measure(self.ghosts_group)
+        elif self.user_interface.attackCommand:
+            self._player.attack()
+            self.shots_group.add(self._player.weapon.shots)
+        self.shots_group.remove(*self._player.weapon.dead_shots)
+
         for qghost in self.ghosts_group:
+            self.visible_ghosts_group.add(qghost.visible_parts)
+            self.visible_ghosts_group.remove(*qghost.dead_ghosts)
             qghost.update(self._player)
+
         if self._player.health <= 0:
             self.keep_running = False
             self.music.play_game_over_sound()
@@ -76,6 +85,7 @@ class BaseLevel:
         self.player_group.draw(self.window)
         self.visible_ghosts_group.draw(self.window)
         self.splitter_group.draw(self.window)
+        self.shots_group.draw(self.window)
         health_bar = self.health_bar_font.render(
             f"HP:{self._player.health}", False, (255, 0, 0)
         )

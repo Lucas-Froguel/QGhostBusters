@@ -13,6 +13,7 @@ from src.settings import MAX_GHOSTS_PER_STATE, PLAYER_MEASURE_RADIUS, INITIAL_HE
 from pygame.transform import rotate
 from src.Units.base_unit import Unit
 from src.Units.ghosts import QGhost
+from src.Units.weapon import Weapon
 from src.Units.utils import is_in_given_radius, find_tensored_components
 
 
@@ -35,28 +36,19 @@ class Player(Unit):
         self.image = scale(self.image, self.cellSize)
         self.direction: Vector2 = Vector2(1, 0)
         self.sound_manager = PlayerSoundManager(channel=self.channel)
+        self.measure_radius = PLAYER_MEASURE_RADIUS
         self.health = INITIAL_HEALTH
         self.map_data = map_data
 
-    def attack(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
-        """
-        Check whether we are in the zone of application of user's weapon.
-        If so, apply the lowering operator on this ghost.
-        As a result, this part of the ghost will become weaker (there can be several ghosts in one spot),
-        and the other parts may become stronger.
-        Examples (a_i acts on i-th state):
-        a_0 (01 + 10)/sqrt(2) -> 10,
-        a_1 (20 + 02) -> 01
-        a_0 (19 + 91)/sqrt(2) -> (09 + 3 * 81)/sqrt(10)
+        self.weapon = Weapon(
+            cellSize=self.cellSize, worldSize=self.worldSize, position=self.position, channel=self.channel, map_data=self.map_data
+        )
 
-        :param ghosts_group: list of QGhosts present in the game
-        :param visible_ghosts_group: visual information about QGhosts
-        """
-        for qghost in ghosts_group:
-            if not qghost.visible_parts:
-                ghosts_group.remove(qghost)
+    def attack(self):
+        self.weapon.attack(direction=self.direction, position=self.position)
+        self.sound_manager.play_attack_sound()
 
-    def measure(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
+    def measure(self, qghosts: list[QGhost]):
         """
         Check whether we are in the zone of application of user's measurement apparatus.
         If so, collapse the ghosts to one spot.
@@ -64,35 +56,10 @@ class Player(Unit):
         :param ghosts_group: list of QGhosts present in the game
         :param visible_ghosts_group: visual information about QGhosts
         """
-        for qghost in ghosts_group:
-            n_ghosts = len(qghost.visible_parts)
-            if n_ghosts == 1:
-                continue
-            for i, ghost in enumerate(qghost.visible_parts):
-                if is_in_given_radius(
-                    self.position, ghost.position, PLAYER_MEASURE_RADIUS
-                ):
-                    probs = np.abs(qghost.quantum_state.full()[:, 0]) ** 2
-                    # choose one vector to survive based on its probability
-                    surviving_state_idx = np.random.choice(
-                        list(range(MAX_GHOSTS_PER_STATE**n_ghosts)),
-                        p=probs / np.sum(probs),
-                    )
-                    numbers_of_ghosts_here = find_tensored_components(
-                        surviving_state_idx, n_ghosts
-                    )
-                    qghost.quantum_state = ket(
-                        numbers_of_ghosts_here[numbers_of_ghosts_here > 0],
-                        MAX_GHOSTS_PER_STATE,
-                    )
-                    surviving_state_indices = set(
-                        np.where(numbers_of_ghosts_here > 0)[0]
-                    )
-                    self.sound_manager.play_attack_sound()
-                    for k in range(n_ghosts - 1, -1, -1):
-                        if k not in surviving_state_indices:
-                            visible_ghosts_group.remove(qghost.visible_parts.pop(k))
-                    break
+        for qghost in qghosts:
+            if qghost.collapse_wave_function(player=self):
+                self.sound_manager.play_measure_sound()
+                break
 
     def move(self, moveVector: Vector2, does_rotate: bool = True) -> None:
         super().move(moveVector=moveVector)
@@ -116,3 +83,5 @@ class Player(Unit):
         super().update(moveVector=moveVector)
         if self.collides_with_wall():
             self.move(moveVector=-moveVector, does_rotate=False)
+
+        self.weapon.update()

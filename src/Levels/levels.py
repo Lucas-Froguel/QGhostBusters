@@ -43,8 +43,9 @@ class CatacombLevel(BaseLevel):
             channel=self.unit_channel,
             map_data=self.tmx_data
         )
-        self.player_group = GroupSingle()
         self.player_group.add(self._player)
+
+        self.shots_group.add(self._player.weapon.shots)
 
         splitters = [
             GhostSplitter(
@@ -72,7 +73,7 @@ class CatacombLevel(BaseLevel):
                 splitterType="45",
             ),
         ]
-        self.visible_ghosts_group = RenderUpdates()
+
         self.ghosts_group = [
             QGhost(
                 cellSize=self.cellSize,
@@ -92,5 +93,4 @@ class CatacombLevel(BaseLevel):
             ),
         ]
 
-        self.splitter_group = RenderUpdates()
         self.splitter_group.add(splitters)

@@ -78,10 +78,12 @@ class GameUserInterface(BaseUserInterface):
     def __init__(self):
         self.movePlayerCommand = Vector2(0, 0)
         self.attackCommand = False
+        self.measureCommand = False
 
     def process_input(self):
         self.movePlayerCommand = Vector2(0, 0)
         self.attackCommand = False
+        self.measureCommand = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
@@ -100,5 +102,7 @@ class GameUserInterface(BaseUserInterface):
                 # attack key
                 elif event.key == pygame.K_SPACE:
                     self.attackCommand = True
+                elif event.key == pygame.K_x:
+                    self.measureCommand = True
 
         return True

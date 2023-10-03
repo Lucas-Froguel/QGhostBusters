@@ -37,7 +37,7 @@ class GameState:
             worldSize=self.worldSize,
             window=self.window,
             level_channel=self.window_channel,
-            unit_channel=self.units_channel
+            unit_channel=self.units_channel,
         )
         self.level.load_level()
 

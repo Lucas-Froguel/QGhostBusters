@@ -39,7 +39,9 @@ class Ghost(Unit):
         :param position: position on the map (in units of cells)
         :param qghost: meta-ghost of which this one is a part
         """
-        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position, channel=channel)
+        super().__init__(
+            cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
+        )
         self.image = load("src/Units/sprites/new_ghost2.png")
         self.image = scale(self.image, self.cellSize)
         self.qghost = qghost
@@ -78,7 +80,7 @@ class QGhost(Ghost):
         position: Vector2 = None,
         splitters: list[GhostSplitter] = None,
         render_group: RenderUpdates = None,
-        channel: Channel = None
+        channel: Channel = None,
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
@@ -86,8 +88,9 @@ class QGhost(Ghost):
         :param position: position on the map (in units of cells)
         :param render_group: a pointer to the visualisation parameters
         """
-        # TODO: it is still classical
-        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position, channel=channel)
+        super().__init__(
+            cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
+        )
         # initialize it in |1>. Allow maximum MAX_GHOSTS_PER_STATE ghosts in one state
         self.quantum_state = ket([1], MAX_GHOSTS_PER_STATE)
         self.visible_parts = []
@@ -96,14 +99,18 @@ class QGhost(Ghost):
         self.render_group = render_group
         self.add_visible_ghost(start_position=position)
 
-    def add_visible_ghost(self, start_position: Vector2 = None, last_move: Vector2 = None):
+    def add_visible_ghost(
+        self,
+        start_position: Vector2 = None,
+        last_move: Vector2 = None,
+    ):
         ghost = Ghost(
             cellSize=self.cellSize,
             worldSize=self.worldSize,
             position=start_position,
             last_move=last_move,
             qghost=self,
-            channel=self.channel
+            channel=self.channel,
         )
         self.visible_parts.append(ghost)
         self.render_group.add(ghost)
@@ -153,11 +160,13 @@ class QGhost(Ghost):
                             self.quantum_state = beam_splitter(self.quantum_state, i, j)
                             seen |= {i, i + j}
                     if not is_coincidence:
-                        last_move = (-1) ** (
-                            splitter.splitterType == "45"
-                        ) * Vector2(this_ghost.last_move.y, this_ghost.last_move.x)
+                        last_move = (-1) ** (splitter.splitterType == "45") * Vector2(
+                            this_ghost.last_move.y, this_ghost.last_move.x
+                        )
 
-                        self.add_visible_ghost(start_position=this_ghost.position, last_move=last_move)
+                        self.add_visible_ghost(
+                            start_position=this_ghost.position, last_move=last_move
+                        )
                         self.quantum_state = beam_splitter(self.quantum_state, i)
 
     def update(self, player) -> None:
@@ -172,4 +181,3 @@ class QGhost(Ghost):
             return None
         self.interact_with_splitter()
         self.attack(player)
-

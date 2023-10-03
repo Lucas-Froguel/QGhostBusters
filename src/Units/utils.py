@@ -86,6 +86,10 @@ def beam_splitter(
 
 
 def find_tensored_components(idx: int, n_comp: int) -> list[int]:
+    """ "
+    Returns array of size n_comp that corresponds to the quantum state of the ghost
+    as |i_0, i_1, ..., i_n>
+    """
     res = []
     n = n_comp - 1
     while idx > 0:

@@ -88,7 +88,6 @@ class QGhost(Ghost):
         :param position: position on the map (in units of cells)
         :param render_group: a pointer to the visualisation parameters
         """
-        # TODO: it is still classical
         super().__init__(
             cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
         )
@@ -101,7 +100,9 @@ class QGhost(Ghost):
         self.add_visible_ghost(start_position=position)
 
     def add_visible_ghost(
-        self, start_position: Vector2 = None, last_move: Vector2 = None
+        self,
+        start_position: Vector2 = None,
+        last_move: Vector2 = None,
     ):
         ghost = Ghost(
             cellSize=self.cellSize,

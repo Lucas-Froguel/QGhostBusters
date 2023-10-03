@@ -8,11 +8,11 @@ from src.Units.splitter import SplitterType
 from src.settings import MAX_GHOSTS_PER_STATE
 
 
-def is_in_attack_radius(player_pos: Vector2, ghost_pos: Vector2, radius: float) -> bool:
+def is_in_given_radius(position_1: Vector2, position_2: Vector2, radius: float) -> bool:
     """
     Check whether the ghost is inside player's radius.
     """
-    return (player_pos - ghost_pos).length_squared() <= radius**2
+    return (position_1 - position_2).length() <= radius
 
 
 def two_ghost_coming_from_different_sides_of_splitter(

@@ -10,7 +10,7 @@ class GameState:
     def __init__(self):
         pygame.init()
         pygame.mixer.init()
-        pygame.mixer_music.set_volume(0.3)
+        pygame.mixer_music.set_volume(0.01)
         pygame.mixer.set_num_channels(2)
         self.window_channel = pygame.mixer.Channel(0)
         self.units_channel = pygame.mixer.Channel(1)

@@ -130,19 +130,19 @@ class CatacombLevel(BaseLevel):
             GhostSplitter(
                 cellSize=self.cellSize,
                 worldSize=self.worldSize,
-                position=Vector2(10, 10),
+                position=Vector2(35, 5),
                 splitterType="45",
             ),
             GhostSplitter(
                 cellSize=self.cellSize,
                 worldSize=self.worldSize,
-                position=Vector2(10, 15),
+                position=Vector2(30, 15),
                 splitterType="45",
             ),
             GhostSplitter(
                 cellSize=self.cellSize,
                 worldSize=self.worldSize,
-                position=Vector2(5, 10),
+                position=Vector2(20, 10),
                 splitterType="45",
             ),
             GhostSplitter(

@@ -8,7 +8,9 @@ class BaseUserInterface:
 
 
 class MenuUserInterface(BaseUserInterface):
-    def __init__(self, current_menu_item: int = None, menu_items: [dict] = None, music=None):
+    def __init__(
+        self, current_menu_item: int = None, menu_items: [dict] = None, music=None
+    ):
         self.current_menu_item = current_menu_item
         self.menu_items = menu_items
         self.select = False
@@ -38,7 +40,13 @@ class MenuUserInterface(BaseUserInterface):
 
 
 class SettingsMenuUserInterface(BaseUserInterface):
-    def __init__(self, current_menu_item: int = None, menu_items: [dict] = None, music=None, volume: float = None):
+    def __init__(
+        self,
+        current_menu_item: int = None,
+        menu_items: [dict] = None,
+        music=None,
+        volume: float = None,
+    ):
         self.current_menu_item = current_menu_item
         self.menu_items = menu_items
         self.select = False

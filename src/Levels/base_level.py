@@ -18,7 +18,7 @@ class BaseLevel:
         worldSize: Vector2 = None,
         window: Surface = None,
         level_channel: Channel = None,
-        unit_channel: Channel = None
+        unit_channel: Channel = None,
     ):
         self.keep_running = True
         self.user_interface = GameUserInterface()

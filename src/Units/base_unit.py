@@ -28,7 +28,7 @@ class Unit(BaseUnit):
         cellSize: Vector2 = None,
         worldSize: Vector2 = None,
         position: Vector2 = None,
-        channel: Channel = None
+        channel: Channel = None,
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game

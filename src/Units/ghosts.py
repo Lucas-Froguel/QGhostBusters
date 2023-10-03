@@ -46,6 +46,7 @@ class Ghost(Unit):
 
         self.sound_manager = GhostSoundManager(channel=self.channel)
         self.last_move = last_move if last_move else Vector2(-1, 0)
+        self.temperament = 0.5  # 0 <= temp <= 1 (1 is more aggressive)
 
     @staticmethod
     def calculate_move_vector() -> Vector2:

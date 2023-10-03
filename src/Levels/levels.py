@@ -117,7 +117,11 @@ class CatacombLevel(BaseLevel):
     def load_level(self):
         super().load_level()
         self._player = Player(
-            cellSize=self.cellSize, worldSize=self.worldSize, position=Vector2(5, 4), channel=self.unit_channel
+            cellSize=self.cellSize,
+            worldSize=self.worldSize,
+            position=Vector2(5, 4),
+            channel=self.unit_channel,
+            map_data=self.tmx_data
         )
         self.player_group = GroupSingle()
         self.player_group.add(self._player)
@@ -156,6 +160,7 @@ class CatacombLevel(BaseLevel):
                 position=Vector2(20, 10),
                 splitters=splitters,
                 render_group=self.visible_ghosts_group,
+                channel=self.unit_channel
             ),
             QGhost(
                 cellSize=self.cellSize,
@@ -163,6 +168,7 @@ class CatacombLevel(BaseLevel):
                 position=Vector2(10, 16),
                 splitters=splitters,
                 render_group=self.visible_ghosts_group,
+                channel=self.unit_channel
             ),
         ]
 

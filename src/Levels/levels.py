@@ -48,6 +48,7 @@ class TestLevel(BaseLevel):
                 worldSize=self.worldSize,
                 position=Vector2(5, 15),
                 splitterType="45",
+            ),
         ]
 
         self.visible_ghosts_group = RenderUpdates()
@@ -73,4 +74,3 @@ class TestLevel(BaseLevel):
 
         self.splitter_group = RenderUpdates()
         self.splitter_group.add(splitters)
-

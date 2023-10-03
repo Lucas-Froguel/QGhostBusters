@@ -48,9 +48,9 @@ def beam_splitter(
     :param affected_ghost_index: there may be several systems in the state, choose this one
     :param other_state_index: index of the otehr state, if two existing ghosts interact. If not given, vacuum.
     """
-    dim = max(quantum_state.shape)
+    vector_length = max(quantum_state.shape)
     n_systems = len(quantum_state.dims[0])
-    if dim > 1000:
+    if vector_length > 1000:
         raise NotImplementedError("The size of the matrix is too large")
 
     add_ghost = False
@@ -73,9 +73,9 @@ def beam_splitter(
             index_order[other_state_index],
         )
 
-        ghosts = [MAX_GHOSTS_PER_STATE] * int(n_systems - 2 + add_ghost)
+        dims = [MAX_GHOSTS_PER_STATE] * int(n_systems - 2 + add_ghost)
 
-        expanded_BS = tensor(qeye(ghosts if ghosts else [0]), BS).permute(index_order)
+        expanded_BS = tensor(qeye(dims if dims else [0]), BS).permute(index_order)
 
     try:
         final_state = expanded_BS * quantum_state

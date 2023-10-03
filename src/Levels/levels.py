@@ -75,13 +75,14 @@ class TestLevel(BaseLevel):
                 render_group=self.visible_ghosts_group,
                 channel=self.unit_channel,
             ),
-            # QGhost(
-            #     cellSize=self.cellSize,
-            #     worldSize=self.worldSize,
-            #     position=Vector2(10, 16),
-            #     splitters=splitters,
-            #     render_group=self.visible_ghosts_group,
-            # ),
+            QGhost(
+                cellSize=self.cellSize,
+                worldSize=self.worldSize,
+                position=Vector2(10, 16),
+                splitters=splitters,
+                render_group=self.visible_ghosts_group,
+                channel=self.unit_channel,
+            ),
         ]
 
         self.splitter_group = RenderUpdates()

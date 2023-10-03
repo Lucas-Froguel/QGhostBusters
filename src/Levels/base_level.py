@@ -49,7 +49,7 @@ class BaseLevel:
 
         # to use text blocks
         pygame.font.init()
-        self.health_bar_font = pygame.font.SysFont("arial", 30)
+        self.health_bar_font = pygame.font.SysFont("fonts/Baskic8.otf", 30)
 
     def update(self):
         self.keep_running = self.user_interface.process_input()
@@ -77,7 +77,7 @@ class BaseLevel:
         self.visible_ghosts_group.draw(self.window)
         self.splitter_group.draw(self.window)
         health_bar = self.health_bar_font.render(
-            str(self._player.health), False, (0, 0, 0)
+            f"Remaining HP:{self._player.health}", False, (0, 0, 0)
         )
         self.window.blit(health_bar, (0, 0))
 

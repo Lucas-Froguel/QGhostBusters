@@ -60,6 +60,31 @@ class Player(Unit):
         for qghost in ghosts_group:
             if not qghost.visible_parts:
                 ghosts_group.remove(qghost)
+            else:
+                for i, ghost in enumerate(qghost.visible_parts):
+                    if is_in_attack_radius(
+                        self.position, ghost.position, PLAYER_MEASURE_RADIUS
+                    ):
+                        
+                        probs = np.abs(qghost.quantum_state.full()[:, 0]) ** 2
+                        
+                        surviving_state_idx = np.random.choice(
+                            list(range(MAX_GHOSTS_PER_STATE**len(qghost.visible_parts))),
+                            p=probs / np.sum(probs),
+                        )
+                        
+                        numbers_of_ghosts_here = find_tensored_components(
+                            surviving_state_idx, len(qghost.visible_parts)
+                        )
+                        
+                        qghost.quantum_state = ket(
+                            numbers_of_ghosts_here[numbers_of_ghosts_here > 0],
+                            MAX_GHOSTS_PER_STATE,
+                        )
+                        
+                        visible_ghosts_group.remove(qghost.visible_parts.pop(i))
+                        self.sound_manager.play_attack_sound()
+                        break
 
     def measure(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
         """
@@ -78,7 +103,7 @@ class Player(Unit):
                     self.position, ghost.position, PLAYER_MEASURE_RADIUS
                 ):
                     probs = np.abs(qghost.quantum_state.full()[:, 0]) ** 2
-                    # choose one vector to survive based on its probability
+                    
                     surviving_state_idx = np.random.choice(
                         list(range(MAX_GHOSTS_PER_STATE**n_ghosts)),
                         p=probs / np.sum(probs),

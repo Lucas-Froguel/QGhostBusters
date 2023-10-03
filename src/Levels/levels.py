@@ -63,9 +63,8 @@ class TestLevel(BaseLevel):
                 worldSize=self.worldSize,
                 position=Vector2(5, 15),
                 splitterType="45",
-            )
+            ),
         ]
-
         self.visible_ghosts_group = RenderUpdates()
         self.ghosts_group = [
             QGhost(
@@ -83,10 +82,6 @@ class TestLevel(BaseLevel):
                 render_group=self.visible_ghosts_group,
             ),
         ]
-        # self.visible_ghosts_group.add(
-        #     [ghost.visible_parts for ghost in self.ghosts_group]
-        # )
 
         self.splitter_group = RenderUpdates()
         self.splitter_group.add(splitters)
-

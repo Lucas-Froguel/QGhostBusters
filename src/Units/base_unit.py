@@ -1,4 +1,3 @@
-
 from pygame import Vector2, Rect
 from pygame.sprite import Sprite
 from pygame.mixer import Channel
@@ -73,4 +72,3 @@ class Unit(BaseUnit):
         self.move(moveVector=moveVector)
         if not self.is_unit_in_map():
             self.move(moveVector=-moveVector)
-

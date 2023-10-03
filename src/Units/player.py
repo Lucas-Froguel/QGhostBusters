@@ -1,4 +1,3 @@
-
 import numpy as np
 import math
 from pygame import Vector2
@@ -46,63 +45,46 @@ class Player(Unit):
             n_ghosts = len(qghost.visible_parts)
             if n_ghosts == 1:
                 continue
-            indices_to_remove = []
             for i, ghost in enumerate(qghost.visible_parts):
                 if is_ghost_in_players_radius(self.position, ghost.position):
-                    # <n|psi>
+                    # projections on |0> for each ghost
                     possible_vectors = [
                         tensor(
                             [
-                                ket([n], MAX_GHOSTS_PER_STATE).dag()
-                                if g == i
+                                ket([0], MAX_GHOSTS_PER_STATE).dag()
+                                if g == j
                                 else qeye(MAX_GHOSTS_PER_STATE)
                                 for g in range(n_ghosts)
                             ]
                         )
                         * qghost.quantum_state
-                        for n in range(MAX_GHOSTS_PER_STATE)
+                        for j in range(n_ghosts)
                     ]
-                    norms = [v.norm() for v in possible_vectors]
-                    n_in_state = np.random.choice(
-                        list(range(MAX_GHOSTS_PER_STATE)),
+                    # norms of each vector, proportional to probability to measure |n>, n>0 in that state
+                    # max is to trim floating point errors
+                    norms = [max(0, 1 - v.norm()) for v in possible_vectors]
+                    # choose one vector to survive based on probability (1 - P(|0>)) of non-zero state
+                    surviving_state_idx = np.random.choice(
+                        list(range(n_ghosts)),
                         p=np.array(norms) / np.sum(norms),
                     )
 
-                    qghost.quantum_state = possible_vectors[n_in_state].unit()
-                    if n_in_state == 0:
-                        indices_to_remove.append(i)
-                    else:
-                        # probability of |0> in j-th Hilbert space
-                        zero_vectors = np.array(
-                            [
-                                (
-                                    tensor(
-                                        [
-                                            ket([0], MAX_GHOSTS_PER_STATE).dag()
-                                            if g != j
-                                            else qeye(MAX_GHOSTS_PER_STATE)
-                                            for g in range(n_ghosts - 1)
-                                        ]
-                                    )
-                                    * qghost.quantum_state
-                                ).norm()
-                                for j in range(n_ghosts)
-                                if j != i
-                            ]
-                        )
-                        indices_to_remove.append(np.argmin(np.abs(1 - zero_vectors)))
+                    qghost.quantum_state = possible_vectors[surviving_state_idx].unit()
                     break
 
             for i in indices_to_remove:
                 self.sound_manager.play_measure_sound()
                 visible_ghosts_group.remove(qghost.visible_parts.pop(i))
+
             if not qghost.visible_parts:
                 ghosts_group.remove(qghost)
 
     def move(self, moveVector: Vector2) -> None:
         super().move(moveVector=moveVector)
 
-        angle = math.acos(self.direction.dot(moveVector) / (self.direction.length() * moveVector.length()))
+        angle = math.acos(
+            self.direction.dot(moveVector)
+            / (self.direction.length() * moveVector.length())
+        )
         self.direction = moveVector
         self.image = rotate(self.image, -math.degrees(angle))
-

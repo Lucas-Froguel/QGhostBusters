@@ -57,9 +57,11 @@ class BaseLevel:
 
         # visible ghost actions
         self.visible_ghosts_group.update(self._player)
+        # remove visuals if hit
         for qghost in self.ghosts_group:
+            old_visible = qghost.visible_parts[:]
             qghost.remove_visible_ghosts()
-            self.visible_ghosts_group.add(qghost.visible_parts)
+            qghost.destroy_dead_ghosts_quantum_state(old_visible)
             self.visible_ghosts_group.remove(*qghost.dead_ghosts)
 
         # player actions
@@ -80,6 +82,7 @@ class BaseLevel:
             qghost.update(self._player)
             self.visible_ghosts_group.add(qghost.visible_parts)
             self.visible_ghosts_group.remove(*qghost.dead_ghosts)
+            qghost.dead_ghosts = []
             if not qghost.is_alive:
                 self.ghosts_group.remove(qghost)
 

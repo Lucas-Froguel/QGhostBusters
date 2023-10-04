@@ -20,7 +20,7 @@ from src.settings import (
 from src.settings import GHOST_SPEED, MAX_GHOSTS_PER_STATE
 from src.SoundEffects.sound_manager import GhostSoundManager
 
-from qutip import ket, tensor, qeye, destroy
+from qutip import ket, tensor, qeye
 
 DIR_DICT = {"L": (-1, 0), "R": (1, 0), "D": (0, -1), "U": (0, 1)}
 
@@ -243,15 +243,6 @@ class QGhost(Ghost):
                 alive_ghosts.append(ghost)
             else:
                 dead_ghosts.append(ghost)
-        # if dead_ghosts and MAX_GHOSTS_PER_STATE**len(alive_ghosts)!=max(self.quantum_state.shape):
-        #     print("sdfwd")
-        #     new_state = self.quantum_state.ptrace(
-        #         [i for i, ghost in enumerate(self.visible_parts) if ghost in alive_ghosts]
-        #     )
-        #     if new_state.norm():
-        #         self.quantum_state = new_state.unit()
-        #     else:
-        #         self.is_alive = False
 
         self.visible_parts = alive_ghosts
         self.dead_ghosts = dead_ghosts
@@ -298,6 +289,26 @@ class QGhost(Ghost):
             if np.random.random() <= attack_prob:
                 player.health -= 1
                 self.sound_manager.play_attack_sound()
+
+    def destroy_dead_ghosts_quantum_state(self, old_visible):
+        if not self.dead_ghosts:
+            return
+        new_state = (
+            tensor(
+                [
+                    ket([0], MAX_GHOSTS_PER_STATE).dag()
+                    if ghost in self.dead_ghosts
+                    else qeye(MAX_GHOSTS_PER_STATE)
+                    for ghost in old_visible
+                ]
+            )
+            * self.quantum_state
+        )
+
+        if new_state.norm():
+            self.quantum_state = new_state.unit()
+        else:
+            self.is_alive = False
 
     def interact_with_splitter(self) -> None:
         seen = set()

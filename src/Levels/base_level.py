@@ -18,7 +18,8 @@ class BaseLevel:
         worldSize: Vector2 = None,
         window: Surface = None,
         level_channel: Channel = None,
-        unit_channel: Channel = None,
+        player_channel: Channel = None,
+        enemies_channel: Channel = None,
     ):
         self.keep_running = True
         self.user_interface = GameUserInterface()
@@ -34,7 +35,8 @@ class BaseLevel:
         self.tmx_data = None
 
         self.level_channel = level_channel
-        self.unit_channel = unit_channel
+        self.player_channel = player_channel
+        self.enemies_channel = enemies_channel
         self.music: LevelSoundManager = None
 
         # ghost-splitters
@@ -57,12 +59,6 @@ class BaseLevel:
 
         # visible ghost actions
         self.visible_ghosts_group.update(self._player)
-        # remove visuals if hit
-        for qghost in self.ghosts_group:
-            old_visible = qghost.visible_parts[:]
-            qghost.remove_visible_ghosts()
-            qghost.destroy_dead_ghosts_quantum_state(old_visible)
-            self.visible_ghosts_group.remove(*qghost.dead_ghosts)
 
         # player actions
         self.player_group.update(self.user_interface.movePlayerCommand)
@@ -75,13 +71,7 @@ class BaseLevel:
 
         # Qhost actions after all the ghosts are in place
         for qghost in self.ghosts_group:
-            # update visible group after possible wave function collapse
-            self.visible_ghosts_group.remove(*qghost.dead_ghosts)
-            # upd visible group after beam splitter interaction
             qghost.update(self._player)
-            self.visible_ghosts_group.add(qghost.visible_parts)
-            self.visible_ghosts_group.remove(*qghost.dead_ghosts)
-            qghost.dead_ghosts = []
             if not qghost.is_alive:
                 self.ghosts_group.remove(qghost)
 

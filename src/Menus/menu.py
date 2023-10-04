@@ -69,7 +69,9 @@ class BaseMenu:
             # Cursor
             if index == self.current_menu_item:
                 cursorX = x - self.menuCursor.get_width() - 10
-                cursorY = y + (surface.get_height() - self.menuCursor.get_height()) // 2 - 10
+                cursorY = (
+                    y + (surface.get_height() - self.menuCursor.get_height()) // 2 - 10
+                )
                 self.window.blit(self.menuCursor, (cursorX, cursorY))
 
             y += (120 * surface.get_height()) // 100
@@ -93,7 +95,7 @@ class MenusManager:
         self.possible_menus = {
             "main_menu": self.main_menu,
             "settings": self.settings,
-            "levels": self.levels
+            "levels": self.levels,
         }
 
     def update(self):
@@ -121,7 +123,9 @@ class MainMenu(BaseMenu):
         ]
 
         self.user_interface = MenuUserInterface(
-            current_menu_item=self.current_menu_item, menu_items=self.menu_items, music=self.music
+            current_menu_item=self.current_menu_item,
+            menu_items=self.menu_items,
+            music=self.music,
         )
 
     def update(self):
@@ -152,7 +156,9 @@ class LevelsMenu(BaseMenu):
         ]
 
         self.user_interface = MenuUserInterface(
-            current_menu_item=self.current_menu_item, menu_items=self.menu_items, music=self.music
+            current_menu_item=self.current_menu_item,
+            menu_items=self.menu_items,
+            music=self.music,
         )
         self.should_exit_settings = False
 
@@ -183,7 +189,10 @@ class SettingsMenu(BaseMenu):
         ]
 
         self.user_interface = SettingsMenuUserInterface(
-            current_menu_item=self.current_menu_item, menu_items=self.menu_items, music=self.music, volume=self.volume
+            current_menu_item=self.current_menu_item,
+            menu_items=self.menu_items,
+            music=self.music,
+            volume=self.volume,
         )
         self.should_exit_settings = False
 
@@ -206,4 +215,3 @@ class SettingsMenu(BaseMenu):
             self.volume = self.user_interface.volume
             self.menu_items[0]["title"] = f"Volume - {self.volume}"
             self.change_volume()
-

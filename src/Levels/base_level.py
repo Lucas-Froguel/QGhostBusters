@@ -18,7 +18,7 @@ class BaseLevel:
         worldSize: Vector2 = None,
         window: Surface = None,
         level_channel: Channel = None,
-        unit_channel: Channel = None
+        unit_channel: Channel = None,
     ):
         self.keep_running = True
         self.user_interface = GameUserInterface()
@@ -69,7 +69,6 @@ class BaseLevel:
             self._player.attack()
             self.shots_group.add(self._player.weapon.shots)
         self.shots_group.remove(*self._player.weapon.dead_shots)
-
         for qghost in self.ghosts_group:
             self.visible_ghosts_group.add(qghost.visible_parts)
             self.visible_ghosts_group.remove(*qghost.dead_ghosts)

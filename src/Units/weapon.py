@@ -1,4 +1,3 @@
-import pygame
 import numpy as np
 from pygame import Vector2
 from pygame.image import load
@@ -12,19 +11,21 @@ from src.Units.base_unit import Unit
 
 class Weapon(Unit):
     def __init__(
-            self,
-            cellSize: Vector2 = None,
-            worldSize: Vector2 = None,
-            position: Vector2 = None,
-            channel: Channel = None,
-            map_data: TiledMap = None
+        self,
+        cellSize: Vector2 = None,
+        worldSize: Vector2 = None,
+        position: Vector2 = None,
+        channel: Channel = None,
+        map_data: TiledMap = None,
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
         :param worldSize: size of the map
         :param position: position on the map (in units of cells)
         """
-        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position, channel=channel)
+        super().__init__(
+            cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
+        )
         self.map_data = map_data
         self.shots: [Shot] = []
         self.dead_shots: [Shot] = []
@@ -37,7 +38,7 @@ class Weapon(Unit):
             position=self.position + direction,
             direction=direction,
             channel=self.channel,
-            map_data=self.map_data
+            map_data=self.map_data,
         )
         self.shots.append(shot)
 
@@ -57,20 +58,22 @@ class Weapon(Unit):
 
 class Shot(Unit):
     def __init__(
-            self,
-            cellSize: Vector2 = None,
-            worldSize: Vector2 = None,
-            position: Vector2 = None,
-            direction: Vector2 = None,
-            channel: Channel = None,
-            map_data: TiledMap = None
+        self,
+        cellSize: Vector2 = None,
+        worldSize: Vector2 = None,
+        position: Vector2 = None,
+        direction: Vector2 = None,
+        channel: Channel = None,
+        map_data: TiledMap = None,
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
         :param worldSize: size of the map
         :param position: position on the map (in units of cells)
         """
-        super().__init__(cellSize=cellSize, worldSize=worldSize, position=position, channel=channel)
+        super().__init__(
+            cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
+        )
         self.image = load("src/Units/sprites/shot.png")
         self.image = scale(self.image, self.cellSize)
         self.map_data = map_data

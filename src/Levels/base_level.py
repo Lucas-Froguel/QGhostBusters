@@ -52,12 +52,6 @@ class BaseLevel:
         pygame.font.init()
         self.health_bar_font = pygame.font.SysFont("fonts/Baskic8.otf", 30)
 
-    # def remove_dead_ghosts(self):
-    #     for qghost in self.ghosts_group:
-    #         qghost.remove_visible_ghosts()
-    #         self.visible_ghosts_group.add(qghost.visible_parts)
-    #         self.visible_ghosts_group.remove(*qghost.dead_ghosts)
-
     def update(self):
         self.keep_running = self.user_interface.process_input()
 

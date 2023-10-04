@@ -222,21 +222,21 @@ class QGhost(Ghost):
                 numbers_of_ghosts_here = find_tensored_components(
                     surviving_state_idx, n_ghosts
                 )
-                # print(len(numbers_of_ghosts_here), sum(numbers_of_ghosts_here>0))
+
                 self.quantum_state = ket(
                     numbers_of_ghosts_here[numbers_of_ghosts_here > 0],
                     MAX_GHOSTS_PER_STATE,
                 )
-                surviving_state_indices = set(np.where(numbers_of_ghosts_here > 0)[0])
+                surviving_state_index = set(np.where(numbers_of_ghosts_here > 0)[0])
                 for k in range(n_ghosts - 1, -1, -1):
-                    if k not in surviving_state_indices:
+                    if k not in surviving_state_index:
                         self.visible_parts[k].is_alive = False
 
-                self.remove_visible_ghosts()
+                self.remove_visible_ghosts(is_measurement=True)
                 return True
         return False
 
-    def remove_visible_ghosts(self):
+    def remove_visible_ghosts(self, is_measurement: bool = False):
         initially_alive_ghosts = self.visible_parts
         alive_ghosts = []
         dead_ghosts = []
@@ -248,9 +248,10 @@ class QGhost(Ghost):
                 dead_ghosts.append(ghost)
                 self.render_group.remove(ghost)
 
-        self.visible_parts = alive_ghosts
         self.dead_ghosts = dead_ghosts
-        self.destroy_dead_ghosts_quantum_state(initially_alive_ghosts)
+        if not is_measurement:
+            self.destroy_dead_ghosts_quantum_state(initially_alive_ghosts)
+        self.visible_parts = alive_ghosts
 
     def add_visible_ghost(
         self, start_position: Vector2 = None, last_move: Vector2 = None

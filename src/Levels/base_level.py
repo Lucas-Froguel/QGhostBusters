@@ -60,13 +60,6 @@ class BaseLevel:
         # visible ghost actions
         self.visible_ghosts_group.update(self._player)
 
-        # remove visuals if hit
-        for qghost in self.ghosts_group:
-            old_visible = qghost.visible_parts[:]
-            qghost.remove_visible_ghosts()
-            # qghost.destroy_dead_ghosts_quantum_state(old_visible)
-            # self.visible_ghosts_group.remove(*qghost.dead_ghosts)
-
         # player actions
         self.player_group.update(self.user_interface.movePlayerCommand)
         if self.user_interface.measureCommand:
@@ -78,13 +71,7 @@ class BaseLevel:
 
         # Qhost actions after all the ghosts are in place
         for qghost in self.ghosts_group:
-            # update visible group after possible wave function collapse
-            # self.visible_ghosts_group.remove(*qghost.dead_ghosts)
-            # upd visible group after beam splitter interaction
             qghost.update(self._player)
-            # self.visible_ghosts_group.add(qghost.visible_parts)
-            # self.visible_ghosts_group.remove(*qghost.dead_ghosts)
-            #   qghost.dead_ghosts = []
             if not qghost.is_alive:
                 self.ghosts_group.remove(qghost)
 

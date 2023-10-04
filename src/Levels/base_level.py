@@ -59,30 +59,26 @@ class BaseLevel:
         self.visible_ghosts_group.update(self._player)
         # remove visuals if hit
         for qghost in self.ghosts_group:
-            # print("0", np.where(np.abs(qghost.quantum_state.full())>0)[0], qghost.quantum_state.dims[0], len(qghost.visible_parts))
             old_visible = qghost.visible_parts[:]
             qghost.remove_visible_ghosts()
             qghost.destroy_dead_ghosts_quantum_state(old_visible)
             self.visible_ghosts_group.remove(*qghost.dead_ghosts)
-            # print("1", np.where(np.abs(qghost.quantum_state.full())>0)[0], qghost.quantum_state.dims[0],len(qghost.visible_parts),"\n")
 
         # player actions
         self.player_group.update(self.user_interface.movePlayerCommand)
         if self.user_interface.measureCommand:
-            self._player.measure(self.ghosts_group)
+            self._player.measure(self.ghosts_group)  # wave func collapse
         elif self.user_interface.attackCommand:
             self._player.attack()
             self.shots_group.add(self._player.weapon.shots)
         self.shots_group.remove(*self._player.weapon.dead_shots)
 
-        # Qhost actions
+        # Qhost actions after all the ghosts are in place
         for qghost in self.ghosts_group:
-            # print("2", np.where(np.abs(qghost.quantum_state.full())>0)[0], qghost.quantum_state.dims[0],len(qghost.visible_parts))
             # update visible group after possible wave function collapse
             self.visible_ghosts_group.remove(*qghost.dead_ghosts)
             # upd visible group after beam splitter interaction
             qghost.update(self._player)
-            # print("3", np.where(np.abs(qghost.quantum_state.full())>0)[0], qghost.quantum_state.dims[0],len(qghost.visible_parts),"\n")
             self.visible_ghosts_group.add(qghost.visible_parts)
             self.visible_ghosts_group.remove(*qghost.dead_ghosts)
             qghost.dead_ghosts = []

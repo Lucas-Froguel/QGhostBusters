@@ -222,6 +222,7 @@ class QGhost(Ghost):
                 numbers_of_ghosts_here = find_tensored_components(
                     surviving_state_idx, n_ghosts
                 )
+                # print(len(numbers_of_ghosts_here), sum(numbers_of_ghosts_here>0))
                 self.quantum_state = ket(
                     numbers_of_ghosts_here[numbers_of_ghosts_here > 0],
                     MAX_GHOSTS_PER_STATE,

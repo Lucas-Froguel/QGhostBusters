@@ -55,29 +55,39 @@ class BaseLevel:
     def update(self):
         self.keep_running = self.user_interface.process_input()
 
-        if not self.ghosts_group:
-            self.keep_running = False
-            print("You won")
-            self.music.play_game_over_sound()
-            return
-
-        self.player_group.update(self.user_interface.movePlayerCommand)
+        # visible ghost actions
         self.visible_ghosts_group.update(self._player)
+
+        # player actions
+        self.player_group.update(self.user_interface.movePlayerCommand)
         if self.user_interface.measureCommand:
             self._player.measure(self.ghosts_group)
         elif self.user_interface.attackCommand:
             self._player.attack()
             self.shots_group.add(self._player.weapon.shots)
         self.shots_group.remove(*self._player.weapon.dead_shots)
+
+        # Qhost actions
         for qghost in self.ghosts_group:
+            # update visible group after possible wave function collapse
             self.visible_ghosts_group.add(qghost.visible_parts)
             self.visible_ghosts_group.remove(*qghost.dead_ghosts)
+            # upd visible group after beam splitter interaction
             qghost.update(self._player)
+            self.visible_ghosts_group.add(qghost.visible_parts)
+            self.visible_ghosts_group.remove(*qghost.dead_ghosts)
+            if not qghost.is_alive:
+                self.ghosts_group.remove(qghost)
 
         if self._player.health <= 0:
             self.keep_running = False
             self.music.play_game_over_sound()
             print("You died")
+        if not self.ghosts_group:
+            self.keep_running = False
+            print("You won")
+            self.music.play_game_over_sound()
+            return
 
     def render(self):
         self.window.blit(self.surface, (0, 0))

@@ -104,6 +104,7 @@ class Ghost(Unit):
         for shot in shots:
             if (shot.position - self.position).length() <= 0.5:
                 self.is_alive = False
+                shot.is_alive = False
                 break
 
     def update(self, player):

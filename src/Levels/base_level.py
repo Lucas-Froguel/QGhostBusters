@@ -18,7 +18,8 @@ class BaseLevel:
         worldSize: Vector2 = None,
         window: Surface = None,
         level_channel: Channel = None,
-        unit_channel: Channel = None,
+        player_channel: Channel = None,
+        enemies_channel: Channel = None,
     ):
         self.keep_running = True
         self.user_interface = GameUserInterface()
@@ -34,18 +35,20 @@ class BaseLevel:
         self.tmx_data = None
 
         self.level_channel = level_channel
-        self.unit_channel = unit_channel
+        self.player_channel = player_channel
+        self.enemies_channel = enemies_channel
         self.music: LevelSoundManager = None
 
         # ghost-splitters
-        self.splitter_group: RenderUpdates = None
+        self.splitter_group: RenderUpdates = RenderUpdates()
 
         # player and ghosts
         self._player: Player = None
-        self.player_group: GroupSingle = None
+        self.player_group: GroupSingle = GroupSingle()
+        self.shots_group: RenderUpdates = RenderUpdates()
 
         self.ghosts_group: [QGhost] = None
-        self.visible_ghosts_group: RenderUpdates = None
+        self.visible_ghosts_group: RenderUpdates = RenderUpdates()
 
         # to use text blocks
         pygame.font.init()
@@ -54,28 +57,40 @@ class BaseLevel:
     def update(self):
         self.keep_running = self.user_interface.process_input()
 
+        # visible ghost actions
+        self.visible_ghosts_group.update(self._player)
+
+        # player actions
+        self.player_group.update(self.user_interface.movePlayerCommand)
+        if self.user_interface.measureCommand:
+            self._player.measure(self.ghosts_group)  # wave func collapse
+        elif self.user_interface.attackCommand:
+            self._player.attack()
+            self.shots_group.add(self._player.weapon.shots)
+        self.shots_group.remove(*self._player.weapon.dead_shots)
+
+        # Qhost actions after all the ghosts are in place
+        for qghost in self.ghosts_group:
+            qghost.update(self._player)
+            if not qghost.is_alive:
+                self.ghosts_group.remove(qghost)
+
+        if self._player.health <= 0:
+            self.keep_running = False
+            self.music.play_game_over_sound()
+            print("You died")
         if not self.ghosts_group:
             self.keep_running = False
             print("You won")
             self.music.play_game_over_sound()
             return
 
-        self.player_group.update(self.user_interface.movePlayerCommand)
-        self.visible_ghosts_group.update(self._player)
-        if self.user_interface.attackCommand:
-            self._player.measure(self.ghosts_group, self.visible_ghosts_group)
-        for qghost in self.ghosts_group:
-            qghost.update(self._player)
-        if self._player.health <= 0:
-            self.keep_running = False
-            self.music.play_game_over_sound()
-            print("You died")
-
     def render(self):
         self.window.blit(self.surface, (0, 0))
         self.player_group.draw(self.window)
         self.visible_ghosts_group.draw(self.window)
         self.splitter_group.draw(self.window)
+        self.shots_group.draw(self.window)
         health_bar = self.health_bar_font.render(
             f"HP:{self._player.health}", False, (255, 0, 0)
         )

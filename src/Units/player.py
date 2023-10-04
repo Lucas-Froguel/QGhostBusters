@@ -14,7 +14,7 @@ from src.settings import MAX_GHOSTS_PER_STATE, PLAYER_MEASURE_RADIUS, INITIAL_HE
 from pygame.transform import rotate
 from src.Units.base_unit import Unit
 from src.Units.ghosts import QGhost
-from src.Units.utils import is_in_attack_radius, find_tensored_components
+from src.Units.utils import is_in_given_radius, find_tensored_components
 
 
 class Player(Unit):
@@ -74,7 +74,7 @@ class Player(Unit):
             if n_ghosts == 1:
                 continue
             for i, ghost in enumerate(qghost.visible_parts):
-                if is_in_attack_radius(
+                if is_in_given_radius(
                     self.position, ghost.position, PLAYER_MEASURE_RADIUS
                 ):
                     probs = np.abs(qghost.quantum_state.full()[:, 0]) ** 2
@@ -94,10 +94,10 @@ class Player(Unit):
                         np.where(numbers_of_ghosts_here > 0)[0]
                     )
                     self.sound_manager.play_attack_sound()
+                    for k in range(n_ghosts - 1, -1, -1):
+                        if k not in surviving_state_indices:
+                            visible_ghosts_group.remove(qghost.visible_parts.pop(k))
                     break
-            for i in range(n_ghosts - 1, -1, -1):
-                if i not in surviving_state_indices:
-                    visible_ghosts_group.remove(qghost.visible_parts.pop(i))
 
     def move(self, moveVector: Vector2, does_rotate: bool = True) -> None:
         super().move(moveVector=moveVector)

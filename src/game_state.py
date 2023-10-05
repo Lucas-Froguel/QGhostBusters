@@ -31,6 +31,7 @@ class GameState:
 
         self.menu = MenusManager(window=self.window, channel=self.window_channel)
         self.setup_game_music(self.menu.music)
+        self.last_game_status = None
 
     def load_level(self, level: BaseLevel):
         self.level = level(
@@ -39,7 +40,7 @@ class GameState:
             window=self.window,
             level_channel=self.window_channel,
             player_channel=self.player_channel,
-            enemies_channel=self.enemies_channel
+            enemies_channel=self.enemies_channel,
         )
         self.level.load_level()
 
@@ -63,12 +64,20 @@ class GameState:
         if self.level:
             self.level.update()
             if not self.level.keep_running:
+                self.last_game_status = self.level.game_status
                 self.unload_level()
         else:
+            if self.last_game_status is not None:
+                if self.last_game_status == "won":
+                    self.menu.current_menu = "win_message"
+                elif self.last_game_status == "lost":
+                    self.menu.current_menu = "lose_message"
+                # in the game was paused, neither is chosen, and the level selection menu should appear
             level = self.menu.update()
             if level:
                 self.load_level(level)
             self.running = self.menu.keep_running
+            self.last_game_status = None
 
     def render(self):
         self.window.fill((0, 0, 0))

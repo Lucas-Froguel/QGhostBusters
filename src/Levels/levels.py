@@ -24,7 +24,7 @@ class CatacombLevel(BaseLevel):
             window=window,
             level_channel=level_channel,
             player_channel=player_channel,
-            enemies_channel=enemies_channel
+            enemies_channel=enemies_channel,
         )
         self.level_name = "src/Levels/levels/catacombs.tmx"
         self.level_title = "The Catacombs"

@@ -44,6 +44,7 @@ class LevelSoundManager(ScreenSoundManager):
         self.music = music
         self.load_level = Sound("src/SoundEffects/sound_effects/load_level.wav")
         self.game_over = Sound("src/SoundEffects/sound_effects/game_over.wav")
+        self.game_won = Sound("src/SoundEffects/sound_effects/game_won.wav")
         self.background_sound = (
             Sound(background_track_path) if background_track_path else None
         )
@@ -59,6 +60,9 @@ class LevelSoundManager(ScreenSoundManager):
 
     def play_game_over_sound(self):
         self.channel.play(self.game_over)
+
+    def play_game_won_sound(self):
+        self.channel.play(self.game_won)
 
 
 class PlayerSoundManager(BaseSoundManager):

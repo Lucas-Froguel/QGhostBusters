@@ -1,3 +1,5 @@
+from typing import Literal
+
 import pytmx
 from pytmx.util_pygame import load_pygame
 import pygame
@@ -57,6 +59,8 @@ class BaseLevel:
 
         self.hud_render_group: RenderUpdates = RenderUpdates()
 
+        self.game_status: Literal["won", "lost"] | None = None
+
     def update(self):
         self.keep_running = self.user_interface.process_input()
 
@@ -84,11 +88,11 @@ class BaseLevel:
         if self._player.health <= 0:
             self.keep_running = False
             self.music.play_game_over_sound()
-            print("You died")
+            self.game_status = "lost"
         if not self.ghosts_group:
             self.keep_running = False
-            print("You won")
-            self.music.play_game_over_sound()
+            self.music.play_game_won_sound()
+            self.game_status = "won"
             return
 
     def render(self):

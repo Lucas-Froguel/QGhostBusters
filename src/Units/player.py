@@ -10,6 +10,7 @@ from qutip import ket
 
 from src.SoundEffects.sound_manager import PlayerSoundManager
 from src.Units.splitter import GhostSplitter
+from src.Units.weapon import Weapon
 from src.settings import MAX_GHOSTS_PER_STATE, PLAYER_MEASURE_RADIUS, INITIAL_HEALTH
 from pygame.transform import rotate
 from src.Units.base_unit import Unit
@@ -39,27 +40,21 @@ class Player(Unit):
         self.image = scale(self.image, self.cellSize)
         self.direction: Vector2 = Vector2(1, 0)
         self.sound_manager = PlayerSoundManager(channel=self.channel)
+        self.measure_radius = PLAYER_MEASURE_RADIUS
         self.health = INITIAL_HEALTH
         self.map_data = map_data
         self.splitters = splitters
+        self.weapon = Weapon(
+            cellSize=self.cellSize,
+            worldSize=self.worldSize,
+            position=self.position,
+            channel=self.channel,
+            map_data=self.map_data,
+        )
 
-    def attack(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
-        """
-        Check whether we are in the zone of application of user's weapon.
-        If so, apply the lowering operator on this ghost.
-        As a result, this part of the ghost will become weaker (there can be several ghosts in one spot),
-        and the other parts may become stronger.
-        Examples (a_i acts on i-th state):
-        a_0 (01 + 10)/sqrt(2) -> 10,
-        a_1 (20 + 02) -> 01
-        a_0 (19 + 91)/sqrt(2) -> (09 + 3 * 81)/sqrt(10)
-
-        :param ghosts_group: list of QGhosts present in the game
-        :param visible_ghosts_group: visual information about QGhosts
-        """
-        for qghost in ghosts_group:
-            if not qghost.visible_parts:
-                ghosts_group.remove(qghost)
+    def attack(self):
+        self.weapon.attack(direction=self.direction, position=self.position)
+        self.sound_manager.play_attack_sound()
 
     def measure(self, ghosts_group: list[QGhost], visible_ghosts_group: RenderUpdates):
         """
@@ -103,7 +98,7 @@ class Player(Unit):
         super().move(moveVector=moveVector)
 
         if does_rotate:
-            angle = math.acos(      
+            angle = math.acos(
                 self.direction.dot(moveVector)
                 / (self.direction.length() * moveVector.length())
             )

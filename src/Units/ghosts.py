@@ -7,6 +7,7 @@ from pygame.sprite import RenderUpdates
 from pygame.transform import scale
 from src.Units.base_unit import Unit
 from src.Units.splitter import GhostSplitter
+from src.Units.trap import Trap
 from src.Units.utils import (
     two_ghost_coming_from_different_sides_of_splitter,
     beam_splitter,
@@ -42,7 +43,7 @@ class Ghost(Unit):
         :param position: position on the map (in units of cells)
         :param qghost: meta-ghost of which this one is a part
         """
-        
+
         super().__init__(
             cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
         )
@@ -173,7 +174,7 @@ class PassiveGhost(Ghost):
         return -moveVector
 
 
-class QGhost(Unit):
+class QGhost(Ghost):
     """
     A quantum ghost that may be in a superposition.
     Parts of the superposition are implemented as Ghost instances
@@ -205,8 +206,8 @@ class QGhost(Unit):
         self.splitters = splitters
         self.render_group = render_group
         self.possible_ghosts = [AggressiveGhost, PassiveGhost]
-        self.add_visible_ghost(start_position=position)
         self.random_generator = np.random.default_rng()
+        self.add_visible_ghost(start_position=position)
 
     def collapse_wave_function(self, player=None):
         n_ghosts = len(self.visible_parts)
@@ -276,31 +277,38 @@ class QGhost(Unit):
         If a ghost is near the player, it attacks.
         All the parts of the superposition attack equally.
         """
-        # prob that attack happens at all
-        if np.random.random() <= PROB_GHOST_ATTACK:
-            attack_prob = 0
-            for i, ghost in enumerate(self.visible_parts):
-                if is_in_given_radius(
-                    player.position, ghost.position, ghost.attack_radius
-                ):
-                    p_not_here = (
-                        tensor(
-                            [
-                                ket([0], MAX_GHOSTS_PER_STATE).dag()
-                                if g == i
-                                else qeye(MAX_GHOSTS_PER_STATE)
-                                for g in range(len(self.visible_parts))
-                            ]
-                        )
-                        * self.quantum_state
-                    ).norm()
-                    attack_prob += (1 - p_not_here) * ghost.prob_ghost_attack
-            if np.random.random() <= attack_prob:
-                player.health -= 1
-                self.sound_manager.play_attack_sound()
+        attack_prob = 0
+        for i, ghost in enumerate(self.visible_parts):
+            if is_in_given_radius(player.position, ghost.position, ghost.attack_radius):
+                p_not_here = (
+                    tensor(
+                        [
+                            ket([0], MAX_GHOSTS_PER_STATE).dag()
+                            if g == i
+                            else qeye(MAX_GHOSTS_PER_STATE)
+                            for g in range(len(self.visible_parts))
+                        ]
+                    )
+                    * self.quantum_state
+                ).norm()
+                attack_prob += (1 - p_not_here) * ghost.prob_ghost_attack
+        if np.random.random() <= attack_prob:
+            player.health -= 1
+            self.sound_manager.play_attack_sound()
 
     def lay_trap(self, traps):
-        trap = trap(position=self.position, cellSize=self.cellSize)
+        trap_laying_ghost = np.random.choice(self.visible_parts)
+        for trap in traps:
+            # check if position already taken
+            if trap.position == trap_laying_ghost.position:
+                return
+            # TODO: add a condition on being on a wall
+        trap = Trap(
+            cellSize=self.cellSize,
+            worldSize=self.worldSize,
+            position=trap_laying_ghost.position,
+            channel=self.channel,
+        )
         traps.append(trap)
 
     def destroy_dead_ghosts_quantum_state(self, old_visible):
@@ -349,7 +357,7 @@ class QGhost(Unit):
                         )
                         self.quantum_state = beam_splitter(self.quantum_state, i)
 
-    def update(self, player, traps):
+    def update(self, player, traps) -> None:
         """
         After all the ghosts are in position, we can:
             1. change their state if they hit the splitter
@@ -358,20 +366,18 @@ class QGhost(Unit):
         :param player: instance of the Player class carrying information about player's position & health
         """
         if len(self.visible_parts) > MAX_GHOSTS_PER_STATE:
-             self.attack(player)
-             self.remove_visible_ghosts()
-            
-             return None
- 
+            self.attack(player)
+            self.remove_visible_ghosts()
+            return None
+
+        self.interact_with_splitter()
+
         if np.random.random() <= PROB_GHOST_ATTACK:
-             self.attack(player)
-        elif np.random.random() <= PROB_GHOST_TRAP: 
-             self.lay_trap(traps)
-             
-              
-             self.remove_visible_ghosts()
-             self.attack(player)
-             
+            self.attack(player)
+        elif np.random.random() <= PROB_GHOST_TRAP:
+            self.lay_trap(traps)
+
+        self.remove_visible_ghosts()
 
         if not self.visible_parts:
-               self.is_alive = False 
+            self.is_alive = False

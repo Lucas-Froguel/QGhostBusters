@@ -9,6 +9,7 @@ from pygame.sprite import RenderUpdates, GroupSingle
 
 from src.Units.player import Player
 from src.Units.ghosts import QGhost
+from src.Units.trap import Trap
 from src.user_interfaces import GameUserInterface
 from src.SoundEffects.sound_manager import LevelSoundManager
 
@@ -52,6 +53,9 @@ class BaseLevel:
         self.ghosts_group: [QGhost] = None
         self.visible_ghosts_group: RenderUpdates = RenderUpdates()
 
+        self.traps: [Trap] = []
+        self.traps_group = RenderUpdates()
+
         # to use text blocks
         pygame.font.init()
         self.health_bar_font = pygame.font.SysFont("fonts/Baskic8.otf", 30)
@@ -75,9 +79,11 @@ class BaseLevel:
 
         # Qhost actions after all the ghosts are in place
         for qghost in self.ghosts_group:
-            qghost.update(self._player)
+            qghost.update(self._player, self.traps)
             if not qghost.is_alive:
                 self.ghosts_group.remove(qghost)
+        self.traps_group.add(self.traps)
+        print(len(self.traps))
 
         if self._player.health <= 0:
             self.keep_running = False
@@ -95,6 +101,7 @@ class BaseLevel:
         self.visible_ghosts_group.draw(self.window)
         self.splitter_group.draw(self.window)
         self.shots_group.draw(self.window)
+        # self.traps_group.draw(self.window)
         health_bar = self.health_bar_font.render(
             f"HP:{self._player.health}", False, (255, 0, 0)
         )

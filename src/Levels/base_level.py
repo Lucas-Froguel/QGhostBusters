@@ -9,6 +9,7 @@ from src.Units.player import Player
 from src.Units.ghosts import QGhost
 from src.user_interfaces import GameUserInterface
 from src.SoundEffects.sound_manager import LevelSoundManager
+from src.Levels.level_hud import BaseLevelHud
 
 
 class BaseLevel:
@@ -18,6 +19,7 @@ class BaseLevel:
         worldSize: Vector2 = None,
         window: Surface = None,
         level_channel: Channel = None,
+        extra_level_channel: Channel = None,
         player_channel: Channel = None,
         enemies_channel: Channel = None,
     ):
@@ -35,9 +37,12 @@ class BaseLevel:
         self.tmx_data = None
 
         self.level_channel = level_channel
+        self.extra_level_channel = extra_level_channel
         self.player_channel = player_channel
         self.enemies_channel = enemies_channel
         self.music: LevelSoundManager = None
+
+        self.base_level_hud: BaseLevelHud = None
 
         # ghost-splitters
         self.splitter_group: RenderUpdates = RenderUpdates()
@@ -50,9 +55,7 @@ class BaseLevel:
         self.ghosts_group: [QGhost] = None
         self.visible_ghosts_group: RenderUpdates = RenderUpdates()
 
-        # to use text blocks
-        pygame.font.init()
-        self.health_bar_font = pygame.font.SysFont("fonts/Baskic8.otf", 30)
+        self.hud_render_group: RenderUpdates = RenderUpdates()
 
     def update(self):
         self.keep_running = self.user_interface.process_input()
@@ -75,6 +78,9 @@ class BaseLevel:
             if not qghost.is_alive:
                 self.ghosts_group.remove(qghost)
 
+        self.base_level_hud.update()
+        self.hud_render_group.update()
+
         if self._player.health <= 0:
             self.keep_running = False
             self.music.play_game_over_sound()
@@ -91,10 +97,10 @@ class BaseLevel:
         self.visible_ghosts_group.draw(self.window)
         self.splitter_group.draw(self.window)
         self.shots_group.draw(self.window)
-        health_bar = self.health_bar_font.render(
-            f"HP:{self._player.health}", False, (255, 0, 0)
-        )
-        self.window.blit(health_bar, (0, 0))
+
+        self.hud_render_group.draw(self.window)
+        self.base_level_hud.player_data_hud.measure_timer.render()
+        self.window.blit(self.base_level_hud.player_data_hud.measure_timer.measure_timer, (0, 32))
 
     def load_map(self):
         self.tmx_map = pytmx.TiledMap(self.level_name)

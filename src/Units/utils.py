@@ -1,10 +1,12 @@
+import os
 from typing import Optional
 
 import numpy as np
-from pygame import Vector2
+from pygame import Vector2, Surface
+from pygame.image import load
+from pygame.transform import scale
 from qutip import Qobj, ket, destroy, tensor, qeye
 
-from src.Units.splitter import SplitterType
 from src.settings import MAX_GHOSTS_PER_STATE
 
 
@@ -16,7 +18,7 @@ def is_in_given_radius(position_1: Vector2, position_2: Vector2, radius: float) 
 
 
 def two_ghost_coming_from_different_sides_of_splitter(
-    g1, g2, splitterType: SplitterType
+    g1, g2, splitterType
 ) -> bool:
     if g1 != g2 and np.allclose(  # not the same ghost
         g1.position, g2.position, 3e-2
@@ -99,3 +101,15 @@ def find_tensored_components(idx: int, n_comp: int) -> list[int]:
         res.append(this_component)
         n -= 1
     return np.array(res + [0] * (n_comp - len(res)))
+
+
+def load_all_images_in_folder(folder_path: str = None, cellSize: Vector2 = None) -> [Surface]:
+    all_files = os.listdir(folder_path)
+    image_files = [filename for filename in all_files if filename.endswith(".png")]
+
+    if cellSize:
+        images = [scale(load(os.path.join(folder_path, filename)), cellSize) for filename in image_files]
+    else:
+        images = [load(os.path.join(folder_path, filename)) for filename in image_files]
+
+    return images

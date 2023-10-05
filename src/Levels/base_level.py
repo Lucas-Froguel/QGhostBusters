@@ -1,3 +1,6 @@
+
+from typing import Literal
+
 import pytmx
 from pytmx.util_pygame import load_pygame
 import pygame
@@ -9,6 +12,7 @@ from src.Units.player import Player
 from src.Units.ghosts import QGhost
 from src.user_interfaces import GameUserInterface
 from src.SoundEffects.sound_manager import LevelSoundManager
+from src.Levels.level_hud import BaseLevelHud
 
 
 class BaseLevel:
@@ -18,7 +22,10 @@ class BaseLevel:
         worldSize: Vector2 = None,
         window: Surface = None,
         level_channel: Channel = None,
-        unit_channel: Channel = None,
+        extra_level_channel: Channel = None,
+        player_channel: Channel = None,
+        enemies_channel: Channel = None,
+
     ):
         self.keep_running = True
         self.user_interface = GameUserInterface()
@@ -34,52 +41,72 @@ class BaseLevel:
         self.tmx_data = None
 
         self.level_channel = level_channel
-        self.unit_channel = unit_channel
+        self.extra_level_channel = extra_level_channel
+        self.player_channel = player_channel
+        self.enemies_channel = enemies_channel
         self.music: LevelSoundManager = None
 
+        self.base_level_hud: BaseLevelHud = None
+
         # ghost-splitters
-        self.splitter_group: RenderUpdates = None
+        self.splitter_group: RenderUpdates = RenderUpdates()
 
         # player and ghosts
         self._player: Player = None
-        self.player_group: GroupSingle = None
+        self.player_group: GroupSingle = GroupSingle()
+        self.shots_group: RenderUpdates = RenderUpdates()
 
         self.ghosts_group: [QGhost] = None
-        self.visible_ghosts_group: RenderUpdates = None
+        self.visible_ghosts_group: RenderUpdates = RenderUpdates()
 
-        # to use text blocks
-        pygame.font.init()
-        self.health_bar_font = pygame.font.SysFont("fonts/Baskic8.otf", 30)
+        self.hud_render_group: RenderUpdates = RenderUpdates()
+
+        self.game_status: Literal["won", "lost"] | None = None
 
     def update(self):
         self.keep_running = self.user_interface.process_input()
 
-        if not self.ghosts_group:
-            self.keep_running = False
-            print("You won")
-            self.music.play_game_over_sound()
-            return
+        # visible ghost actions
+        self.visible_ghosts_group.update(self._player)
 
+        # player actions
         self.player_group.update(self.user_interface.movePlayerCommand)
-        self.visible_ghosts_group.update()
-        if self.user_interface.attackCommand:
-            self._player.measure(self.ghosts_group, self.visible_ghosts_group)
+        if self.user_interface.measureCommand:
+            self._player.measure(self.ghosts_group)  # wave func collapse
+        elif self.user_interface.attackCommand:
+            self._player.attack()
+            self.shots_group.add(self._player.weapon.shots)
+        self.shots_group.remove(*self._player.weapon.dead_shots)
+
+        # Qhost actions after all the ghosts are in place
         for qghost in self.ghosts_group:
             qghost.update(self._player)
+            if not qghost.is_alive:
+                self.ghosts_group.remove(qghost)
+
+        self.base_level_hud.update()
+        # self.hud_render_group.update()
+
         if self._player.health <= 0:
             self.keep_running = False
             self.music.play_game_over_sound()
-            print("You died")
+            self.game_status = "lost"
+        if not self.ghosts_group:
+            self.keep_running = False
+            self.music.play_game_won_sound()
+            self.game_status = "won"
+            return
 
     def render(self):
         self.window.blit(self.surface, (0, 0))
         self.player_group.draw(self.window)
         self.visible_ghosts_group.draw(self.window)
         self.splitter_group.draw(self.window)
-        health_bar = self.health_bar_font.render(
-            f"HP:{self._player.health}", False, (255, 0, 0)
-        )
-        self.window.blit(health_bar, (0, 0))
+        self.shots_group.draw(self.window)
+
+        self.hud_render_group.draw(self.window)
+        self.base_level_hud.player_data_hud.measure_timer.render()
+        self.window.blit(self.base_level_hud.player_data_hud.measure_timer.measure_timer, (0, 32))
 
     def load_map(self):
         self.tmx_map = pytmx.TiledMap(self.level_name)

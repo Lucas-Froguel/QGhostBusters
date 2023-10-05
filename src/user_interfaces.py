@@ -27,15 +27,14 @@ class MenuUserInterface(BaseUserInterface):
                 break
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
-                    if self.current_menu_item < len(self.menu_items) - 1:
-                        self.current_menu_item += 1
-                        self.music.play_select_menu_item_sound()
+                    self.current_menu_item += 1
+                    self.music.play_select_menu_item_sound()
                 elif event.key == pygame.K_UP:
-                    if self.current_menu_item > 0:
-                        self.current_menu_item -= 1
-                        self.music.play_select_menu_item_sound()
+                    self.current_menu_item -= 1
+                    self.music.play_select_menu_item_sound()
                 elif event.key == pygame.K_RETURN:
                     self.select = True
+                self.current_menu_item %= len(self.menu_items)
         return self.running
 
 
@@ -86,10 +85,12 @@ class GameUserInterface(BaseUserInterface):
     def __init__(self):
         self.movePlayerCommand = Vector2(0, 0)
         self.attackCommand = False
+        self.measureCommand = False
 
     def process_input(self):
         self.movePlayerCommand = Vector2(0, 0)
         self.attackCommand = False
+        self.measureCommand = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
@@ -108,5 +109,7 @@ class GameUserInterface(BaseUserInterface):
                 # attack key
                 elif event.key == pygame.K_SPACE:
                     self.attackCommand = True
+                elif event.key == pygame.K_x:
+                    self.measureCommand = True
 
         return True

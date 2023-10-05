@@ -64,7 +64,6 @@ class LevelSoundManager(ScreenSoundManager):
     def play_game_won_sound(self):
         self.channel.play(self.game_won)
 
-
 class PlayerSoundManager(BaseSoundManager):
     def __init__(self, channel: Channel = None):
         super().__init__(channel=channel)

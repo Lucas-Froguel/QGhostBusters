@@ -1,3 +1,4 @@
+
 import time
 
 import numpy as np
@@ -104,7 +105,7 @@ class Player(Unit):
         if not self.ready_to_measure and check_if_able_to_measure:
             self.sound_manager.play_ready_to_measure_sound()
             self.ready_to_measure = True
-
+    
     def update(self, moveVector: Vector2 = None) -> None:
         super().update(moveVector=moveVector)
         if self.collides_with_wall():

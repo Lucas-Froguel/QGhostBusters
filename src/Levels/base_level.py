@@ -1,3 +1,4 @@
+
 from typing import Literal
 
 import pytmx
@@ -24,6 +25,7 @@ class BaseLevel:
         extra_level_channel: Channel = None,
         player_channel: Channel = None,
         enemies_channel: Channel = None,
+
     ):
         self.keep_running = True
         self.user_interface = GameUserInterface()

@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import math
 from pytmx import TiledMap
@@ -8,7 +10,7 @@ from pygame.transform import scale
 
 from src.SoundEffects.sound_manager import PlayerSoundManager
 from src.Units.splitter import GhostSplitter
-from src.settings import PLAYER_MEASURE_RADIUS, INITIAL_HEALTH
+from src.settings import PLAYER_MEASURE_RADIUS, PLAYER_INITIAL_HEALTH, PLAYER_MEASURE_TIME
 from pygame.transform import rotate
 from src.Units.base_unit import Unit
 from src.Units.ghosts import QGhost
@@ -37,8 +39,14 @@ class Player(Unit):
         self.image = scale(self.image, self.cellSize)
         self.direction: Vector2 = Vector2(1, 0)
         self.sound_manager = PlayerSoundManager(channel=self.channel)
+
         self.measure_radius = PLAYER_MEASURE_RADIUS
-        self.health = INITIAL_HEALTH
+        self.max_health = PLAYER_INITIAL_HEALTH
+        self.health = PLAYER_INITIAL_HEALTH
+        self.min_measure_time = PLAYER_MEASURE_TIME
+        self.last_measure_time: int = 0
+        self.ready_to_measure: bool = True
+
         self.map_data = map_data
         self.splitters = splitters
 
@@ -62,10 +70,13 @@ class Player(Unit):
         :param ghosts_group: list of QGhosts present in the game
         :param visible_ghosts_group: visual information about QGhosts
         """
-        for qghost in qghosts:
-            if qghost.collapse_wave_function(player=self):
-                self.sound_manager.play_measure_sound()
-                break
+        if self.ready_to_measure:
+            for qghost in qghosts:
+                if qghost.collapse_wave_function(player=self):
+                    self.sound_manager.play_measure_sound()
+                    self.last_measure_time = int(time.time())
+                    self.ready_to_measure = False
+                    break
 
     def move(self, moveVector: Vector2, does_rotate: bool = True) -> None:
         super().move(moveVector=moveVector)
@@ -88,9 +99,17 @@ class Player(Unit):
                 return True
         return False
 
+    def check_measure_time(self):
+        check_if_able_to_measure = int(time.time() - self.last_measure_time) > self.min_measure_time
+        if not self.ready_to_measure and check_if_able_to_measure:
+            self.sound_manager.play_ready_to_measure_sound()
+            self.ready_to_measure = True
+
     def update(self, moveVector: Vector2 = None) -> None:
         super().update(moveVector=moveVector)
         if self.collides_with_wall():
             self.move(moveVector=-moveVector, does_rotate=False)
+
+        self.check_measure_time()
 
         self.weapon.update()

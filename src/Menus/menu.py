@@ -25,7 +25,7 @@ class BaseMenu:
         self.menuCursor = pygame.image.load("src/Units/sprites/new_ghost2.png")
         self.menuCursor = scale(self.menuCursor, Vector2(48, 48))
 
-        self.background = load("src/Menus/background_menu.png")
+        self.background = load("src/Menus/backgrounds/space1_bit.png")
 
         self.user_interface: MenuUserInterface = None
 

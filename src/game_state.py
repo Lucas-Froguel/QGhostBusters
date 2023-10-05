@@ -9,12 +9,14 @@ from src.SoundEffects.sound_manager import ScreenSoundManager
 class GameState:
     def __init__(self):
         pygame.init()
+        pygame.font.init()
         pygame.mixer.init()
         pygame.mixer_music.set_volume(0.1)
         pygame.mixer.set_num_channels(4)
         self.window_channel = pygame.mixer.Channel(0)
-        self.player_channel = pygame.mixer.Channel(1)
-        self.enemies_channel = pygame.mixer.Channel(2)
+        self.extra_level_channel = pygame.mixer.Channel(1)
+        self.player_channel = pygame.mixer.Channel(2)
+        self.enemies_channel = pygame.mixer.Channel(3)
 
         self.running = True
         self.clock = pygame.time.Clock()
@@ -39,6 +41,7 @@ class GameState:
             worldSize=self.worldSize,
             window=self.window,
             level_channel=self.window_channel,
+            extra_level_channel=self.extra_level_channel,
             player_channel=self.player_channel,
             enemies_channel=self.enemies_channel,
         )

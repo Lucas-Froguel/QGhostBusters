@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from pygame import Vector2
 from pygame.image import load
@@ -6,7 +7,8 @@ from pygame.transform import scale
 from pytmx import TiledMap
 
 
-from src.Units.base_unit import Unit
+from src.Units.base_unit import Unit, AnimatedUnit
+from src.Units.utils import load_all_images_in_folder
 
 
 class Weapon(Unit):
@@ -56,7 +58,7 @@ class Weapon(Unit):
         self.dead_shots = dead_shots
 
 
-class Shot(Unit):
+class Shot(AnimatedUnit):
     def __init__(
         self,
         cellSize: Vector2 = None,
@@ -72,10 +74,13 @@ class Shot(Unit):
         :param position: position on the map (in units of cells)
         """
         super().__init__(
-            cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
+            cellSize=cellSize,
+            worldSize=worldSize,
+            position=position,
+            channel=channel,
+            images_folder="src/Units/sprites/shots"
         )
-        self.image = load("src/Units/sprites/shot.png")
-        self.image = scale(self.image, self.cellSize)
+
         self.map_data = map_data
         self.direction = direction
         self.is_alive = True
@@ -91,3 +96,5 @@ class Shot(Unit):
         self.move(moveVector=self.direction / 2)
         if not self.is_unit_in_map() or self.collides_with_wall():
             self.is_alive = False
+
+        self.update_image()

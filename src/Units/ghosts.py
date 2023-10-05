@@ -355,7 +355,7 @@ class QGhost(Unit):
             1. change their state if they hit the splitter
             2. let them attack the player
 
-        :param player: instance of the Player class carrying information about player's position and health
+        :param player: instance of the Player class carrying information about player's position & health
         """
         if len(self.visible_parts) > MAX_GHOSTS_PER_STATE:
              self.attack(player)
@@ -365,7 +365,7 @@ class QGhost(Unit):
  
         if np.random.random() <= PROB_GHOST_ATTACK:
              self.attack(player)
-        elif np.random.random() <= PROB_GHOST_TRAP:
+        elif np.random.random() <= PROB_GHOST_TRAP: 
              self.lay_trap(traps)
              
               

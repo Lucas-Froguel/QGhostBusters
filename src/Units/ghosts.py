@@ -138,8 +138,8 @@ class AggressiveGhost(Ghost):
         self.follow_player_chance = 0.9
         self.follow_waypoint_chance = 0.3
         self.attack_radius = GHOST_ATTACK_RADIUS + 2
-        self.prob_ghost_attack = 2
-        self.detect_player_radius = self.attack_radius + 1
+        self.prob_ghost_attack = 3
+        self.detect_player_radius = self.attack_radius + 2
 
 
 class PassiveGhost(Ghost):
@@ -160,7 +160,7 @@ class PassiveGhost(Ghost):
             channel=channel,
             splitters=splitters,
         )
-        self.follow_player_chance = 0.3
+        self.follow_player_chance = 0.8
         self.follow_waypoint_chance = 0.8
         self.attack_radius = GHOST_ATTACK_RADIUS - 2
         self.prob_ghost_attack = 1

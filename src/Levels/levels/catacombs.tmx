@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="40" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="1">
- <tileset firstgid="1" source="dungeon-tileset.tsx"/>
+ <tileset firstgid="1" source="dungeon/dungeon-tileset.tsx"/>
  <tileset firstgid="37" source="catacombs/Catacombs - main.tsx"/>
  <tileset firstgid="677" source="catacombs/Catacombs - decorative.tsx"/>
  <layer id="3" name="Tile Layer 1" width="40" height="20">

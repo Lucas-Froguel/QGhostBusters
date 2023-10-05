@@ -125,6 +125,11 @@ class BaseLevel:
         for layer in self.tmx_data.visible_layers:
             if isinstance(layer, pytmx.TiledTileLayer):
                 for x, y, image in layer.tiles():
-                    self.surface.blit(image, (x * self.cellSize.x, y * self.cellSize.y))
+                    width = image.get_rect().width
+                    if width < self.cellSize.x:
+                        x_displacement = int(width - self.cellSize.x)
+                        self.surface.blit(image, (x * self.cellSize.x, y * self.cellSize.y - x_displacement))
+                    else:
+                        self.surface.blit(image, (x * self.cellSize.x, y * self.cellSize.y))
 
         self.music.play_music()

@@ -1,8 +1,10 @@
 import time
 
 import pygame
+from pygame.sprite import Sprite
 from pygame import Vector2, Rect, Surface
 from pygame.image import load
+from pygame.transform import scale
 from src.Units.player import Player
 
 
@@ -20,20 +22,23 @@ class PlayerDataHUD:
         self.player = player
         self.cellSize = cellSize
 
-        self.hearts: [FullHeart, EmptyHeart] = []
+        self.hearts: [LifeHeart] = [
+            LifeHeart(cellSize=self.cellSize, position=Vector2(life, 0))
+            for life in range(player.max_health)
+        ]
         self.measure_timer: MeasureTimer = MeasureTimer(
             last_measure_time=self.player.last_measure_time,
             min_measure_time=self.player.min_measure_time
         )
 
+        self.update()
+
     def update_health(self):
-        hearts = []
         for life in range(self.player.max_health):
-            if life <= self.player.health:
-                hearts.append(FullHeart(cellSize=self.cellSize, position=Vector2(life, 1)))
+            if life < self.player.health:
+                self.hearts[life].update(has_health=True)
             else:
-                hearts.append(EmptyHeart(cellSize=self.cellSize, position=Vector2(life, 1)))
-        self.hearts = hearts
+                self.hearts[life].update(has_health=False)
 
     def update_measure_timer(self):
         self.measure_timer.update(
@@ -66,9 +71,15 @@ class MeasureTimer:
         )
 
 
-class FullHeart:
+class LifeHeart(Sprite):
     def __init__(self, position: Vector2 = None, cellSize: Vector2 = None):
-        self.image = load("src/Levels/sprites/life_heart_full.png")
+        super().__init__()
+        self.full_heart_image = load("src/Levels/sprites/life_heart_full.png")
+        self.full_heart_image = scale(self.full_heart_image, cellSize)
+        self.empty_heart_image = load("src/Levels/sprites/life_heart_empty.png")
+        self.empty_heart_image = scale(self.empty_heart_image, cellSize)
+        self.image = self.full_heart_image
+        self.has_health = True
         self.rect = Rect(
             position.x * cellSize.x,
             position.y * cellSize.y,
@@ -76,13 +87,6 @@ class FullHeart:
             cellSize.y,
         )
 
-
-class EmptyHeart:
-    def __init__(self, position: Vector2 = None, cellSize: Vector2 = None):
-        self.image = load("src/Levels/sprites/life_heart_empty.png")
-        self.rect = Rect(
-            position.x * cellSize.x,
-            position.y * cellSize.y,
-            cellSize.x,
-            cellSize.y,
-        )
+    def update(self, has_health: bool = True) -> None:
+        self.has_health = has_health
+        self.image = self.full_heart_image if self.has_health else self.empty_heart_image

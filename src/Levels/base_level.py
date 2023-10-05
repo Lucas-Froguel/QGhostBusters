@@ -79,7 +79,7 @@ class BaseLevel:
                 self.ghosts_group.remove(qghost)
 
         self.base_level_hud.update()
-        self.hud_render_group.update()
+        # self.hud_render_group.update()
 
         if self._player.health <= 0:
             self.keep_running = False

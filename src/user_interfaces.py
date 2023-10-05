@@ -27,15 +27,14 @@ class MenuUserInterface(BaseUserInterface):
                 break
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
-                    if self.current_menu_item < len(self.menu_items) - 1:
-                        self.current_menu_item += 1
-                        self.music.play_select_menu_item_sound()
+                    self.current_menu_item += 1
+                    self.music.play_select_menu_item_sound()
                 elif event.key == pygame.K_UP:
-                    if self.current_menu_item > 0:
-                        self.current_menu_item -= 1
-                        self.music.play_select_menu_item_sound()
+                    self.current_menu_item -= 1
+                    self.music.play_select_menu_item_sound()
                 elif event.key == pygame.K_RETURN:
                     self.select = True
+                self.current_menu_item %= len(self.menu_items)
         return self.running
 
 

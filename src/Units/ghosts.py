@@ -174,7 +174,7 @@ class PassiveGhost(Ghost):
 class QGhost(Ghost):
     """
     A quantum ghost that may be in a superposition.
-    Parts of the superposition are implemented as Message instances
+    Parts of the superposition are implemented as Ghost instances
     """
 
     def __init__(

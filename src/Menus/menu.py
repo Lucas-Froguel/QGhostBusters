@@ -92,10 +92,15 @@ class MenusManager:
         self.settings = SettingsMenu(window=self.window, music=self.music)
         self.levels = LevelsMenu(window=self.window, music=self.music)
 
+        self.win_message = WinMessage(window, self.music)
+        self.lose_message = LoseMessage(window, self.music)
+
         self.possible_menus = {
             "main_menu": self.main_menu,
             "settings": self.settings,
             "levels": self.levels,
+            "win_message": self.win_message,
+            "lose_message": self.lose_message,
         }
 
     def update(self):
@@ -215,3 +220,42 @@ class SettingsMenu(BaseMenu):
             self.volume = self.user_interface.volume
             self.menu_items[0]["title"] = f"Volume - {self.volume}"
             self.change_volume()
+
+
+class LoseMessage(BaseMenu):
+    def __init__(self, window: Surface = None, music: MenuSoundManager = None):
+        super().__init__(window=window, music=music)
+
+        self.title = "You were annihilated!"
+        self.current_menu = "lose_message"
+        self.menu_items = [
+            {"title": "Go back to menu", "action": lambda: self.exit_message()},
+        ]
+
+        self.user_interface = MenuUserInterface(
+            current_menu_item=self.current_menu_item,
+            menu_items=self.menu_items,
+            music=self.music,
+        )
+
+    def update(self):
+        super().update()
+
+        if self.user_interface.select:
+            self.exit_message()
+
+    def exit_message(self):
+        self.current_menu = "levels"
+
+    def load_menu(self):
+        self.current_menu = "lose_message"
+
+
+class WinMessage(LoseMessage):
+    def __init__(self, window: Surface = None, music: MenuSoundManager = None):
+        super().__init__(window=window, music=music)
+        self.current_menu = "win_message"
+        self.title = "You won!"
+
+    def load_menu(self):
+        self.current_menu = "win_message"

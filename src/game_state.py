@@ -1,6 +1,5 @@
 import pygame
 from pygame import Vector2
-
 from src.Levels.base_level import BaseLevel
 from src.Menus.menu import MenusManager
 from src.SoundEffects.sound_manager import ScreenSoundManager

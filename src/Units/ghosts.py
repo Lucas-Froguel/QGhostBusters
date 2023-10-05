@@ -16,6 +16,7 @@ from src.Units.utils import (
 from src.settings import (
     GHOST_ATTACK_RADIUS,
     PROB_GHOST_ATTACK,
+    PROB_GHOST_TRAP,
 )
 from src.settings import GHOST_SPEED, MAX_GHOSTS_PER_STATE
 from src.SoundEffects.sound_manager import GhostSoundManager
@@ -41,6 +42,7 @@ class Ghost(Unit):
         :param position: position on the map (in units of cells)
         :param qghost: meta-ghost of which this one is a part
         """
+        
         super().__init__(
             cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
         )
@@ -171,7 +173,7 @@ class PassiveGhost(Ghost):
         return -moveVector
 
 
-class QGhost(Ghost):
+class QGhost(Unit):
     """
     A quantum ghost that may be in a superposition.
     Parts of the superposition are implemented as Ghost instances
@@ -204,6 +206,7 @@ class QGhost(Ghost):
         self.render_group = render_group
         self.possible_ghosts = [AggressiveGhost, PassiveGhost]
         self.add_visible_ghost(start_position=position)
+        self.random_generator = np.random.default_rng()
 
     def collapse_wave_function(self, player=None):
         n_ghosts = len(self.visible_parts)
@@ -296,6 +299,10 @@ class QGhost(Ghost):
                 player.health -= 1
                 self.sound_manager.play_attack_sound()
 
+    def lay_trap(self, traps):
+        trap = trap(position=self.position, cellSize=self.cellSize)
+        traps.append(trap)
+
     def destroy_dead_ghosts_quantum_state(self, old_visible):
         if not self.dead_ghosts:
             return
@@ -342,7 +349,7 @@ class QGhost(Ghost):
                         )
                         self.quantum_state = beam_splitter(self.quantum_state, i)
 
-    def update(self, player) -> None:
+    def update(self, player, traps):
         """
         After all the ghosts are in position, we can:
             1. change their state if they hit the splitter
@@ -351,13 +358,20 @@ class QGhost(Ghost):
         :param player: instance of the Player class carrying information about player's position and health
         """
         if len(self.visible_parts) > MAX_GHOSTS_PER_STATE:
-            self.attack(player)
-            self.remove_visible_ghosts()
-            return None
-
-        self.interact_with_splitter()
-        self.attack(player)
-        self.remove_visible_ghosts()
+             self.attack(player)
+             self.remove_visible_ghosts()
+            
+             return None
+ 
+        if np.random.random() <= PROB_GHOST_ATTACK:
+             self.attack(player)
+        elif np.random.random() <= PROB_GHOST_TRAP:
+             self.lay_trap(traps)
+             
+              
+             self.remove_visible_ghosts()
+             self.attack(player)
+             
 
         if not self.visible_parts:
-            self.is_alive = False
+               self.is_alive = False 

@@ -126,8 +126,6 @@ class BaseLevel:
         self.shots_group.draw(self.window)
 
         self.hud_render_group.draw(self.window)
-        self.base_level_hud.player_data_hud.measure_timer.render()
-        self.window.blit(self.base_level_hud.player_data_hud.measure_timer.measure_timer, (0, 32))
 
         if self._player.weapon.measurer.play_animation:
             self.measurement_group.draw(self.window)

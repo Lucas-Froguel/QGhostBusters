@@ -184,6 +184,7 @@ class LevelsMenu(BaseMenu):
     def load_menu(self):
         self.current_menu = "levels"
 
+
 class SettingsMenu(BaseMenu):
     def __init__(self, window: Surface = None, music: MenuSoundManager = None, ghost_parameters: GhostParameters=None):
         super().__init__(window=window, music=music)
@@ -233,8 +234,7 @@ class SettingsMenu(BaseMenu):
             self.change_difficulty()
 
     def change_difficulty(self):
-        self.ghost_parameters.trap_probability = PROB_GHOST_TRAP * self.difficulty/MAX_DIFFICULTY
-        self.ghost_parameters.attack_probability = PROB_GHOST_ATTACK * self.difficulty/MAX_DIFFICULTY
+        self.ghost_parameters.change_difficulty(difficulty=self.difficulty)
 
 
 class LoseMessage(BaseMenu):

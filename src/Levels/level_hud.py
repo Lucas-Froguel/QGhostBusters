@@ -26,10 +26,7 @@ class PlayerDataHUD:
             LifeHeart(cellSize=self.cellSize, position=Vector2(life, 0))
             for life in range(player.max_health)
         ]
-        self.measure_timer: MeasureTimer = MeasureTimer(
-            last_measure_time=self.player.last_measure_time,
-            min_measure_time=self.player.min_measure_time
-        )
+        self.measure_timer: MeasureTimer = None
 
         self.update()
 
@@ -48,7 +45,8 @@ class PlayerDataHUD:
 
     def update(self):
         self.update_health()
-        self.update_measure_timer()
+        if self.measure_timer:
+            self.update_measure_timer()
 
 
 class MeasureTimer:

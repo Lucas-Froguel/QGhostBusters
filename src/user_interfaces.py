@@ -7,6 +7,21 @@ class BaseUserInterface:
         pass
 
 
+class MessageUserInterface(BaseUserInterface):
+    def __init__(self):
+        self.running = True
+
+    def process_input(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+                break
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    self.running = False
+        return self.running
+
+
 class MenuUserInterface(BaseUserInterface):
     def __init__(
         self, current_menu_item: int = None, menu_items: [dict] = None, music=None
@@ -91,6 +106,7 @@ class GameUserInterface(BaseUserInterface):
         self.movePlayerCommand = Vector2(0, 0)
         self.attackCommand = False
         self.measureCommand = False
+        self.pauseCommand = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
@@ -111,5 +127,8 @@ class GameUserInterface(BaseUserInterface):
                     self.attackCommand = True
                 elif event.key == pygame.K_x:
                     self.measureCommand = True
+                # pause
+                elif event.key == pygame.K_p:
+                    self.pauseCommand = True
 
         return True

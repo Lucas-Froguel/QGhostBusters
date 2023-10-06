@@ -1,4 +1,3 @@
-
 import pytmx
 import random
 import pygame
@@ -8,6 +7,7 @@ from pygame import Vector2, Surface
 from pygame.mixer import Channel
 from pygame.sprite import RenderUpdates, GroupSingle
 
+from src.Units.message import BaseMessage
 from src.Units.player import Player
 from src.Units.ghosts import QGhost
 from src.Units.splitter import GhostSplitter
@@ -27,6 +27,7 @@ class BaseLevel:
         extra_level_channel: Channel = None,
         player_channel: Channel = None,
         enemies_channel: Channel = None,
+        welcome_message: str = None,
     ):
         self.keep_running = True
         self.user_interface = GameUserInterface()
@@ -71,8 +72,19 @@ class BaseLevel:
 
         self.game_status: Literal["won", "lost"] | None = None
 
+        self.messages = RenderUpdates()
+        self.generate_message(welcome_message)
+
     def update(self):
+        if len(self.messages):
+            self.messages.update()
+            if any([not message.show for message in self.messages]):
+                self.messages.empty()
+            return
+
         self.keep_running = self.user_interface.process_input()
+        if self.user_interface.pauseCommand:
+            self.generate_message("Game paused, press Enter to unpause.")
 
         # visible ghost actions
         self.visible_ghosts_group.update(self._player)
@@ -83,7 +95,7 @@ class BaseLevel:
             measureCommand=self.user_interface.measureCommand,
             attackCommand=self.user_interface.attackCommand,
             ghosts_group=self.ghosts_group,
-            shots_group=self.shots_group
+            shots_group=self.shots_group,
         )
         self.measurement_group.update(self._player.position)
         if self.user_interface.attackCommand:
@@ -106,7 +118,6 @@ class BaseLevel:
             self.keep_running = False
             self.music.play_game_won_sound()
             self.game_status = "won"
-            return
 
     def render(self):
         self.window.blit(self.surface, (0, 0))
@@ -117,10 +128,14 @@ class BaseLevel:
 
         self.hud_render_group.draw(self.window)
         self.base_level_hud.player_data_hud.measure_timer.render()
-        self.window.blit(self.base_level_hud.player_data_hud.measure_timer.measure_timer, (0, 32))
+        self.window.blit(
+            self.base_level_hud.player_data_hud.measure_timer.measure_timer, (0, 32)
+        )
 
         if self._player.weapon.measurer.play_animation:
             self.measurement_group.draw(self.window)
+
+        self.messages.draw(self.window)
 
     def load_map(self):
         self.tmx_map = pytmx.TiledMap(self.level_name)
@@ -139,9 +154,14 @@ class BaseLevel:
                     width = image.get_rect().width
                     if width < self.cellSize.x:
                         x_displacement = int(width - self.cellSize.x)
-                        self.surface.blit(image, (x * self.cellSize.x, y * self.cellSize.y - x_displacement))
+                        self.surface.blit(
+                            image,
+                            (x * self.cellSize.x, y * self.cellSize.y - x_displacement),
+                        )
                     else:
-                        self.surface.blit(image, (x * self.cellSize.x, y * self.cellSize.y))
+                        self.surface.blit(
+                            image, (x * self.cellSize.x, y * self.cellSize.y)
+                        )
 
     def load_units(self):
         splitters = [
@@ -149,7 +169,7 @@ class BaseLevel:
                 cellSize=self.cellSize,
                 worldSize=self.worldSize,
                 position=generate_random_positions(worldSize=self.worldSize),
-                splitterType=random.choice(self.splitter_types)
+                splitterType=random.choice(self.splitter_types),
             )
             for _ in range(self.num_splitters)
         ]
@@ -161,7 +181,9 @@ class BaseLevel:
             channel=self.player_channel,
             map_data=self.tmx_data,
             splitters=splitters,
-            does_map_have_tile_dont_pass=True if "TileDontPass" in self.tmx_data.layernames else False
+            does_map_have_tile_dont_pass=True
+            if "TileDontPass" in self.tmx_data.layernames
+            else False,
         )
         self.player_group.add(self._player)
 
@@ -199,3 +221,17 @@ class BaseLevel:
         self.load_map()
         self.load_units()
         self.music.play_music()
+
+    def generate_message(self, welcome_message):
+        if welcome_message is None:
+            return
+        if isinstance(welcome_message, str):
+            self.messages.add(
+                BaseMessage(self.worldSize, self.cellSize, welcome_message)
+            )
+        elif isinstance(welcome_message, list):
+            for i, line in enumerate(welcome_message):
+                position = Vector2(self.worldSize.x // 4, self.worldSize.y // 4 + i)
+                self.messages.add(
+                    BaseMessage(self.worldSize, self.cellSize, line, position)
+                )

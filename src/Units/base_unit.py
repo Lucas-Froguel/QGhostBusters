@@ -83,12 +83,14 @@ class AnimatedUnit(Unit):
         position: Vector2 = None,
         channel: Channel = None,
         images_folder: str = None,
-        images_name: str = None
+        images_name: str = None,
     ):
         super().__init__(
             cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
         )
-        self.images = load_all_images_in_folder(folder_path=images_folder, file_name=images_name, cellSize=cellSize)
+        self.images = load_all_images_in_folder(
+            folder_path=images_folder, file_name=images_name, cellSize=cellSize
+        )
         self.num_images = len(self.images)
         self.current_image_index: int = 0
         self.current_image_direction: int = 1

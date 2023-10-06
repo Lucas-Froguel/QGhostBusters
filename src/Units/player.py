@@ -1,4 +1,3 @@
-
 import time
 import math
 import numpy as np
@@ -11,7 +10,11 @@ from pygame.transform import scale
 
 from src.SoundEffects.sound_manager import PlayerSoundManager
 from src.Units.splitter import GhostSplitter
-from src.settings import PLAYER_MEASURE_RADIUS, PLAYER_INITIAL_HEALTH, PLAYER_MEASURE_TIME
+from src.settings import (
+    PLAYER_MEASURE_RADIUS,
+    PLAYER_INITIAL_HEALTH,
+    PLAYER_MEASURE_TIME,
+)
 from pygame.transform import rotate
 from src.Units.base_unit import Unit
 from src.Units.ghosts import QGhost
@@ -122,7 +125,7 @@ class Player(Unit):
         check_collision_functions = [
             self.collides_with_splitter,
             self.collides_with_wall,
-            self.collides_with_non_walkable_floor
+            self.collides_with_non_walkable_floor,
         ]
         for collision_function in check_collision_functions:
             if collision_function():
@@ -130,7 +133,9 @@ class Player(Unit):
         return False
 
     def check_measure_time(self):
-        check_if_able_to_measure = int(time.time() - self.last_measure_time) > self.min_measure_time
+        check_if_able_to_measure = (
+            int(time.time() - self.last_measure_time) > self.min_measure_time
+        )
         if not self.ready_to_measure and check_if_able_to_measure:
             self.sound_manager.play_ready_to_measure_sound()
             self.ready_to_measure = True
@@ -140,7 +145,7 @@ class Player(Unit):
         measureCommand: bool = None,
         attackCommand: bool = None,
         ghosts_group=None,
-        shots_group=None
+        shots_group=None,
     ):
         if measureCommand:
             self.measure(ghosts_group)  # wave func collapse
@@ -148,14 +153,14 @@ class Player(Unit):
             self.attack()
             shots_group.add(self.weapon.shots)
         shots_group.remove(*self.weapon.dead_shots)
-    
+
     def update(
         self,
         moveVector: Vector2 = None,
         measureCommand: bool = None,
         attackCommand: bool = None,
         ghosts_group=None,
-        shots_group=None
+        shots_group=None,
     ) -> None:
         super().update(moveVector=moveVector)
 
@@ -169,5 +174,5 @@ class Player(Unit):
             measureCommand=measureCommand,
             attackCommand=attackCommand,
             ghosts_group=ghosts_group,
-            shots_group=shots_group
+            shots_group=shots_group,
         )

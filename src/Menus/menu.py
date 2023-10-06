@@ -3,7 +3,12 @@ from pygame.image import load
 from pygame.mixer import Channel
 from pygame.transform import scale
 from pygame import Vector2, Surface
-from src.Levels.levels import CatacombLevel, TheMazeLevel, IntoTheCavesLevel, TheCavesLevel
+from src.Levels.levels import (
+    CatacombLevel,
+    TheMazeLevel,
+    IntoTheCavesLevel,
+    TheCavesLevel,
+)
 from src.user_interfaces import MenuUserInterface, SettingsMenuUserInterface
 from src.SoundEffects.sound_manager import MenuSoundManager
 

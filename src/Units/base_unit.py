@@ -72,3 +72,4 @@ class Unit(BaseUnit):
         self.move(moveVector=moveVector)
         if not self.is_unit_in_map():
             self.move(moveVector=-moveVector)
+            self.player_group.update(moveVector, traps=self.traps)

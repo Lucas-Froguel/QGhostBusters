@@ -1,6 +1,8 @@
 import pygame
 from pygame import Vector2
 
+from src.settings import MAX_DIFFICULTY
+
 
 class BaseUserInterface:
     def process_input(self):
@@ -45,6 +47,7 @@ class SettingsMenuUserInterface(BaseUserInterface):
         menu_items: [dict] = None,
         music=None,
         volume: float = None,
+        difficulty: int = None,
     ):
         self.current_menu_item = current_menu_item
         self.menu_items = menu_items
@@ -53,6 +56,7 @@ class SettingsMenuUserInterface(BaseUserInterface):
         self.running = True
         self.music = music
         self.volume = volume
+        self.difficulty = difficulty
 
     def process_input(self):
         self.select = False
@@ -63,19 +67,25 @@ class SettingsMenuUserInterface(BaseUserInterface):
                 break
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
-                    if self.current_menu_item < len(self.menu_items) - 1:
-                        self.current_menu_item += 1
-                        self.music.play_select_menu_item_sound()
+                    self.current_menu_item += 1
+                    self.music.play_select_menu_item_sound()
+                    self.current_menu_item %= len(self.menu_items)
                 elif event.key == pygame.K_UP:
-                    if self.current_menu_item > 0:
-                        self.current_menu_item -= 1
-                        self.music.play_select_menu_item_sound()
-                elif event.key == pygame.K_LEFT:
+                    self.current_menu_item -= 1
+                    self.music.play_select_menu_item_sound()
+                    self.current_menu_item %= len(self.menu_items)
+                elif event.key == pygame.K_LEFT and self.current_menu_item==0:
                     if self.volume > 0:
                         self.volume -= 5
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_LEFT and self.current_menu_item==1:
+                    if self.difficulty > 1:
+                        self.difficulty -= 1
+                elif event.key == pygame.K_RIGHT and self.current_menu_item==0:
                     if self.volume < 100:
                         self.volume += 5
+                elif event.key == pygame.K_RIGHT and self.current_menu_item==1:
+                    if self.difficulty < MAX_DIFFICULTY:
+                        self.difficulty += 1
                 elif event.key == pygame.K_RETURN:
                     self.select = True
         return self.running

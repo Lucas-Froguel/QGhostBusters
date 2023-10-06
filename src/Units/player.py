@@ -7,15 +7,19 @@ from pytmx import TiledMap
 from pygame import Vector2
 from pygame.image import load
 from pygame.mixer import Channel
+from pygame.sprite import RenderUpdates
 from pygame.transform import scale
+from qutip import ket
 
 from src.SoundEffects.sound_manager import PlayerSoundManager
 from src.Units.splitter import GhostSplitter
+from src.Units.trap import Trap
+from src.Units.weapon import Weapon
 from src.settings import PLAYER_MEASURE_RADIUS, PLAYER_INITIAL_HEALTH, PLAYER_MEASURE_TIME
 from pygame.transform import rotate
 from src.Units.base_unit import Unit
 from src.Units.ghosts import QGhost
-from src.Units.weapon import Weapon
+from src.Units.utils import is_in_given_radius, find_tensored_components
 
 
 class Player(Unit):
@@ -52,7 +56,6 @@ class Player(Unit):
         self.map_data = map_data
         self.does_map_have_tile_dont_pass = does_map_have_tile_dont_pass
         self.splitters = splitters
-
         self.weapon = Weapon(
             cellSize=self.cellSize,
             worldSize=self.worldSize,
@@ -70,7 +73,7 @@ class Player(Unit):
         Check whether we are in the zone of application of user's measurement apparatus.
         If so, collapse the ghosts to one spot.
 
-        :param ghosts_group: list of QGhosts present in the game
+        :param qghosts: list of QGhosts present in the game
         :param visible_ghosts_group: visual information about QGhosts
         """
         if self.ready_to_measure:
@@ -155,13 +158,14 @@ class Player(Unit):
         measureCommand: bool = None,
         attackCommand: bool = None,
         ghosts_group=None,
-        shots_group=None
+        shots_group=None,
+        traps=None,
     ) -> None:
         super().update(moveVector=moveVector)
 
         if self.collides_with_anything():
             self.move(moveVector=-moveVector, does_rotate=False)
-
+        self.check_if_on_trap(traps)
         self.check_measure_time()
         self.weapon.update()
 
@@ -171,3 +175,11 @@ class Player(Unit):
             ghosts_group=ghosts_group,
             shots_group=shots_group
         )
+
+    def check_if_on_trap(self, traps: list[Trap]=None):
+        for trap in traps:
+            if np.allclose(self.position, trap.position):
+                self.health -= 1
+                trap.is_alive = False
+                break
+

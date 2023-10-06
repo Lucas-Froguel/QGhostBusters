@@ -53,7 +53,7 @@ def beam_splitter(
     """
     vector_length = max(quantum_state.shape)
     n_systems = len(quantum_state.dims[0])
-    if vector_length > 1000:
+    if vector_length > 2000:
         raise NotImplementedError("The size of the matrix is too large")
 
     add_ghost = False

@@ -3,17 +3,20 @@ from pygame import Vector2
 from src.Levels.base_level import BaseLevel
 from src.Menus.menu import MenusManager
 from src.SoundEffects.sound_manager import ScreenSoundManager
+from src.Units.ghosts import GhostParameters
 
 
 class GameState:
     def __init__(self):
         pygame.init()
+        pygame.font.init()
         pygame.mixer.init()
         pygame.mixer_music.set_volume(0.1)
         pygame.mixer.set_num_channels(4)
         self.window_channel = pygame.mixer.Channel(0)
-        self.player_channel = pygame.mixer.Channel(1)
-        self.enemies_channel = pygame.mixer.Channel(2)
+        self.extra_level_channel = pygame.mixer.Channel(1)
+        self.player_channel = pygame.mixer.Channel(2)
+        self.enemies_channel = pygame.mixer.Channel(3)
 
         self.running = True
         self.clock = pygame.time.Clock()
@@ -32,14 +35,16 @@ class GameState:
         self.setup_game_music(self.menu.music)
         self.last_game_status = None
 
-    def load_level(self, level: BaseLevel):
+    def load_level(self, level: BaseLevel, ghost_parameters: GhostParameters = None):
         self.level = level(
             cellSize=self.cellSize,
             worldSize=self.worldSize,
             window=self.window,
             level_channel=self.window_channel,
+            extra_level_channel=self.extra_level_channel,
             player_channel=self.player_channel,
             enemies_channel=self.enemies_channel,
+            ghost_parameters=ghost_parameters,
         )
         self.level.load_level()
 
@@ -74,7 +79,7 @@ class GameState:
                 # in the game was paused, neither is chosen, and the level selection menu should appear
             level = self.menu.update()
             if level:
-                self.load_level(level)
+                self.load_level(level, self.menu.settings.ghost_parameters)
             self.running = self.menu.keep_running
             self.last_game_status = None
 

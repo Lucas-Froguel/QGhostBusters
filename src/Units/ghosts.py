@@ -1,3 +1,5 @@
+import dataclasses
+
 import numpy as np
 from numpy import sign
 from pygame import Vector2
@@ -141,8 +143,8 @@ class AggressiveGhost(Ghost):
         self.follow_player_chance = 0.9
         self.follow_waypoint_chance = 0.3
         self.attack_radius = GHOST_ATTACK_RADIUS + 2
-        self.prob_ghost_attack = 1.1
-        self.detect_player_radius = self.attack_radius + 1
+        self.prob_ghost_attack = 3
+        self.detect_player_radius = self.attack_radius + 2
 
 
 class PassiveGhost(Ghost):
@@ -163,15 +165,21 @@ class PassiveGhost(Ghost):
             channel=channel,
             splitters=splitters,
         )
-        self.follow_player_chance = 0.3
+        self.follow_player_chance = 0.8
         self.follow_waypoint_chance = 0.8
         self.attack_radius = GHOST_ATTACK_RADIUS - 2
-        self.prob_ghost_attack = 0.2
+        self.prob_ghost_attack = 1
         self.detect_player_radius = GHOST_ATTACK_RADIUS + 4
 
     def walk_to_player(self, player_position: Vector2 = None) -> Vector2:
         moveVector = super().walk_to_player(player_position=player_position)
         return -moveVector
+
+
+@dataclasses.dataclass
+class GhostParameters:
+    attack_probability: float = PROB_GHOST_ATTACK
+    trap_probability: float = PROB_GHOST_TRAP
 
 
 class QGhost(Ghost):
@@ -188,6 +196,7 @@ class QGhost(Ghost):
         splitters: list[GhostSplitter] = None,
         render_group: RenderUpdates = None,
         channel: Channel = None,
+        options: GhostParameters = None
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
@@ -208,6 +217,7 @@ class QGhost(Ghost):
         self.possible_ghosts = [AggressiveGhost, PassiveGhost]
         self.random_generator = np.random.default_rng()
         self.add_visible_ghost(start_position=position)
+        self.options = GhostParameters() if options is None else options
 
     def collapse_wave_function(self, player=None):
         n_ghosts = len(self.visible_parts)
@@ -371,10 +381,11 @@ class QGhost(Ghost):
             return None
 
         self.interact_with_splitter()
+        print(self.options.attack_probability)
 
-        if np.random.random() <= PROB_GHOST_ATTACK:
+        if np.random.random() <= self.options.attack_probability:
             self.attack(player)
-        elif np.random.random() <= PROB_GHOST_TRAP:
+        elif np.random.random() <= self.options.trap_probability:
             self.lay_trap(traps)
 
         self.remove_visible_ghosts()

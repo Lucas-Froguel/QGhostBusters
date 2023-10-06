@@ -16,6 +16,8 @@ from pygame.transform import rotate
 from src.Units.base_unit import Unit
 from src.Units.ghosts import QGhost
 from src.Units.utils import is_in_given_radius, find_tensored_components
+from src.Units.trap import Trap
+
 
 
 class Player(Unit):

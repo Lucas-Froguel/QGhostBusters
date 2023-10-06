@@ -51,3 +51,7 @@ map.
 Each unit has a `position`, which holds the information of the cell they are in. The variable `rect` contains their
 actual position in the map. 
 
+# Acknowledgement
+
+Thanks to Szadi art for the free sprites made available online for free use. More of his work can be found (here)[https://szadiart.itch.io/].
+

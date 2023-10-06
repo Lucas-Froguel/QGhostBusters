@@ -3,7 +3,7 @@ from pygame.image import load
 from pygame.mixer import Channel
 from pygame.transform import scale
 from pygame import Vector2, Surface
-from src.Levels.levels import CatacombLevel, TheMazeLevel
+from src.Levels.levels import CatacombLevel, TheMazeLevel, IntoTheCavesLevel, TheCavesLevel
 from src.user_interfaces import MenuUserInterface, SettingsMenuUserInterface
 from src.SoundEffects.sound_manager import MenuSoundManager
 
@@ -22,7 +22,7 @@ class BaseMenu:
         # Font
         self.titleFont = pygame.font.Font("fonts/Baskic8.otf", 72)
         self.itemFont = pygame.font.Font("fonts/Baskic8.otf", 48)
-        self.menuCursor = pygame.image.load("src/Units/sprites/new_ghost2.png")
+        self.menuCursor = pygame.image.load("src/Units/sprites/ghost.png")
         self.menuCursor = scale(self.menuCursor, Vector2(48, 48))
 
         self.background = load("src/Menus/backgrounds/space1_bit.png")
@@ -156,6 +156,8 @@ class LevelsMenu(BaseMenu):
         self.current_menu = "levels"
         self.title = "Levels"
         self.menu_items = [
+            {"title": "Into The Caves", "action": lambda: IntoTheCavesLevel},
+            {"title": "The Caves", "action": lambda: TheCavesLevel},
             {"title": "The Catacombs", "action": lambda: CatacombLevel},
             {"title": "The Maze", "action": lambda: TheMazeLevel},
             {"title": "Back", "action": lambda: self.exit_settings()},

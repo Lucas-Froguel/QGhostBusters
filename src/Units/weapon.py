@@ -77,7 +77,8 @@ class Shot(AnimatedUnit):
             worldSize=worldSize,
             position=position,
             channel=channel,
-            images_folder="src/Units/sprites/shots"
+            images_folder="src/Units/sprites/shots",
+            images_name="shot"
         )
 
         self.map_data = map_data
@@ -117,7 +118,8 @@ class Measurement(AnimatedUnit):
             worldSize=worldSize,
             position=position,
             channel=channel,
-            images_folder="src/Units/sprites/measurements"
+            images_folder="src/Units/sprites/measurements",
+            images_name="measurement"
         )
         self.play_animation = False
         self.regularCellSize = cellSize
@@ -141,7 +143,7 @@ class Measurement(AnimatedUnit):
 
     def update_image(self):
         self.image = self.images[int(self.current_image_index)]
-        self.current_image_index += self.current_image_direction / 3
+        self.current_image_index += self.current_image_direction
 
     def measure(self, position: Vector2 = None):
         self.play_animation = True

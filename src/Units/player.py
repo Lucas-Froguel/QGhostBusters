@@ -134,12 +134,40 @@ class Player(Unit):
         if not self.ready_to_measure and check_if_able_to_measure:
             self.sound_manager.play_ready_to_measure_sound()
             self.ready_to_measure = True
+
+    def control_commands(
+        self,
+        measureCommand: bool = None,
+        attackCommand: bool = None,
+        ghosts_group=None,
+        shots_group=None
+    ):
+        if measureCommand:
+            self.measure(ghosts_group)  # wave func collapse
+        elif attackCommand:
+            self.attack()
+            shots_group.add(self.weapon.shots)
+        shots_group.remove(*self.weapon.dead_shots)
     
-    def update(self, moveVector: Vector2 = None) -> None:
+    def update(
+        self,
+        moveVector: Vector2 = None,
+        measureCommand: bool = None,
+        attackCommand: bool = None,
+        ghosts_group=None,
+        shots_group=None
+    ) -> None:
         super().update(moveVector=moveVector)
+
         if self.collides_with_anything():
             self.move(moveVector=-moveVector, does_rotate=False)
 
         self.check_measure_time()
-
         self.weapon.update()
+
+        self.control_commands(
+            measureCommand=measureCommand,
+            attackCommand=attackCommand,
+            ghosts_group=ghosts_group,
+            shots_group=shots_group
+        )

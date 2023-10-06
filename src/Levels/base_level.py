@@ -45,6 +45,8 @@ class BaseLevel:
         self.tmx_map: pytmx.TileMap = None
         self.tmx_data = None
 
+        self.music_path: str = None
+        self.background_sound_path: str = None
         self.level_channel = level_channel
         self.extra_level_channel = extra_level_channel
         self.player_channel = player_channel
@@ -76,12 +78,15 @@ class BaseLevel:
         self.visible_ghosts_group.update(self._player)
 
         # player actions
-        self.player_group.update(self.user_interface.movePlayerCommand)
+        self.player_group.update(
+            moveVector=self.user_interface.movePlayerCommand,
+            measureCommand=self.user_interface.measureCommand,
+            attackCommand=self.user_interface.attackCommand,
+            ghosts_group=self.ghosts_group,
+            shots_group=self.shots_group
+        )
         self.measurement_group.update(self._player.position)
-        if self.user_interface.measureCommand:
-            self._player.measure(self.ghosts_group)  # wave func collapse
-        elif self.user_interface.attackCommand:
-            self._player.attack()
+        if self.user_interface.attackCommand:
             self.shots_group.add(self._player.weapon.shots)
         self.shots_group.remove(*self._player.weapon.dead_shots)
 
@@ -180,7 +185,16 @@ class BaseLevel:
         self.base_level_hud = BaseLevelHud(cellSize=self.cellSize, player=self._player)
         self.hud_render_group.add(self.base_level_hud.player_data_hud.hearts)
 
+    def load_music(self):
+        self.music = LevelSoundManager(
+            music=self.music_path,
+            channel=self.level_channel,
+            extra_channel=self.extra_level_channel,
+            background_track_path=self.background_sound_path,
+        )
+
     def load_level(self):
+        self.load_music()
         self.music.play_load_level_sound()
         self.load_map()
         self.load_units()

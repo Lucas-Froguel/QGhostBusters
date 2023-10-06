@@ -2,12 +2,7 @@
 from pygame import Vector2, Surface
 from pygame.mixer import Channel
 
-from src.Units.player import Player
-from src.Units.ghosts import QGhost
 from src.Levels.base_level import BaseLevel
-from src.Units.splitter import GhostSplitter
-from src.Levels.level_hud import BaseLevelHud
-from src.SoundEffects.sound_manager import LevelSoundManager
 
 
 class CatacombLevel(BaseLevel):
@@ -33,16 +28,12 @@ class CatacombLevel(BaseLevel):
         self.level_name = "src/Levels/levels/catacombs.tmx"
         self.level_title = "The Catacombs"
 
+        self.music_path = "src/SoundEffects/sound_effects/suspense.wav"
+        self.background_sound_path = "src/SoundEffects/sound_effects/rain_and_thunder.wav"
+
         self.player_initial_position = Vector2(1, 18)
         self.num_ghosts = 3
         self.num_splitters = 4
-
-        self.music = LevelSoundManager(
-            music="src/SoundEffects/sound_effects/suspense.wav",
-            channel=self.level_channel,
-            extra_channel=self.extra_level_channel,
-            background_track_path="src/SoundEffects/sound_effects/rain_and_thunder.wav",
-        )
 
 
 class TheMazeLevel(BaseLevel):
@@ -68,16 +59,12 @@ class TheMazeLevel(BaseLevel):
         self.level_name = "src/Levels/levels/the_maze.tmx"
         self.level_title = "The Maze"
 
+        self.music_path = "src/SoundEffects/sound_effects/suspense.wav"
+        self.background_sound_path = "src/SoundEffects/sound_effects/rain_and_thunder.wav"
+
         self.player_initial_position = Vector2(1, 10)
         self.num_ghosts = 4
         self.num_splitters = 6
-
-        self.music = LevelSoundManager(
-            music="src/SoundEffects/sound_effects/suspense.wav",
-            channel=self.level_channel,
-            extra_channel=self.extra_level_channel,
-            background_track_path="src/SoundEffects/sound_effects/rain_and_thunder.wav",
-        )
 
 
 class IntoTheCavesLevel(BaseLevel):
@@ -103,16 +90,12 @@ class IntoTheCavesLevel(BaseLevel):
         self.level_name = "src/Levels/levels/into_the_caves.tmx"
         self.level_title = "Into The Caves"
 
+        self.music_path = "src/SoundEffects/sound_effects/suspense.wav"
+        self.background_sound_path = "src/SoundEffects/sound_effects/rain_and_thunder.wav"
+
         self.player_initial_position = Vector2(2, 2)
         self.num_ghosts = 3
         self.num_splitters = 2
-
-        self.music = LevelSoundManager(
-            music="src/SoundEffects/sound_effects/suspense.wav",
-            channel=self.level_channel,
-            extra_channel=self.extra_level_channel,
-            background_track_path="src/SoundEffects/sound_effects/rain_and_thunder.wav",
-        )
 
 
 class TheCavesLevel(BaseLevel):
@@ -138,14 +121,11 @@ class TheCavesLevel(BaseLevel):
         self.level_name = "src/Levels/levels/the_caves.tmx"
         self.level_title = "The Caves"
 
+        self.music_path = "src/SoundEffects/sound_effects/suspense.wav"
+        self.background_sound_path = "src/SoundEffects/sound_effects/rain_and_thunder.wav"
+
         self.player_initial_position = Vector2(1, 10)
         self.num_ghosts = 3
         self.num_splitters = 4
 
-        self.music = LevelSoundManager(
-            music="src/SoundEffects/sound_effects/suspense.wav",
-            channel=self.level_channel,
-            extra_channel=self.extra_level_channel,
-            background_track_path="src/SoundEffects/sound_effects/rain_and_thunder.wav",
-        )
 

@@ -73,9 +73,6 @@ class BaseLevel:
         self.traps: [Trap] = []
         self.traps_group = RenderUpdates()
 
-        # to use text blocks
-        pygame.font.init()
-        self.health_bar_font = pygame.font.SysFont("fonts/Baskic8.otf", 30)
         self.hud_render_group: RenderUpdates = RenderUpdates()
 
         self.game_status: Literal["won", "lost"] | None = None

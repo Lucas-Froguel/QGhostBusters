@@ -1,6 +1,36 @@
 # QGhostBusters
 This is the game of Quantum Enigma team at the Quantum Games Hackaton 2023
 
+# Installation instructions:
+
+## Windows
+
+1. Prerequisites:
+   - Windows does not allow to execute scripts by default. If you haven't enabled this option, you should start by opening PowerShell and executing `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`.
+   - You need git installed for cloning. You can download it [here](https://git-scm.com/download/win).
+   - You need Python installed. You can download it [here](https://www.python.org/downloads/windows/).
+   - Life will be simpler if you add Python to your `PATH` variable
+2. Go to a directory where you want the game installed via `cd .\path\to\the\directory`, e.g. `cd ~\games\QGhostBusters>`.
+3. Clone the repo: `git clone -b development https://github.com/Lucas-Froguel/QGhostBusters.git`.
+4. Get inside the game directory: `cd QGhostBusters`
+5. Create virtual environment: `python -m venv venv` (if you don't have path to Python in your enviromnent PATH, instead of `python` type the path to `Python.exe` file including the `exe` itself)
+6. Get inside it `.\venv\Scripts\activate`
+7. Install the required packages `pip install -r requirements.txt`
+8. Launch the game `python main.py`
+
+## Linux
+
+1. Prerequisites:
+   - You need git installed for cloning.
+   - You need Python installed.
+2. Go to a directory where you want the game installed via `cd .\path\to\the\directory`, e.g. `cd ~\games\QGhostBusters>`.
+3. Clone the repo: `git clone -b development https://github.com/Lucas-Froguel/QGhostBusters.git`.
+4. Get inside the game directory: `cd QGhostBusters`
+5. Create virtual environment: `python -m venv venv` (if you don't have path to Python in your enviromnent PATH, instead of `python` type the path to `Python.exe` file including the `exe` itself)
+6. Get inside it `source venv/bin/activate`
+7. Install the required packages `pip install -r requirements.txt`
+8. Launch the game `python main.py`
+
 # Story
 
 Welcome to Qhost Busters! This game makes the player live the role of ghost buster, a person whose job is to find and
@@ -49,7 +79,7 @@ of squares is determined by `worldSize` variable. Naturally, the product `cellSi
 map. 
 
 Each unit has a `position`, which holds the information of the cell they are in. The variable `rect` contains their
-actual position in the map. 
+actual position in the map.
 
 # Acknowledgement
 

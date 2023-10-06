@@ -7,7 +7,8 @@ from src.Units.base_unit import Unit
 
 
 class Trap(Unit):
-    def __int__(
+    ...
+    def __init__(
         self,
         cellSize: Vector2 = None,
         worldSize: Vector2 = None,
@@ -22,6 +23,6 @@ class Trap(Unit):
         super().__init__(
             cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
         )
-        self.image = load("src/Units/sprites/shot.png")
+        self.image = load("src/Units/sprites/ghost_trap.png")
         self.image = scale(self.image, self.cellSize)
         self.is_alive = True

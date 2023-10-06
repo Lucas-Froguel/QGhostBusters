@@ -13,6 +13,7 @@ from qutip import ket
 
 from src.SoundEffects.sound_manager import PlayerSoundManager
 from src.Units.splitter import GhostSplitter
+from src.Units.trap import Trap
 from src.Units.weapon import Weapon
 from src.settings import PLAYER_MEASURE_RADIUS, PLAYER_INITIAL_HEALTH, PLAYER_MEASURE_TIME
 from pygame.transform import rotate
@@ -157,12 +158,14 @@ class Player(Unit):
         measureCommand: bool = None,
         attackCommand: bool = None,
         ghosts_group=None,
-        shots_group=None
+        shots_group=None,
+        traps=None,
     ) -> None:
         super().update(moveVector=moveVector)
 
         if self.collides_with_anything():
             self.move(moveVector=-moveVector, does_rotate=False)
+        self.check_if_on_trap(traps)
         self.check_measure_time()
         self.weapon.update()
 
@@ -172,3 +175,11 @@ class Player(Unit):
             ghosts_group=ghosts_group,
             shots_group=shots_group
         )
+
+    def check_if_on_trap(self, traps: list[Trap]=None):
+        for trap in traps:
+            if np.allclose(self.position, trap.position):
+                self.health -= 1
+                trap.is_alive = False
+                break
+

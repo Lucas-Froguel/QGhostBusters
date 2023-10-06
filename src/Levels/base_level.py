@@ -92,7 +92,8 @@ class BaseLevel:
             measureCommand=self.user_interface.measureCommand,
             attackCommand=self.user_interface.attackCommand,
             ghosts_group=self.ghosts_group,
-            shots_group=self.shots_group
+            shots_group=self.shots_group,
+            traps=self.traps,
         )
         self.measurement_group.update(self._player.position)
         if self.user_interface.attackCommand:
@@ -105,7 +106,6 @@ class BaseLevel:
             if not qghost.is_alive:
                 self.ghosts_group.remove(qghost)
         self.traps_group.add(self.traps)
-        print(len(self.traps))
 
         self.base_level_hud.update()
 
@@ -121,6 +121,8 @@ class BaseLevel:
 
     def render(self):
         self.window.blit(self.surface, (0, 0))
+        if self.traps:
+            self.traps_group.draw(self.window)
         self.player_group.draw(self.window)
         self.visible_ghosts_group.draw(self.window)
         self.splitter_group.draw(self.window)

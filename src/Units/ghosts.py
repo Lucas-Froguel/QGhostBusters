@@ -43,7 +43,6 @@ class Ghost(Unit):
         :param cellSize: cellSize is the size of each cell/block in the game
         :param worldSize: size of the map
         :param position: position on the map (in units of cells)
-        :param qghost: meta-ghost of which this one is a part
         """
 
         super().__init__(
@@ -306,13 +305,12 @@ class QGhost(Ghost):
             player.health -= 1
             self.sound_manager.play_attack_sound()
 
-    def lay_trap(self, traps):
+    def lay_trap(self, traps: list[Trap])->None:
         trap_laying_ghost = np.random.choice(self.visible_parts)
         for trap in traps:
             # check if position already taken
             if trap.position == trap_laying_ghost.position:
                 return
-            # TODO: add a condition on being on a wall
         trap = Trap(
             cellSize=self.cellSize,
             worldSize=self.worldSize,
@@ -381,7 +379,6 @@ class QGhost(Ghost):
             return None
 
         self.interact_with_splitter()
-        print(self.options.attack_probability)
 
         if np.random.random() <= self.options.attack_probability:
             self.attack(player)

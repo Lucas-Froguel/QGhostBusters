@@ -104,9 +104,9 @@ def find_tensored_components(idx: int, n_comp: int) -> list[int]:
     return np.array(res + [0] * (n_comp - len(res)))
 
 
-def load_all_images_in_folder(folder_path: str = None, cellSize: Vector2 = None) -> [Surface]:
-    all_files = os.listdir(folder_path)
-    image_files = [filename for filename in all_files if filename.endswith(".png")]
+def load_all_images_in_folder(folder_path: str = None, file_name: str = None, cellSize: Vector2 = None) -> [Surface]:
+    num_files = len(os.listdir(folder_path))
+    image_files = [f"{file_name}{i}.png" for i in range(num_files)]
 
     if cellSize:
         images = [scale(load(os.path.join(folder_path, filename)), cellSize) for filename in image_files]
@@ -114,3 +114,6 @@ def load_all_images_in_folder(folder_path: str = None, cellSize: Vector2 = None)
         images = [load(os.path.join(folder_path, filename)) for filename in image_files]
 
     return images
+
+
+

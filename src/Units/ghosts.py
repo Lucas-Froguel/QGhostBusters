@@ -44,7 +44,7 @@ class Ghost(Unit):
         super().__init__(
             cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
         )
-        self.image = load("src/Units/sprites/new_ghost2.png")
+        self.image = load("src/Units/sprites/ghost.png")
         self.image = scale(self.image, self.cellSize)
         self.splitters = splitters
         self.waypoint = None

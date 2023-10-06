@@ -1,18 +1,20 @@
 
-from typing import Literal
-
 import pytmx
-from pytmx.util_pygame import load_pygame
+import random
 import pygame
+from typing import Literal
+from pytmx.util_pygame import load_pygame
 from pygame import Vector2, Surface
 from pygame.mixer import Channel
 from pygame.sprite import RenderUpdates, GroupSingle
 
 from src.Units.player import Player
 from src.Units.ghosts import QGhost
+from src.Units.splitter import GhostSplitter
+from src.Levels.level_hud import BaseLevelHud
+from src.Levels.utils import generate_random_positions
 from src.user_interfaces import GameUserInterface
 from src.SoundEffects.sound_manager import LevelSoundManager
-from src.Levels.level_hud import BaseLevelHud
 
 
 class BaseLevel:
@@ -25,21 +27,26 @@ class BaseLevel:
         extra_level_channel: Channel = None,
         player_channel: Channel = None,
         enemies_channel: Channel = None,
-
     ):
         self.keep_running = True
         self.user_interface = GameUserInterface()
         self.window = window
         self.surface: pygame.Surface = None
         self.level_title: str = "Level"
+        self.num_ghosts: int = 1
+        self.num_splitters: int = 1
+        self.splitter_types: [str] = ["45", "125"]
 
         self.cellSize = cellSize
         self.worldSize = worldSize
+        self.player_initial_position: Vector2 = None
 
         self.level_name: str = None
         self.tmx_map: pytmx.TileMap = None
         self.tmx_data = None
 
+        self.music_path: str = None
+        self.background_sound_path: str = None
         self.level_channel = level_channel
         self.extra_level_channel = extra_level_channel
         self.player_channel = player_channel
@@ -55,6 +62,7 @@ class BaseLevel:
         self._player: Player = None
         self.player_group: GroupSingle = GroupSingle()
         self.shots_group: RenderUpdates = RenderUpdates()
+        self.measurement_group: GroupSingle = GroupSingle()
 
         self.ghosts_group: [QGhost] = None
         self.visible_ghosts_group: RenderUpdates = RenderUpdates()
@@ -70,11 +78,15 @@ class BaseLevel:
         self.visible_ghosts_group.update(self._player)
 
         # player actions
-        self.player_group.update(self.user_interface.movePlayerCommand)
-        if self.user_interface.measureCommand:
-            self._player.measure(self.ghosts_group)  # wave func collapse
-        elif self.user_interface.attackCommand:
-            self._player.attack()
+        self.player_group.update(
+            moveVector=self.user_interface.movePlayerCommand,
+            measureCommand=self.user_interface.measureCommand,
+            attackCommand=self.user_interface.attackCommand,
+            ghosts_group=self.ghosts_group,
+            shots_group=self.shots_group
+        )
+        self.measurement_group.update(self._player.position)
+        if self.user_interface.attackCommand:
             self.shots_group.add(self._player.weapon.shots)
         self.shots_group.remove(*self._player.weapon.dead_shots)
 
@@ -85,7 +97,6 @@ class BaseLevel:
                 self.ghosts_group.remove(qghost)
 
         self.base_level_hud.update()
-        # self.hud_render_group.update()
 
         if self._player.health <= 0:
             self.keep_running = False
@@ -108,13 +119,13 @@ class BaseLevel:
         self.base_level_hud.player_data_hud.measure_timer.render()
         self.window.blit(self.base_level_hud.player_data_hud.measure_timer.measure_timer, (0, 32))
 
+        if self._player.weapon.measurer.play_animation:
+            self.measurement_group.draw(self.window)
+
     def load_map(self):
         self.tmx_map = pytmx.TiledMap(self.level_name)
         self.tmx_data = load_pygame(self.level_name)
 
-    def load_level(self):
-        self.music.play_load_level_sound()
-        self.load_map()
         self.cellSize = Vector2(self.tmx_data.tilewidth, self.tmx_data.tileheight)
         self.worldSize = Vector2(self.tmx_data.width, self.tmx_data.height)
 
@@ -132,4 +143,59 @@ class BaseLevel:
                     else:
                         self.surface.blit(image, (x * self.cellSize.x, y * self.cellSize.y))
 
+    def load_units(self):
+        splitters = [
+            GhostSplitter(
+                cellSize=self.cellSize,
+                worldSize=self.worldSize,
+                position=generate_random_positions(worldSize=self.worldSize),
+                splitterType=random.choice(self.splitter_types)
+            )
+            for _ in range(self.num_splitters)
+        ]
+
+        self._player = Player(
+            cellSize=self.cellSize,
+            worldSize=self.worldSize,
+            position=self.player_initial_position,
+            channel=self.player_channel,
+            map_data=self.tmx_data,
+            splitters=splitters,
+            does_map_have_tile_dont_pass=True if "TileDontPass" in self.tmx_data.layernames else False
+        )
+        self.player_group.add(self._player)
+
+        self.shots_group.add(self._player.weapon.shots)
+        self.measurement_group.add(self._player.weapon.measurer)
+
+        self.ghosts_group = [
+            QGhost(
+                cellSize=self.cellSize,
+                worldSize=self.worldSize,
+                position=generate_random_positions(worldSize=self.worldSize),
+                splitters=splitters,
+                render_group=self.visible_ghosts_group,
+                channel=self.enemies_channel,
+            )
+            for _ in range(self.num_ghosts)
+        ]
+
+        self.splitter_group.add(splitters)
+
+        self.base_level_hud = BaseLevelHud(cellSize=self.cellSize, player=self._player)
+        self.hud_render_group.add(self.base_level_hud.player_data_hud.hearts)
+
+    def load_music(self):
+        self.music = LevelSoundManager(
+            music=self.music_path,
+            channel=self.level_channel,
+            extra_channel=self.extra_level_channel,
+            background_track_path=self.background_sound_path,
+        )
+
+    def load_level(self):
+        self.load_music()
+        self.music.play_load_level_sound()
+        self.load_map()
+        self.load_units()
         self.music.play_music()

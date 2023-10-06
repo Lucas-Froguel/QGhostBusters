@@ -77,6 +77,7 @@ class Player(Unit):
                     self.sound_manager.play_measure_sound()
                     self.last_measure_time = int(time.time())
                     self.ready_to_measure = False
+                    self.weapon.measurer.measure(position=self.position)
                     break
 
     def move(self, moveVector: Vector2, does_rotate: bool = True) -> None:

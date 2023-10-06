@@ -104,6 +104,6 @@ class AnimatedUnit(Unit):
 
         self.image = self.images[int(self.current_image_index)]
 
-    def update(self):
-        super().update()
+    def update(self, moveVector: Vector2 = None):
+        super().update(moveVector=moveVector)
         self.update_image()

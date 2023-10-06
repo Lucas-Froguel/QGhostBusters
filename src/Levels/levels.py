@@ -78,6 +78,7 @@ class CatacombLevel(BaseLevel):
         self.player_group.add(self._player)
 
         self.shots_group.add(self._player.weapon.shots)
+        self.measurement_group.add(self._player.weapon.measurer)
 
         self.ghosts_group = [
             QGhost(

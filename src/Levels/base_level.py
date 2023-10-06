@@ -55,6 +55,7 @@ class BaseLevel:
         self._player: Player = None
         self.player_group: GroupSingle = GroupSingle()
         self.shots_group: RenderUpdates = RenderUpdates()
+        self.measurement_group: GroupSingle = GroupSingle()
 
         self.ghosts_group: [QGhost] = None
         self.visible_ghosts_group: RenderUpdates = RenderUpdates()
@@ -71,6 +72,7 @@ class BaseLevel:
 
         # player actions
         self.player_group.update(self.user_interface.movePlayerCommand)
+        self.measurement_group.update(self._player.position)
         if self.user_interface.measureCommand:
             self._player.measure(self.ghosts_group)  # wave func collapse
         elif self.user_interface.attackCommand:
@@ -85,7 +87,6 @@ class BaseLevel:
                 self.ghosts_group.remove(qghost)
 
         self.base_level_hud.update()
-        # self.hud_render_group.update()
 
         if self._player.health <= 0:
             self.keep_running = False
@@ -107,6 +108,9 @@ class BaseLevel:
         self.hud_render_group.draw(self.window)
         self.base_level_hud.player_data_hud.measure_timer.render()
         self.window.blit(self.base_level_hud.player_data_hud.measure_timer.measure_timer, (0, 32))
+
+        if self._player.weapon.measurer.play_animation:
+            self.measurement_group.draw(self.window)
 
     def load_map(self):
         self.tmx_map = pytmx.TiledMap(self.level_name)

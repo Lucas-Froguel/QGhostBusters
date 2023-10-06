@@ -49,7 +49,7 @@ class Ghost(Unit):
         super().__init__(
             cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
         )
-        self.image = load("src/Units/sprites/new_ghost2.png")
+        self.image = load("src/Units/sprites/ghost.png")
         self.image = scale(self.image, self.cellSize)
         self.splitters = splitters
         self.waypoint = None
@@ -196,7 +196,7 @@ class QGhost(Ghost):
         splitters: list[GhostSplitter] = None,
         render_group: RenderUpdates = None,
         channel: Channel = None,
-        options: GhostParameters = None
+        ghost_parameters: GhostParameters = None
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
@@ -217,7 +217,7 @@ class QGhost(Ghost):
         self.possible_ghosts = [AggressiveGhost, PassiveGhost]
         self.random_generator = np.random.default_rng()
         self.add_visible_ghost(start_position=position)
-        self.options = GhostParameters() if options is None else options
+        self.options = GhostParameters() if ghost_parameters is None else ghost_parameters
 
     def collapse_wave_function(self, player=None):
         n_ghosts = len(self.visible_parts)

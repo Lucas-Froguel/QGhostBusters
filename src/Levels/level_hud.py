@@ -48,7 +48,8 @@ class PlayerDataHUD:
 
     def update(self):
         self.update_health()
-        self.update_measure_timer()
+        if self.measure_timer:
+            self.update_measure_timer()
 
 
 class MeasureTimer:

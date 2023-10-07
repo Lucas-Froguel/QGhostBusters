@@ -91,6 +91,32 @@ class SettingsMenuUserInterface(BaseUserInterface):
         return self.running
 
 
+class EnterTextUserInterface(BaseUserInterface):
+    def __init__(self):
+        self.select = False
+        self.quit = False
+        self.running = True
+        self.text: str = ""
+
+    def process_input(self):
+        self.running = True
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+                break
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    self.running = False
+                    break
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                else:
+                    self.text += event.unicode
+
+        return self.running
+
+
 class GameUserInterface(BaseUserInterface):
     def __init__(self):
         self.movePlayerCommand = Vector2(0, 0)

@@ -1,3 +1,4 @@
+import time
 import pytmx
 import random
 import pygame
@@ -11,10 +12,12 @@ from src.Units.player import Player
 from src.Units.ghosts import QGhost, GhostParameters
 from src.Units.trap import Trap
 from src.Units.splitter import GhostSplitter
+from src.Score.score import ScoreSystem
 from src.Levels.level_hud import BaseLevelHud
 from src.Levels.utils import generate_random_positions
 from src.user_interfaces import GameUserInterface
 from src.SoundEffects.sound_manager import LevelSoundManager
+from src.settings import MAX_GHOSTS_PER_STATE
 
 
 class BaseLevel:
@@ -28,6 +31,8 @@ class BaseLevel:
         player_channel: Channel = None,
         enemies_channel: Channel = None,
         ghost_parameters: GhostParameters = None,
+        score_system: ScoreSystem = None,
+        difficulty: int = 3,
     ):
         self.keep_running = True
         self.user_interface = GameUserInterface()
@@ -37,6 +42,8 @@ class BaseLevel:
         self.num_ghosts: int = 1
         self.num_splitters: int = 1
         self.splitter_types: [str] = ["45", "125"]
+        self.difficulty: int = difficulty
+        self.level_start_time: float = None
 
         self.cellSize = cellSize
         self.worldSize = worldSize
@@ -75,6 +82,8 @@ class BaseLevel:
         self.hud_render_group: RenderUpdates = RenderUpdates()
 
         self.game_status: Literal["won", "lost"] | None = None
+        self.scores: ScoreSystem = score_system
+        self.level_score: int = 0
 
     def update(self):
         self.keep_running = self.user_interface.process_input()
@@ -101,19 +110,33 @@ class BaseLevel:
             qghost.update(self._player, self.traps)
             if not qghost.is_alive:
                 self.ghosts_group.remove(qghost)
+                self._player.qghosts_killed += 1
+        self.traps_group.add(self.traps)
         self.clean_traps()
 
         self.base_level_hud.update()
 
         if self._player.health <= 0:
-            self.keep_running = False
-            self.music.play_game_over_sound()
-            self.game_status = "lost"
+            self.end_level(status="lost")
         if not self.ghosts_group:
-            self.keep_running = False
+            self.end_level(status="won")
+
+    def end_level(self, status: str = None):
+        self.keep_running = False
+        self.game_status = status
+        self.level_score = self.scores.calculate_score(
+            final_health=self._player.health,
+            num_of_fallen_traps=self._player.num_of_fallen_traps,
+            visible_ghosts_killed=self._player.visible_ghosts_killed,
+            qghosts_killed=self._player.qghosts_killed,
+            level_difficulty=self.difficulty,
+            max_ghosts_per_state=MAX_GHOSTS_PER_STATE,
+            total_level_time=time.time() - self.level_start_time,
+        )
+        if self.game_status == "won":
             self.music.play_game_won_sound()
-            self.game_status = "won"
-            return
+        else:
+            self.music.play_game_over_sound()
 
     def render(self):
         self.window.blit(self.surface, (0, 0))
@@ -221,6 +244,7 @@ class BaseLevel:
         self.load_map()
         self.load_units()
         self.music.play_music()
+        self.level_start_time = time.time()
 
     def clean_traps(self):
         for trap in self.traps:

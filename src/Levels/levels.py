@@ -4,6 +4,7 @@ from pygame import Vector2, Surface
 from pygame.mixer import Channel
 
 from src.Levels.base_level import BaseLevel
+from src.Score.score import ScoreSystem
 
 
 class CatacombLevel(BaseLevel):
@@ -17,6 +18,7 @@ class CatacombLevel(BaseLevel):
         player_channel: Channel = None,
         enemies_channel: Channel = None,
         ghost_parameters: GhostParameters = None,
+        score_system: ScoreSystem = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -27,9 +29,12 @@ class CatacombLevel(BaseLevel):
             player_channel=player_channel,
             enemies_channel=enemies_channel,
             ghost_parameters=ghost_parameters,
+            score_system=score_system,
+            difficulty=ghost_parameters.difficulty,
         )
         self.level_name = "src/Levels/levels/catacombs.tmx"
         self.level_title = "The Catacombs"
+        self.level_id = "the_catacombs"
 
         self.music_path = "src/SoundEffects/sound_effects/suspense.wav"
         self.background_sound_path = (
@@ -52,6 +57,7 @@ class TheMazeLevel(BaseLevel):
         player_channel: Channel = None,
         enemies_channel: Channel = None,
         ghost_parameters: GhostParameters = None,
+        score_system: ScoreSystem = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -62,9 +68,12 @@ class TheMazeLevel(BaseLevel):
             player_channel=player_channel,
             enemies_channel=enemies_channel,
             ghost_parameters=ghost_parameters,
+            score_system=score_system,
+            difficulty=ghost_parameters.difficulty,
         )
         self.level_name = "src/Levels/levels/the_maze.tmx"
         self.level_title = "The Maze"
+        self.level_id = "the_maze"
 
         self.music_path = "src/SoundEffects/sound_effects/suspense.wav"
         self.background_sound_path = (
@@ -87,6 +96,7 @@ class IntoTheCavesLevel(BaseLevel):
         player_channel: Channel = None,
         enemies_channel: Channel = None,
         ghost_parameters: GhostParameters = None,
+        score_system: ScoreSystem = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -97,9 +107,12 @@ class IntoTheCavesLevel(BaseLevel):
             player_channel=player_channel,
             enemies_channel=enemies_channel,
             ghost_parameters=ghost_parameters,
+            score_system=score_system,
+            difficulty=ghost_parameters.difficulty,
         )
         self.level_name = "src/Levels/levels/into_the_caves.tmx"
         self.level_title = "Into The Caves"
+        self.level_id = "into_the_caves"
 
         self.music_path = "src/SoundEffects/sound_effects/suspense.wav"
         self.background_sound_path = (
@@ -122,6 +135,7 @@ class TheCavesLevel(BaseLevel):
         player_channel: Channel = None,
         enemies_channel: Channel = None,
         ghost_parameters: GhostParameters = None,
+        score_system: ScoreSystem = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -132,9 +146,12 @@ class TheCavesLevel(BaseLevel):
             player_channel=player_channel,
             enemies_channel=enemies_channel,
             ghost_parameters=ghost_parameters,
+            score_system=score_system,
+            difficulty=ghost_parameters.difficulty,
         )
         self.level_name = "src/Levels/levels/the_caves.tmx"
         self.level_title = "The Caves"
+        self.level_id = "the_caves"
 
         self.music_path = "src/SoundEffects/sound_effects/suspense.wav"
         self.background_sound_path = (

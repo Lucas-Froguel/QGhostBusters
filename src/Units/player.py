@@ -41,11 +41,13 @@ class Player(Unit):
         super().__init__(
             cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
         )
+        # visual variables
         self.image = load("src/Units/sprites/enemy1.png")
         self.image = scale(self.image, self.cellSize)
         self.direction: Vector2 = Vector2(1, 0)
         self.sound_manager = PlayerSoundManager(channel=self.channel)
 
+        # gameplay variables
         self.measure_radius = PLAYER_MEASURE_RADIUS
         self.max_health = PLAYER_INITIAL_HEALTH
         self.health = PLAYER_INITIAL_HEALTH
@@ -53,6 +55,12 @@ class Player(Unit):
         self.last_measure_time: int = 0
         self.ready_to_measure: bool = True
 
+        # score variables
+        self.num_of_fallen_traps: int = 0
+        self.qghosts_killed: int = 0
+        self.visible_ghosts_killed: int = 0
+
+        # functionality variables
         self.map_data = map_data
         self.does_map_have_tile_dont_pass = does_map_have_tile_dont_pass
         self.splitters = splitters
@@ -180,6 +188,12 @@ class Player(Unit):
         for trap in traps:
             if np.allclose(self.position, trap.position):
                 self.health -= 1
+                self.num_of_fallen_traps += 1
                 trap.is_alive = False
                 break
 
+    def check_if_killed_visible_ghost(self, ghosts_group):
+        for qghost in ghosts_group:
+            for ghost in qghost.visible_parts:
+                if not ghost.is_alive:
+                    self.visible_ghosts_killed += 1

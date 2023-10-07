@@ -4,6 +4,7 @@ from src.Levels.base_level import BaseLevel
 from src.Menus.menu import MenusManager
 from src.SoundEffects.sound_manager import ScreenSoundManager
 from src.Units.ghosts import GhostParameters
+from src.Score.score import ScoreSystem
 
 
 class GameState:
@@ -28,14 +29,22 @@ class GameState:
         self.window_title = "QhostBusters - Menu"
         self.setup_game_window()
 
+        self.score_system = ScoreSystem()
+
         # level variables
         self.level: BaseLevel = None
 
-        self.menu = MenusManager(window=self.window, channel=self.window_channel)
+        self.menu = MenusManager(window=self.window, channel=self.window_channel, score_system=self.score_system)
         self.setup_game_music(self.menu.music)
-        self.last_game_status = None
+        self.last_game_status: str = None
+        self.last_game_score: int = None
+        self.last_game_id: str = None
+        self.last_game_name: str = None
+        self.has_level_ended: bool = False
 
     def load_level(self, level: BaseLevel, ghost_parameters: GhostParameters = None):
+        self.last_game_status = None
+        self.has_level_ended = False
         self.level = level(
             cellSize=self.cellSize,
             worldSize=self.worldSize,
@@ -45,13 +54,18 @@ class GameState:
             player_channel=self.player_channel,
             enemies_channel=self.enemies_channel,
             ghost_parameters=ghost_parameters,
+            score_system=self.score_system
         )
         self.level.load_level()
+        self.last_game_id = self.level.level_id
+        self.last_game_name = self.level.level_title
 
     def unload_level(self):
+        self.last_game_score = self.level.level_score
         self.level = None
         self.setup_game_window()
         self.setup_game_music(self.menu.music)
+        self.has_level_ended = True
 
     def setup_game_window(self):
         windowSize = self.cellSize.elementwise() * self.worldSize
@@ -71,17 +85,22 @@ class GameState:
                 self.last_game_status = self.level.game_status
                 self.unload_level()
         else:
-            if self.last_game_status is not None:
+            if self.has_level_ended:
                 if self.last_game_status == "won":
-                    self.menu.current_menu = "win_message"
+                    self.menu.current_menu = "won_message"
                 elif self.last_game_status == "lost":
-                    self.menu.current_menu = "lose_message"
-                # in the game was paused, neither is chosen, and the level selection menu should appear
-            level = self.menu.update()
+                    self.menu.current_menu = "lost_message"
+                self.has_level_ended = False
+
+            level = self.menu.update(
+                level_score=self.last_game_score,
+                level_id=self.last_game_id,
+                level_name=self.last_game_name,
+                level_message=f"{self.last_game_status}_message"
+            )
             if level:
                 self.load_level(level, self.menu.settings.ghost_parameters)
             self.running = self.menu.keep_running
-            self.last_game_status = None
 
     def render(self):
         self.window.fill((0, 0, 0))

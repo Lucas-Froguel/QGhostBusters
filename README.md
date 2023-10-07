@@ -31,6 +31,12 @@ This is the game of Quantum Enigma team at the Quantum Games Hackaton 2023
 7. Install the required packages `pip install -r requirements.txt`
 8. Launch the game `python main.py`
 
+# Controls
+
+- Arrows or WASD keys to move.
+- Space to bust ghosts with your gun.
+- X to measure ghosts' position, but beware: this is a costly operation, and you'll need to wait for your Professor to gather funding for the next measurement.   
+
 # Story
 
 Welcome to Qhost Busters! This game makes the player live the role of ghost buster, a person whose job is to find and

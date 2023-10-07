@@ -108,13 +108,13 @@ class GameUserInterface(BaseUserInterface):
                 if event.key == pygame.K_ESCAPE:
                     return False
                 # movement keys
-                elif event.key == pygame.K_RIGHT:
+                elif event.key in {pygame.K_RIGHT, pygame.K_d}:
                     self.movePlayerCommand.x = 1
-                elif event.key == pygame.K_LEFT:
+                elif event.key in {pygame.K_LEFT, pygame.K_a}:
                     self.movePlayerCommand.x = -1
-                elif event.key == pygame.K_DOWN:
+                elif event.key in {pygame.K_DOWN, pygame.K_s}:
                     self.movePlayerCommand.y = 1
-                elif event.key == pygame.K_UP:
+                elif event.key in {pygame.K_UP, pygame.K_w}:
                     self.movePlayerCommand.y = -1
                 # attack key
                 elif event.key == pygame.K_SPACE:

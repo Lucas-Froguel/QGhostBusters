@@ -180,7 +180,7 @@ class Player(Unit):
 
     def check_if_on_trap(self, traps: list[Trap] = None):
         for trap in traps:
-            if np.allclose(self.position, trap.position):
+            if np.allclose(self.position, trap.position) and trap.is_alive:
                 self.health -= 1
                 trap.is_alive = False
                 break

@@ -101,7 +101,7 @@ class BaseLevel:
             qghost.update(self._player, self.traps)
             if not qghost.is_alive:
                 self.ghosts_group.remove(qghost)
-        self.traps_group.add(self.traps)
+        self.clean_traps()
 
         self.base_level_hud.update()
 
@@ -221,3 +221,11 @@ class BaseLevel:
         self.load_map()
         self.load_units()
         self.music.play_music()
+
+    def clean_traps(self):
+        for trap in self.traps:
+            if not trap.is_alive:
+                self.traps_group.remove(trap)
+                self.traps.remove(trap)
+        # add new ones
+        self.traps_group.add(self.traps)

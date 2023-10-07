@@ -74,16 +74,16 @@ class SettingsMenuUserInterface(BaseUserInterface):
                     self.current_menu_item -= 1
                     self.music.play_select_menu_item_sound()
                     self.current_menu_item %= len(self.menu_items)
-                elif event.key == pygame.K_LEFT and self.current_menu_item==0:
+                elif event.key == pygame.K_LEFT and self.current_menu_item == 0:
                     if self.volume > 0:
                         self.volume -= 5
-                elif event.key == pygame.K_LEFT and self.current_menu_item==1:
+                elif event.key == pygame.K_LEFT and self.current_menu_item == 1:
                     if self.difficulty > 1:
                         self.difficulty -= 1
-                elif event.key == pygame.K_RIGHT and self.current_menu_item==0:
+                elif event.key == pygame.K_RIGHT and self.current_menu_item == 0:
                     if self.volume < 100:
                         self.volume += 5
-                elif event.key == pygame.K_RIGHT and self.current_menu_item==1:
+                elif event.key == pygame.K_RIGHT and self.current_menu_item == 1:
                     if self.difficulty < MAX_DIFFICULTY:
                         self.difficulty += 1
                 elif event.key == pygame.K_RETURN:

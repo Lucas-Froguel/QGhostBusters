@@ -1,4 +1,3 @@
-
 import numpy as np
 from pygame import Vector2, Rect
 from pygame.mixer import Channel
@@ -78,7 +77,7 @@ class Shot(AnimatedUnit):
             position=position,
             channel=channel,
             images_folder="src/Units/sprites/shots",
-            images_name="shot"
+            images_name="shot",
         )
 
         self.map_data = map_data
@@ -102,11 +101,11 @@ class Shot(AnimatedUnit):
 
 class Measurement(AnimatedUnit):
     def __init__(
-            self,
-            cellSize: Vector2 = None,
-            worldSize: Vector2 = None,
-            position: Vector2 = None,
-            channel: Channel = None,
+        self,
+        cellSize: Vector2 = None,
+        worldSize: Vector2 = None,
+        position: Vector2 = None,
+        channel: Channel = None,
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
@@ -119,7 +118,7 @@ class Measurement(AnimatedUnit):
             position=position,
             channel=channel,
             images_folder="src/Units/sprites/measurements",
-            images_name="measurement"
+            images_name="measurement",
         )
         self.play_animation = False
         self.regularCellSize = cellSize

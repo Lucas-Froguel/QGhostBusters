@@ -64,12 +64,15 @@ class LevelSoundManager(ScreenSoundManager):
     def play_game_won_sound(self):
         self.channel.play(self.game_won)
 
+
 class PlayerSoundManager(BaseSoundManager):
     def __init__(self, channel: Channel = None):
         super().__init__(channel=channel)
         self.attack_sound = Sound("src/SoundEffects/sound_effects/player_attack.wav")
         self.measure_sound = Sound("src/SoundEffects/sound_effects/measure.wav")
-        self.ready_to_measure_sound = Sound("src/SoundEffects/sound_effects/before_measure_timer_resets.wav")
+        self.ready_to_measure_sound = Sound(
+            "src/SoundEffects/sound_effects/before_measure_timer_resets.wav"
+        )
 
     def play_attack_sound(self):
         self.channel.queue(self.attack_sound)

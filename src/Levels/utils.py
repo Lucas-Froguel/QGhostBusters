@@ -1,4 +1,3 @@
-
 from numpy import random
 from pygame import Vector2
 

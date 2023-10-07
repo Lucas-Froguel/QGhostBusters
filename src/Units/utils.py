@@ -1,4 +1,3 @@
-
 import os
 from typing import Optional
 
@@ -18,9 +17,7 @@ def is_in_given_radius(position_1: Vector2, position_2: Vector2, radius: float) 
     return (position_1 - position_2).length() <= radius
 
 
-def two_ghost_coming_from_different_sides_of_splitter(
-    g1, g2, splitterType
-) -> bool:
+def two_ghost_coming_from_different_sides_of_splitter(g1, g2, splitterType) -> bool:
     if g1 != g2 and np.allclose(  # not the same ghost
         g1.position, g2.position, 3e-2
     ):  # same position
@@ -53,7 +50,7 @@ def beam_splitter(
     """
     vector_length = max(quantum_state.shape)
     n_systems = len(quantum_state.dims[0])
-    if vector_length > 1000:
+    if vector_length > 2000:
         raise NotImplementedError("The size of the matrix is too large")
 
     add_ghost = False
@@ -104,12 +101,17 @@ def find_tensored_components(idx: int, n_comp: int) -> list[int]:
     return np.array(res + [0] * (n_comp - len(res)))
 
 
-def load_all_images_in_folder(folder_path: str = None, cellSize: Vector2 = None) -> [Surface]:
-    all_files = os.listdir(folder_path)
-    image_files = [filename for filename in all_files if filename.endswith(".png")]
+def load_all_images_in_folder(
+    folder_path: str = None, file_name: str = None, cellSize: Vector2 = None
+) -> [Surface]:
+    num_files = len(os.listdir(folder_path))
+    image_files = [f"{file_name}{i}.png" for i in range(num_files)]
 
     if cellSize:
-        images = [scale(load(os.path.join(folder_path, filename)), cellSize) for filename in image_files]
+        images = [
+            scale(load(os.path.join(folder_path, filename)), cellSize)
+            for filename in image_files
+        ]
     else:
         images = [load(os.path.join(folder_path, filename)) for filename in image_files]
 

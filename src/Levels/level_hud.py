@@ -28,7 +28,7 @@ class PlayerDataHUD:
         ]
         self.measure_timer: MeasureTimer = MeasureTimer(
             last_measure_time=self.player.last_measure_time,
-            min_measure_time=self.player.min_measure_time
+            min_measure_time=self.player.min_measure_time,
         )
 
         self.update()
@@ -43,12 +43,13 @@ class PlayerDataHUD:
     def update_measure_timer(self):
         self.measure_timer.update(
             last_measure_time=self.player.last_measure_time,
-            min_measure_time=self.player.min_measure_time
+            min_measure_time=self.player.min_measure_time,
         )
 
     def update(self):
         self.update_health()
-        self.update_measure_timer()
+        if self.measure_timer:
+            self.update_measure_timer()
 
 
 class MeasureTimer:
@@ -63,7 +64,11 @@ class MeasureTimer:
         self.last_measure_time = last_measure_time
         self.min_measure_time = min_measure_time
         time_waited = int(time.time() - self.last_measure_time)
-        self.time_to_wait = self.min_measure_time - time_waited if time_waited < self.min_measure_time else 0
+        self.time_to_wait = (
+            self.min_measure_time - time_waited
+            if time_waited < self.min_measure_time
+            else 0
+        )
 
     def render(self):
         self.measure_timer = self.measure_timer_font.render(
@@ -89,4 +94,6 @@ class LifeHeart(Sprite):
 
     def update(self, has_health: bool = True) -> None:
         self.has_health = has_health
-        self.image = self.full_heart_image if self.has_health else self.empty_heart_image
+        self.image = (
+            self.full_heart_image if self.has_health else self.empty_heart_image
+        )

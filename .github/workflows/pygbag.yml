@@ -1,0 +1,29 @@
+
+name: pygbag_build
+on:
+  push:
+    branches:
+      - development
+  workflow_dispatch:
+
+
+jobs:
+  build-pygbag:
+    name: Quantum Enigma's Qhostbusters game
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup Git
+      run: sudo apt-get update && sudo apt-get install -y git
+    - uses: actions/checkout@v2
+    - name: Checkout
+      run: |
+            echo "Attempting to install pygbag"
+            python -m pip install pygbag
+            echo "Successfully installed pygbag"
+            python -m pygbag --build $GITHUB_WORKSPACE/main.py
+    - name : "Upload to GitHub pages branch gh-pages"
+      uses: JamesIves/github-pages-deploy-action@4.1.7
+      with:
+        branch: gh-pages
+        folder: build/web

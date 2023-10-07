@@ -190,7 +190,10 @@ class BaseLevel:
             QGhost(
                 cellSize=self.cellSize,
                 worldSize=self.worldSize,
-                position=generate_random_positions(worldSize=self.worldSize),
+                position=generate_random_positions(
+                    worldSize=self.worldSize,
+                    player_position=self.player_initial_position,
+                ),
                 splitters=splitters,
                 render_group=self.visible_ghosts_group,
                 channel=self.enemies_channel,

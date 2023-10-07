@@ -2,9 +2,6 @@ from src.user_interfaces import MessageUserInterface
 from pygame.sprite import Sprite
 from pygame import Vector2, Rect, font
 
-font.init()
-my_font = font.SysFont("fonts/Baskic8.otf", 36)
-
 
 class BaseMessage(Sprite):
     def __init__(self, worldSize, cellSize, text: str = None, position=None):
@@ -15,7 +12,10 @@ class BaseMessage(Sprite):
             )
         else:
             self.position = Vector2(position.x * cellSize.x, position.y * cellSize.y)
-        self.image = my_font.render(text, 0, "red", "black")
+
+        self.text_font = font.Font("fonts/Baskic8.otf", 36)
+
+        self.image = self.text_font.render(text, 0, "red")
         self.rect = Rect(
             self.position.x,
             self.position.y,

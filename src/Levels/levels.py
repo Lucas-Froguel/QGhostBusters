@@ -1,3 +1,4 @@
+from src.Units.ghosts import GhostParameters
 from pygame import Vector2, Surface
 from pygame.mixer import Channel
 
@@ -14,6 +15,7 @@ class CatacombLevel(BaseLevel):
         extra_level_channel: Channel = None,
         player_channel: Channel = None,
         enemies_channel: Channel = None,
+        ghost_parameters: GhostParameters = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -23,6 +25,7 @@ class CatacombLevel(BaseLevel):
             extra_level_channel=extra_level_channel,
             player_channel=player_channel,
             enemies_channel=enemies_channel,
+            ghost_parameters=ghost_parameters,
         )
         self.level_name = "src/Levels/levels/catacombs.tmx"
         self.level_title = "The Catacombs"
@@ -47,6 +50,7 @@ class TheMazeLevel(BaseLevel):
         extra_level_channel: Channel = None,
         player_channel: Channel = None,
         enemies_channel: Channel = None,
+        ghost_parameters: GhostParameters = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -56,6 +60,7 @@ class TheMazeLevel(BaseLevel):
             extra_level_channel=extra_level_channel,
             player_channel=player_channel,
             enemies_channel=enemies_channel,
+            ghost_parameters=ghost_parameters,
         )
         self.level_name = "src/Levels/levels/the_maze.tmx"
         self.level_title = "The Maze"
@@ -80,6 +85,7 @@ class IntoTheCavesLevel(BaseLevel):
         extra_level_channel: Channel = None,
         player_channel: Channel = None,
         enemies_channel: Channel = None,
+        ghost_parameters: GhostParameters = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -96,6 +102,7 @@ class IntoTheCavesLevel(BaseLevel):
                 "Press Space to shoot.",
                 "Press P to pause.",
             ],
+            ghost_parameters=ghost_parameters,
         )
         self.level_name = "src/Levels/levels/into_the_caves.tmx"
         self.level_title = "Into The Caves"
@@ -120,6 +127,7 @@ class TheCavesLevel(BaseLevel):
         extra_level_channel: Channel = None,
         player_channel: Channel = None,
         enemies_channel: Channel = None,
+        ghost_parameters: GhostParameters = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -129,6 +137,7 @@ class TheCavesLevel(BaseLevel):
             extra_level_channel=extra_level_channel,
             player_channel=player_channel,
             enemies_channel=enemies_channel,
+            ghost_parameters=ghost_parameters,
         )
         self.level_name = "src/Levels/levels/the_caves.tmx"
         self.level_title = "The Caves"

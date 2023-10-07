@@ -9,7 +9,8 @@ from pygame.sprite import RenderUpdates, GroupSingle
 
 from src.Units.message import BaseMessage
 from src.Units.player import Player
-from src.Units.ghosts import QGhost
+from src.Units.ghosts import QGhost, GhostParameters
+from src.Units.trap import Trap
 from src.Units.splitter import GhostSplitter
 from src.Levels.level_hud import BaseLevelHud
 from src.Levels.utils import generate_random_positions
@@ -28,6 +29,7 @@ class BaseLevel:
         player_channel: Channel = None,
         enemies_channel: Channel = None,
         welcome_message: str = None,
+        ghost_parameters: GhostParameters = None,
     ):
         self.keep_running = True
         self.user_interface = GameUserInterface()
@@ -65,8 +67,12 @@ class BaseLevel:
         self.shots_group: RenderUpdates = RenderUpdates()
         self.measurement_group: GroupSingle = GroupSingle()
 
+        self.ghost_parameters = ghost_parameters
         self.ghosts_group: [QGhost] = None
         self.visible_ghosts_group: RenderUpdates = RenderUpdates()
+
+        self.traps: [Trap] = []
+        self.traps_group = RenderUpdates()
 
         self.hud_render_group: RenderUpdates = RenderUpdates()
 
@@ -96,6 +102,7 @@ class BaseLevel:
             attackCommand=self.user_interface.attackCommand,
             ghosts_group=self.ghosts_group,
             shots_group=self.shots_group,
+            traps=self.traps,
         )
         self.measurement_group.update(self._player.position)
         if self.user_interface.attackCommand:
@@ -104,9 +111,10 @@ class BaseLevel:
 
         # Qhost actions after all the ghosts are in place
         for qghost in self.ghosts_group:
-            qghost.update(self._player)
+            qghost.update(self._player, self.traps)
             if not qghost.is_alive:
                 self.ghosts_group.remove(qghost)
+        self.traps_group.add(self.traps)
 
         self.base_level_hud.update()
 
@@ -121,6 +129,8 @@ class BaseLevel:
 
     def render(self):
         self.window.blit(self.surface, (0, 0))
+        if self.traps:
+            self.traps_group.draw(self.window)
         self.player_group.draw(self.window)
         self.visible_ghosts_group.draw(self.window)
         self.splitter_group.draw(self.window)
@@ -198,6 +208,7 @@ class BaseLevel:
                 splitters=splitters,
                 render_group=self.visible_ghosts_group,
                 channel=self.enemies_channel,
+                ghost_parameters=self.ghost_parameters,
             )
             for _ in range(self.num_ghosts)
         ]

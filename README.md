@@ -1,5 +1,5 @@
 # QGhostBusters
-This is the game of Quantum Enigma team at the Quantum Games Hackaton 2023!
+This is the game of Quantum Enigma team at the Quantum Games Hackaton 2023.
 
 # Story
 
@@ -22,6 +22,9 @@ Some of the mysterious, haunted locations are:
 ![The Caves](images%2Fthe_caves.png)
 
 ![The Catacombs](images%2Fthe_catacombs.png)
+
+[![Gameplay video](https://img.youtube.com/vi/NRey1MnxBLY/maxresdefault.jpg)](https://youtu.be/NRey1MnxBLY)
+The video is accessible [here](NRey1MnxBLY).
 
 # Rules
 

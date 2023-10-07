@@ -195,7 +195,7 @@ class QGhost(Ghost):
         splitters: list[GhostSplitter] = None,
         render_group: RenderUpdates = None,
         channel: Channel = None,
-        ghost_parameters: GhostParameters = None
+        ghost_parameters: GhostParameters = None,
     ):
         """
         :param cellSize: cellSize is the size of each cell/block in the game
@@ -216,7 +216,9 @@ class QGhost(Ghost):
         self.possible_ghosts = [AggressiveGhost, PassiveGhost]
         self.random_generator = np.random.default_rng()
         self.add_visible_ghost(start_position=position)
-        self.options = GhostParameters() if ghost_parameters is None else ghost_parameters
+        self.options = (
+            GhostParameters() if ghost_parameters is None else ghost_parameters
+        )
 
     def collapse_wave_function(self, player=None):
         n_ghosts = len(self.visible_parts)
@@ -305,7 +307,7 @@ class QGhost(Ghost):
             player.health -= 1
             self.sound_manager.play_attack_sound()
 
-    def lay_trap(self, traps: list[Trap])->None:
+    def lay_trap(self, traps: list[Trap]) -> None:
         trap_laying_ghost = np.random.choice(self.visible_parts)
         for trap in traps:
             # check if position already taken

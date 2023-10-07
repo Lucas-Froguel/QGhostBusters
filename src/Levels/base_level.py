@@ -106,11 +106,15 @@ class BaseLevel:
         self.shots_group.remove(*self._player.weapon.dead_shots)
 
         # Qhost actions after all the ghosts are in place
+        alive_ghosts = []
         for qghost in self.ghosts_group:
             qghost.update(self._player, self.traps)
             if not qghost.is_alive:
                 self.ghosts_group.remove(qghost)
                 self._player.qghosts_killed += 1
+            alive_ghosts += qghost.visible_parts
+        self.visible_ghosts_group.remove([ghost for ghost in self.visible_ghosts_group if ghost not in alive_ghosts])
+
         self.traps_group.add(self.traps)
         self.clean_traps()
 

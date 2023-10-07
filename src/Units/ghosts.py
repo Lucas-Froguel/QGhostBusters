@@ -387,19 +387,15 @@ class QGhost(Ghost):
 
         :param player: instance of the Player class carrying information about player's position & health
         """
-        if len(self.visible_parts) > MAX_GHOSTS_PER_STATE:
-            self.attack(player)
-            self.remove_visible_ghosts()
-            return None
+        if len(self.visible_parts) < MAX_GHOSTS_PER_STATE:
+            self.interact_with_splitter()
 
-        self.interact_with_splitter()
+        self.remove_visible_ghosts()
 
         if np.random.random() <= self.options.attack_probability:
             self.attack(player)
         elif np.random.random() <= self.options.trap_probability:
             self.lay_trap(traps)
-
-        self.remove_visible_ghosts()
 
         if not self.visible_parts:
             self.is_alive = False

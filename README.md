@@ -1,6 +1,8 @@
 # QGhostBusters
 This is the game of Quantum Enigma team at the Quantum Games Hackaton 2023.
 
+The gameplay video is accessible [here](NRey1MnxBLY).
+
 # Story
 
 Welcome to "Qhost Busters"! In this captivating game, you step into the shoes of a fearless ghost buster, tasked with the thrilling mission of tracking down and vanquishing malevolent spirits. Prepare for a spine-tingling journey through a series of haunted locales that demand your supernatural expertise.
@@ -22,7 +24,6 @@ Some of the mysterious, haunted locations are:
 ![A screen shot](images%2FScreenshot.png)
 
 [![Gameplay video](https://img.youtube.com/vi/NRey1MnxBLY/maxresdefault.jpg)](https://youtu.be/NRey1MnxBLY)
-The video is accessible [here](NRey1MnxBLY).
 
 # Rules
 

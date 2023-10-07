@@ -9,6 +9,21 @@ class BaseUserInterface:
         pass
 
 
+class MessageUserInterface(BaseUserInterface):
+    def __init__(self):
+        self.running = True
+
+    def process_input(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+                break
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    self.running = False
+        return self.running
+
+
 class MenuUserInterface(BaseUserInterface):
     def __init__(
         self, current_menu_item: int = None, menu_items: [dict] = None, music=None
@@ -74,16 +89,16 @@ class SettingsMenuUserInterface(BaseUserInterface):
                     self.current_menu_item -= 1
                     self.music.play_select_menu_item_sound()
                     self.current_menu_item %= len(self.menu_items)
-                elif event.key == pygame.K_LEFT and self.current_menu_item==0:
+                elif event.key == pygame.K_LEFT and self.current_menu_item == 0:
                     if self.volume > 0:
                         self.volume -= 5
-                elif event.key == pygame.K_LEFT and self.current_menu_item==1:
+                elif event.key == pygame.K_LEFT and self.current_menu_item == 1:
                     if self.difficulty > 1:
                         self.difficulty -= 1
-                elif event.key == pygame.K_RIGHT and self.current_menu_item==0:
+                elif event.key == pygame.K_RIGHT and self.current_menu_item == 0:
                     if self.volume < 100:
                         self.volume += 5
-                elif event.key == pygame.K_RIGHT and self.current_menu_item==1:
+                elif event.key == pygame.K_RIGHT and self.current_menu_item == 1:
                     if self.difficulty < MAX_DIFFICULTY:
                         self.difficulty += 1
                 elif event.key == pygame.K_RETURN:
@@ -101,6 +116,7 @@ class GameUserInterface(BaseUserInterface):
         self.movePlayerCommand = Vector2(0, 0)
         self.attackCommand = False
         self.measureCommand = False
+        self.pauseCommand = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
@@ -121,5 +137,8 @@ class GameUserInterface(BaseUserInterface):
                     self.attackCommand = True
                 elif event.key == pygame.K_x:
                     self.measureCommand = True
+                # pause
+                elif event.key == pygame.K_p:
+                    self.pauseCommand = True
 
         return True

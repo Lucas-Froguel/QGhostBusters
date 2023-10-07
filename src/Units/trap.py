@@ -8,6 +8,7 @@ from src.Units.base_unit import Unit
 
 class Trap(Unit):
     ...
+
     def __init__(
         self,
         cellSize: Vector2 = None,

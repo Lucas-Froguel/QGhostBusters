@@ -63,18 +63,25 @@ can't know where the blow is coming from.
 
 ## Windows
 
-1. Prerequisites:
+Prerequisites:
    - Windows does not allow to execute scripts by default. If you haven't enabled this option, you should start by opening PowerShell and executing `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`.
    - You need git installed for cloning. You can download it [here](https://git-scm.com/download/win).
    - You need Python installed. You can download it [here](https://www.python.org/downloads/windows/).
    - Life will be simpler if you add Python to your `PATH` variable
-2. Go to a directory where you want the game installed via `cd .\path\to\the\directory`, e.g. `cd ~\games\QGhostBusters>`.
-3. Clone the repo: `git clone -b development https://github.com/Lucas-Froguel/QGhostBusters.git`.
-4. Get inside the game directory: `cd QGhostBusters`
-5. Create virtual environment: `python -m venv venv` (if you don't have path to Python in your enviromnent PATH, instead of `python` type the path to `Python.exe` file including the `exe` itself)
-6. Get inside it `.\venv\Scripts\activate`
-7. Install the required packages `pip install -r requirements.txt`
-8. Launch the game `python main.py`
+
+Install without console:
+1. Go to a directory where you want the game installed.
+2. Copy `./installers/install_on_windows.exe` into that folder and run it (it replicates contents of the ps1 file in the same folder)
+3. Next time to run the game just copy `./installers/play_on_windows.exe` into QGhostBusters folder and run it from there. 
+
+Install with console (if exe file did not work for some reason)
+1. Go to a directory where you want the game installed via `cd .\path\to\the\directory`, e.g. `cd ~\games\QGhostBusters>`.
+2. Clone the repo: `git clone -b development https://github.com/Lucas-Froguel/QGhostBusters.git`.
+3. Get inside the game directory: `cd QGhostBusters`
+4. Create virtual environment: `python -m venv venv` (if you don't have path to Python in your enviromnent PATH, instead of `python` type the path to `Python.exe` file including the `exe` itself)
+5. Get inside it `.\venv\Scripts\activate`
+6. Install the required packages `pip install -r requirements.txt`
+7. Run `python main.py` to play.
 
 ## Linux
 
@@ -84,18 +91,6 @@ can't know where the blow is coming from.
 2. Run `./installers/linux_install.sh` to download the necessary packages.
 3. Run `./installers/linux_play.sh` to play the game.
 
-# Meta progression
-
-We are planning to add meta-progression, but it will depend on our progress on the other aspects of the game. 
-
-# Documentation
-
-Our world is a grid of squares of fixed size. The size of the squares is determined by `cellSize` variable. The amount
-of squares is determined by `worldSize` variable. Naturally, the product `cellSize * worldSize` (has to!) yields the size of the 
-map. 
-
-Each unit has a `position`, which holds the information of the cell they are in. The variable `rect` contains their
-actual position in the map.
 
 # Acknowledgement
 

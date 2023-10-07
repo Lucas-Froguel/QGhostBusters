@@ -42,7 +42,7 @@ class Player(Unit):
             cellSize=cellSize, worldSize=worldSize, position=position, channel=channel
         )
         # visual variables
-        self.image = load("src/Units/sprites/enemy1.png")
+        self.image = load("src/Units/sprites/character.png")
         self.image = scale(self.image, self.cellSize)
         self.direction: Vector2 = Vector2(1, 0)
         self.sound_manager = PlayerSoundManager(channel=self.channel)
@@ -97,12 +97,9 @@ class Player(Unit):
         super().move(moveVector=moveVector)
 
         if does_rotate:
-            angle = math.acos(
-                self.direction.dot(moveVector)
-                / (self.direction.length() * moveVector.length())
-            )
+            angle = moveVector.angle_to(self.direction)
             self.direction = moveVector
-            self.image = rotate(self.image, -math.degrees(angle))
+            self.image = rotate(self.image, angle)
 
     def collides_with_wall(self):
         walls = self.map_data.layernames["Walls"].tiles()

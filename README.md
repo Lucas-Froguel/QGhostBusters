@@ -56,7 +56,7 @@ such a plasma, he gets damaged.
 # Physical world inspiration
 
 The ghosts as implemented in this game are inspired on photons following different paths. Their spatial superposition is
-achieved by passing through beam splitters, and if several ghosts do this at the same time, they interfere similarly to Hon-Ou-Mandel effect.
+achieved by passing through beam splitters, and if several ghosts do this at the same time, they interfere similarly to Hong-Ou-Mandel effect.
 
 The ghosts attack the player, so to avoid collapsing superposition from the back-action, we put the attack raduis quite large, so that we 
 can't know where the blow is coming from.

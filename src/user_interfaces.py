@@ -100,7 +100,6 @@ class EnterTextUserInterface(BaseUserInterface):
 
     def process_input(self):
         self.running = True
-        # self.text = ""
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

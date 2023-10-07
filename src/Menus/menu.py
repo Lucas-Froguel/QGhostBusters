@@ -4,11 +4,19 @@ from pygame.mixer import Channel
 from pygame.transform import scale
 from pygame import Vector2, Surface
 from src.Units.ghosts import GhostParameters
-from src.settings import MAX_DIFFICULTY
-from src.Levels.levels import CatacombLevel, TheMazeLevel, IntoTheCavesLevel, TheCavesLevel
+
+from src.settings import PROB_GHOST_TRAP, PROB_GHOST_ATTACK, MAX_DIFFICULTY
+from src.Levels.levels import (
+    CatacombLevel,
+    TheMazeLevel,
+    IntoTheCavesLevel,
+    TheCavesLevel,
+)
 from src.user_interfaces import MenuUserInterface, SettingsMenuUserInterface, EnterTextUserInterface
+
 from src.SoundEffects.sound_manager import MenuSoundManager
 from src.Score.score import ScoreSystem
+
 
 
 class BaseMenu:
@@ -95,8 +103,14 @@ class MenusManager:
         self.music = MenuSoundManager(channel=self.channel)
         ghost_parameters = GhostParameters()
         self.main_menu = MainMenu(window=self.window, music=self.music)
-        self.settings = SettingsMenu(window=self.window, music=self.music, ghost_parameters=ghost_parameters)
-        self.levels = LevelsMenu(window=self.window, music=self.music, ghost_parameters=self.settings.ghost_parameters)
+        self.settings = SettingsMenu(
+            window=self.window, music=self.music, ghost_parameters=ghost_parameters
+        )
+        self.levels = LevelsMenu(
+            window=self.window,
+            music=self.music,
+            ghost_parameters=self.settings.ghost_parameters,
+        )
 
         self.win_message = WinMessage(window=window, music=self.music)
         self.lose_message = LoseMessage(window=window, music=self.music)
@@ -186,7 +200,12 @@ class MainMenu(BaseMenu):
 
 
 class LevelsMenu(BaseMenu):
-    def __init__(self, window: Surface = None, music: MenuSoundManager = None, ghost_parameters: GhostParameters=None):
+    def __init__(
+        self,
+        window: Surface = None,
+        music: MenuSoundManager = None,
+        ghost_parameters: GhostParameters = None,
+    ):
         super().__init__(window=window, music=music)
 
         self.current_menu = "levels"
@@ -198,7 +217,7 @@ class LevelsMenu(BaseMenu):
             {"title": "The Maze", "action": lambda: TheMazeLevel},
             {"title": "Back", "action": lambda: self.exit_settings()},
         ]
-        self.ghost_parameters=ghost_parameters
+        self.ghost_parameters = ghost_parameters
         self.user_interface = MenuUserInterface(
             current_menu_item=self.current_menu_item,
             menu_items=self.menu_items,
@@ -221,14 +240,19 @@ class LevelsMenu(BaseMenu):
 
 
 class SettingsMenu(BaseMenu):
-    def __init__(self, window: Surface = None, music: MenuSoundManager = None, ghost_parameters: GhostParameters=None):
+    def __init__(
+        self,
+        window: Surface = None,
+        music: MenuSoundManager = None,
+        ghost_parameters: GhostParameters = None,
+    ):
         super().__init__(window=window, music=music)
 
         self.current_menu = "settings"
         self.title = "Settings"
         self.volume = 100
-        self.difficulty = MAX_DIFFICULTY-2
-        self.ghost_parameters=ghost_parameters
+        self.difficulty = MAX_DIFFICULTY - 2
+        self.ghost_parameters = ghost_parameters
         self.menu_items = [
             {"title": f"Volume - {self.volume}", "action": lambda: None},
             {"title": f"Difficutly - {self.difficulty}", "action": lambda: None},
@@ -270,6 +294,12 @@ class SettingsMenu(BaseMenu):
 
     def change_difficulty(self):
         self.ghost_parameters.change_difficulty(difficulty=self.difficulty)
+        self.ghost_parameters.trap_probability = (
+            PROB_GHOST_TRAP * self.difficulty / MAX_DIFFICULTY
+        )
+        self.ghost_parameters.attack_probability = (
+            PROB_GHOST_ATTACK * self.difficulty / MAX_DIFFICULTY
+        )
 
 
 class LoseMessage(BaseMenu):

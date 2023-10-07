@@ -72,7 +72,7 @@ class BaseLevel:
         self.shots_group: RenderUpdates = RenderUpdates()
         self.measurement_group: GroupSingle = GroupSingle()
 
-        self.ghost_parameters=ghost_parameters
+        self.ghost_parameters = ghost_parameters
         self.ghosts_group: [QGhost] = None
         self.visible_ghosts_group: RenderUpdates = RenderUpdates()
 
@@ -112,6 +112,7 @@ class BaseLevel:
                 self.ghosts_group.remove(qghost)
                 self._player.qghosts_killed += 1
         self.traps_group.add(self.traps)
+        self.clean_traps()
 
         self.base_level_hud.update()
 
@@ -147,6 +148,10 @@ class BaseLevel:
         self.shots_group.draw(self.window)
 
         self.hud_render_group.draw(self.window)
+        self.base_level_hud.player_data_hud.measure_timer.render()
+        self.window.blit(
+            self.base_level_hud.player_data_hud.measure_timer.measure_timer, (0, 32)
+        )
 
         if self._player.weapon.measurer.play_animation:
             self.measurement_group.draw(self.window)
@@ -168,9 +173,14 @@ class BaseLevel:
                     width = image.get_rect().width
                     if width < self.cellSize.x:
                         x_displacement = int(width - self.cellSize.x)
-                        self.surface.blit(image, (x * self.cellSize.x, y * self.cellSize.y - x_displacement))
+                        self.surface.blit(
+                            image,
+                            (x * self.cellSize.x, y * self.cellSize.y - x_displacement),
+                        )
                     else:
-                        self.surface.blit(image, (x * self.cellSize.x, y * self.cellSize.y))
+                        self.surface.blit(
+                            image, (x * self.cellSize.x, y * self.cellSize.y)
+                        )
 
     def load_units(self):
         splitters = [
@@ -178,7 +188,7 @@ class BaseLevel:
                 cellSize=self.cellSize,
                 worldSize=self.worldSize,
                 position=generate_random_positions(worldSize=self.worldSize),
-                splitterType=random.choice(self.splitter_types)
+                splitterType=random.choice(self.splitter_types),
             )
             for _ in range(self.num_splitters)
         ]
@@ -190,7 +200,9 @@ class BaseLevel:
             channel=self.player_channel,
             map_data=self.tmx_data,
             splitters=splitters,
-            does_map_have_tile_dont_pass=True if "TileDontPass" in self.tmx_data.layernames else False
+            does_map_have_tile_dont_pass=True
+            if "TileDontPass" in self.tmx_data.layernames
+            else False,
         )
         self.player_group.add(self._player)
 
@@ -201,7 +213,10 @@ class BaseLevel:
             QGhost(
                 cellSize=self.cellSize,
                 worldSize=self.worldSize,
-                position=generate_random_positions(worldSize=self.worldSize),
+                position=generate_random_positions(
+                    worldSize=self.worldSize,
+                    player_position=self.player_initial_position,
+                ),
                 splitters=splitters,
                 render_group=self.visible_ghosts_group,
                 channel=self.enemies_channel,
@@ -230,3 +245,11 @@ class BaseLevel:
         self.load_units()
         self.music.play_music()
         self.level_start_time = time.time()
+
+    def clean_traps(self):
+        for trap in self.traps:
+            if not trap.is_alive:
+                self.traps_group.remove(trap)
+                self.traps.remove(trap)
+        # add new ones
+        self.traps_group.add(self.traps)

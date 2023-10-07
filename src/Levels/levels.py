@@ -37,7 +37,9 @@ class CatacombLevel(BaseLevel):
         self.level_id = "the_catacombs"
 
         self.music_path = "src/SoundEffects/sound_effects/suspense.wav"
-        self.background_sound_path = "src/SoundEffects/sound_effects/rain_and_thunder.wav"
+        self.background_sound_path = (
+            "src/SoundEffects/sound_effects/rain_and_thunder.wav"
+        )
 
         self.player_initial_position = Vector2(1, 18)
         self.num_ghosts = 3
@@ -74,7 +76,9 @@ class TheMazeLevel(BaseLevel):
         self.level_id = "the_maze"
 
         self.music_path = "src/SoundEffects/sound_effects/suspense.wav"
-        self.background_sound_path = "src/SoundEffects/sound_effects/rain_and_thunder.wav"
+        self.background_sound_path = (
+            "src/SoundEffects/sound_effects/rain_and_thunder.wav"
+        )
 
         self.player_initial_position = Vector2(1, 10)
         self.num_ghosts = 4
@@ -83,16 +87,16 @@ class TheMazeLevel(BaseLevel):
 
 class IntoTheCavesLevel(BaseLevel):
     def __init__(
-            self,
-            cellSize: Vector2 = None,
-            worldSize: Vector2 = None,
-            window: Surface = None,
-            level_channel: Channel = None,
-            extra_level_channel: Channel = None,
-            player_channel: Channel = None,
-            enemies_channel: Channel = None,
-            ghost_parameters: GhostParameters = None,
-            score_system: ScoreSystem = None
+        self,
+        cellSize: Vector2 = None,
+        worldSize: Vector2 = None,
+        window: Surface = None,
+        level_channel: Channel = None,
+        extra_level_channel: Channel = None,
+        player_channel: Channel = None,
+        enemies_channel: Channel = None,
+        ghost_parameters: GhostParameters = None,
+        score_system: ScoreSystem = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -111,7 +115,9 @@ class IntoTheCavesLevel(BaseLevel):
         self.level_id = "into_the_caves"
 
         self.music_path = "src/SoundEffects/sound_effects/suspense.wav"
-        self.background_sound_path = "src/SoundEffects/sound_effects/rain_and_thunder.wav"
+        self.background_sound_path = (
+            "src/SoundEffects/sound_effects/rain_and_thunder.wav"
+        )
 
         self.player_initial_position = Vector2(2, 2)
         self.num_ghosts = 3
@@ -129,7 +135,7 @@ class TheCavesLevel(BaseLevel):
             player_channel: Channel = None,
             enemies_channel: Channel = None,
             ghost_parameters: GhostParameters = None,
-            score_system: ScoreSystem = None
+            score_system: ScoreSystem = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -148,10 +154,10 @@ class TheCavesLevel(BaseLevel):
         self.level_id = "the_caves"
 
         self.music_path = "src/SoundEffects/sound_effects/suspense.wav"
-        self.background_sound_path = "src/SoundEffects/sound_effects/rain_and_thunder.wav"
+        self.background_sound_path = (
+            "src/SoundEffects/sound_effects/rain_and_thunder.wav"
+        )
 
         self.player_initial_position = Vector2(1, 10)
         self.num_ghosts = 3
         self.num_splitters = 4
-
-

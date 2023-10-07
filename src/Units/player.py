@@ -1,4 +1,3 @@
-
 import time
 import math
 import numpy as np
@@ -7,19 +6,20 @@ from pytmx import TiledMap
 from pygame import Vector2
 from pygame.image import load
 from pygame.mixer import Channel
-from pygame.sprite import RenderUpdates
 from pygame.transform import scale
-from qutip import ket
 
 from src.SoundEffects.sound_manager import PlayerSoundManager
 from src.Units.splitter import GhostSplitter
 from src.Units.trap import Trap
 from src.Units.weapon import Weapon
-from src.settings import PLAYER_MEASURE_RADIUS, PLAYER_INITIAL_HEALTH, PLAYER_MEASURE_TIME
+from src.settings import (
+    PLAYER_MEASURE_RADIUS,
+    PLAYER_INITIAL_HEALTH,
+    PLAYER_MEASURE_TIME,
+)
 from pygame.transform import rotate
 from src.Units.base_unit import Unit
 from src.Units.ghosts import QGhost
-from src.Units.utils import is_in_given_radius, find_tensored_components
 
 
 class Player(Unit):
@@ -133,7 +133,7 @@ class Player(Unit):
         check_collision_functions = [
             self.collides_with_splitter,
             self.collides_with_wall,
-            self.collides_with_non_walkable_floor
+            self.collides_with_non_walkable_floor,
         ]
         for collision_function in check_collision_functions:
             if collision_function():
@@ -141,7 +141,9 @@ class Player(Unit):
         return False
 
     def check_measure_time(self):
-        check_if_able_to_measure = int(time.time() - self.last_measure_time) > self.min_measure_time
+        check_if_able_to_measure = (
+            int(time.time() - self.last_measure_time) > self.min_measure_time
+        )
         if not self.ready_to_measure and check_if_able_to_measure:
             self.sound_manager.play_ready_to_measure_sound()
             self.ready_to_measure = True
@@ -151,7 +153,7 @@ class Player(Unit):
         measureCommand: bool = None,
         attackCommand: bool = None,
         ghosts_group=None,
-        shots_group=None
+        shots_group=None,
     ):
         if measureCommand:
             self.measure(ghosts_group)  # wave func collapse
@@ -159,7 +161,7 @@ class Player(Unit):
             self.attack()
             shots_group.add(self.weapon.shots)
         shots_group.remove(*self.weapon.dead_shots)
-    
+
     def update(
         self,
         moveVector: Vector2 = None,
@@ -181,12 +183,12 @@ class Player(Unit):
             measureCommand=measureCommand,
             attackCommand=attackCommand,
             ghosts_group=ghosts_group,
-            shots_group=shots_group
+            shots_group=shots_group,
         )
 
-    def check_if_on_trap(self, traps: list[Trap]=None):
+    def check_if_on_trap(self, traps: list[Trap] = None):
         for trap in traps:
-            if np.allclose(self.position, trap.position):
+            if np.allclose(self.position, trap.position) and trap.is_alive:
                 self.health -= 1
                 self.num_of_fallen_traps += 1
                 trap.is_alive = False

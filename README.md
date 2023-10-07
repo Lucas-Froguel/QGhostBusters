@@ -17,11 +17,9 @@ Your keen observation and quick reflexes will be your greatest allies as you nav
 
 This is a world where the line between reality and the supernatural blurs, leaving you to decipher which seemingly ordinary locations harbor these elusive apparitions. Will you be able to unveil the hidden hauntings and put an end to their ethereal mischief?
 
-Some of the mysterious, haunted locations are: 
+Some of the mysterious, haunted locations are:
 
-![The Caves](images%2Fthe_caves.png)
-
-![The Catacombs](images%2Fthe_catacombs.png)
+![A screen shot](images%2FScreenshot.png)
 
 [![Gameplay video](https://img.youtube.com/vi/NRey1MnxBLY/maxresdefault.jpg)](https://youtu.be/NRey1MnxBLY)
 The video is accessible [here](NRey1MnxBLY).

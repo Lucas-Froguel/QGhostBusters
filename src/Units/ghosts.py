@@ -20,7 +20,7 @@ from src.settings import (
     GHOST_ATTACK_RADIUS,
     PROB_GHOST_ATTACK,
     PROB_GHOST_TRAP,
-    MAX_DIFFICULTY
+    MAX_DIFFICULTY,
 )
 from src.settings import GHOST_SPEED, MAX_GHOSTS_PER_STATE
 from src.SoundEffects.sound_manager import GhostSoundManager
@@ -185,8 +185,12 @@ class GhostParameters:
 
     def change_difficulty(self, difficulty: int = 3):
         self.difficulty = difficulty
-        self.trap_probability = PROB_GHOST_TRAP * (self.difficulty/self.max_difficulty)
-        self.attack_probability = PROB_GHOST_ATTACK * (self.difficulty/self.max_difficulty)
+        self.trap_probability = PROB_GHOST_TRAP * (
+            self.difficulty / self.max_difficulty
+        )
+        self.attack_probability = PROB_GHOST_ATTACK * (
+            self.difficulty / self.max_difficulty
+        )
 
 
 class QGhost(Ghost):

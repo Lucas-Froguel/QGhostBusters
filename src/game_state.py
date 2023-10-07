@@ -34,7 +34,11 @@ class GameState:
         # level variables
         self.level: BaseLevel = None
 
-        self.menu = MenusManager(window=self.window, channel=self.window_channel, score_system=self.score_system)
+        self.menu = MenusManager(
+            window=self.window,
+            channel=self.window_channel,
+            score_system=self.score_system,
+        )
         self.setup_game_music(self.menu.music)
         self.last_game_status: str = None
         self.last_game_score: int = None
@@ -54,7 +58,7 @@ class GameState:
             player_channel=self.player_channel,
             enemies_channel=self.enemies_channel,
             ghost_parameters=ghost_parameters,
-            score_system=self.score_system
+            score_system=self.score_system,
         )
         self.level.load_level()
         self.last_game_id = self.level.level_id
@@ -96,7 +100,7 @@ class GameState:
                 level_score=self.last_game_score,
                 level_id=self.last_game_id,
                 level_name=self.last_game_name,
-                level_message=f"{self.last_game_status}_message"
+                level_message=f"{self.last_game_status}_message",
             )
             if level:
                 self.load_level(level, self.menu.settings.ghost_parameters)

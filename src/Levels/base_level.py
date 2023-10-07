@@ -131,7 +131,7 @@ class BaseLevel:
             qghosts_killed=self._player.qghosts_killed,
             level_difficulty=self.difficulty,
             max_ghosts_per_state=MAX_GHOSTS_PER_STATE,
-            total_level_time=time.time() - self.level_start_time
+            total_level_time=time.time() - self.level_start_time,
         )
         if self.game_status == "won":
             self.music.play_game_won_sound()

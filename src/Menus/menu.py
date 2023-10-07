@@ -12,11 +12,14 @@ from src.Levels.levels import (
     IntoTheCavesLevel,
     TheCavesLevel,
 )
-from src.user_interfaces import MenuUserInterface, SettingsMenuUserInterface, EnterTextUserInterface
+from src.user_interfaces import (
+    MenuUserInterface,
+    SettingsMenuUserInterface,
+    EnterTextUserInterface,
+)
 
 from src.SoundEffects.sound_manager import MenuSoundManager
 from src.Score.score import ScoreSystem
-
 
 
 class BaseMenu:
@@ -95,7 +98,12 @@ class BaseMenu:
 
 
 class MenusManager:
-    def __init__(self, window: Surface = None, channel: Channel = None, score_system: ScoreSystem = None):
+    def __init__(
+        self,
+        window: Surface = None,
+        channel: Channel = None,
+        score_system: ScoreSystem = None,
+    ):
         self.window = window
         self.channel = channel
         self.current_menu = "main_menu"
@@ -114,25 +122,41 @@ class MenusManager:
 
         self.win_message = WinMessage(window=window, music=self.music)
         self.lose_message = LoseMessage(window=window, music=self.music)
-        self.enter_name = EnterNameMenu(window=window, music=self.music, scores=score_system)
+        self.enter_name = EnterNameMenu(
+            window=window, music=self.music, scores=score_system
+        )
 
         self.highscores = DisplayHighScores(
-            window=window,
-            music=self.music,
-            scores=score_system
+            window=window, music=self.music, scores=score_system
         )
 
         self.into_the_caves = LevelHighScores(
-            window=self.window, music=self.music, level_name="Into The Caves", level_id="into_the_caves", scores=score_system
+            window=self.window,
+            music=self.music,
+            level_name="Into The Caves",
+            level_id="into_the_caves",
+            scores=score_system,
         )
         self.the_caves = LevelHighScores(
-            window=self.window, music=self.music, level_name="The Caves", level_id="the_caves", scores=score_system
+            window=self.window,
+            music=self.music,
+            level_name="The Caves",
+            level_id="the_caves",
+            scores=score_system,
         )
         self.the_catacombs = LevelHighScores(
-            window=self.window, music=self.music, level_name="The Catacombs", level_id="the_catacombs", scores=score_system
+            window=self.window,
+            music=self.music,
+            level_name="The Catacombs",
+            level_id="the_catacombs",
+            scores=score_system,
         )
         self.the_maze = LevelHighScores(
-            window=self.window, music=self.music, level_name="The Maze", level_id="the_maze", scores=score_system
+            window=self.window,
+            music=self.music,
+            level_name="The Maze",
+            level_id="the_maze",
+            scores=score_system,
         )
 
         self.possible_menus = {
@@ -146,7 +170,7 @@ class MenusManager:
             "into_the_caves": self.into_the_caves,
             "the_caves": self.the_caves,
             "the_catacombs": self.the_catacombs,
-            "the_maze": self.the_maze
+            "the_maze": self.the_maze,
         }
 
     def update(self, **kwargs):
@@ -339,7 +363,9 @@ class LoseMessage(BaseMenu):
     def load_menu(self, **kwargs):
         self.current_menu = "lost_message"
 
-    def load_enter_name(self, ):
+    def load_enter_name(
+        self,
+    ):
         self.current_menu = "enter_name"
 
 
@@ -355,7 +381,11 @@ class WinMessage(LoseMessage):
 
 class EnterNameMenu(BaseMenu):
     def __init__(
-        self, window: Surface = None, music: MenuSoundManager = None, level_message: str = None, scores: ScoreSystem = None
+        self,
+        window: Surface = None,
+        music: MenuSoundManager = None,
+        level_message: str = None,
+        scores: ScoreSystem = None,
     ):
         super().__init__(window=window, music=music)
         self.level_score: int = None
@@ -375,7 +405,7 @@ class EnterNameMenu(BaseMenu):
 
     def exit_message(self):
         self.current_menu = self.level_message
-    
+
     def update(self, **kwargs):
         self.level_score = kwargs["level_score"]
         self.level_id = kwargs["level_id"]
@@ -386,9 +416,7 @@ class EnterNameMenu(BaseMenu):
         self.menu_items[0]["title"] = self.name
         if not self.user_interface.process_input():
             self.scores.add_score(
-                map_id=self.level_id,
-                score=self.level_score,
-                player_name=self.name
+                map_id=self.level_id, score=self.level_score, player_name=self.name
             )
             self.scores.save_scores()
             self.exit_message()
@@ -396,7 +424,10 @@ class EnterNameMenu(BaseMenu):
 
 class DisplayHighScores(BaseMenu):
     def __init__(
-        self, window: Surface = None, music: MenuSoundManager = None, scores: ScoreSystem = None
+        self,
+        window: Surface = None,
+        music: MenuSoundManager = None,
+        scores: ScoreSystem = None,
     ):
         super().__init__(window=window, music=music)
         self.scores = scores
@@ -404,11 +435,17 @@ class DisplayHighScores(BaseMenu):
         self.current_menu = "highscores"
 
         self.menu_items = [
-            {"title": "Into The Caves", "action": lambda: self.load_into_the_caves_highscores()},
+            {
+                "title": "Into The Caves",
+                "action": lambda: self.load_into_the_caves_highscores(),
+            },
             {"title": "The Caves", "action": lambda: self.load_the_caves_highscores()},
-            {"title": "The Catacombs", "action": lambda: self.load_the_catacombs_highscores()},
+            {
+                "title": "The Catacombs",
+                "action": lambda: self.load_the_catacombs_highscores(),
+            },
             {"title": "The Maze", "action": lambda: self.load_the_maze_highscores()},
-            {"title": "Back to menu", "action": lambda: self.exit_message()}
+            {"title": "Back to menu", "action": lambda: self.exit_message()},
         ]
 
         self.user_interface = MenuUserInterface(
@@ -444,8 +481,12 @@ class DisplayHighScores(BaseMenu):
 
 class LevelHighScores(BaseMenu):
     def __init__(
-            self, window: Surface = None, music: MenuSoundManager = None, scores: ScoreSystem = None,
-            level_name: str = None, level_id: str = None
+        self,
+        window: Surface = None,
+        music: MenuSoundManager = None,
+        scores: ScoreSystem = None,
+        level_name: str = None,
+        level_id: str = None,
     ):
         super().__init__(window=window, music=music)
         self.title = f"Highscores - {level_name}"
@@ -455,7 +496,8 @@ class LevelHighScores(BaseMenu):
         self.actual_scores = self.scores.return_high_scores(map_id=self.current_menu)
 
         self.menu_items = [
-            {"title": f"{score[0]} - {score[1]}", "action": lambda: None} for score in self.actual_scores
+            {"title": f"{score[0]} - {score[1]}", "action": lambda: None}
+            for score in self.actual_scores
         ]
         self.menu_items.append(
             {"title": "Back to Highscores", "action": lambda: self.exit_message()},

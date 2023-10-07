@@ -1,16 +1,11 @@
-
 import pickle
 import numpy as np
 
 historic_scores = {
-    "into_the_caves": {
-    },
-    "the_caves": {
-    },
-    "the_catacombs": {
-    },
-    "the_maze": {
-    }
+    "into_the_caves": {},
+    "the_caves": {},
+    "the_catacombs": {},
+    "the_maze": {},
 }
 
 
@@ -19,7 +14,9 @@ class ScoreSystem:
         self.levels = ["into_the_caves", "the_caves", "the_catacombs", "the_maze"]
         self.num_of_high_scores: int = 5
         self.historic_scores: dict = None
-        self.historic_scores_file: str = "src/Score/historic_scores/historic_scores.pickle"
+        self.historic_scores_file: str = (
+            "src/Score/historic_scores/historic_scores.pickle"
+        )
         self.load_scores()
 
     def load_scores(self):
@@ -40,7 +37,7 @@ class ScoreSystem:
 
         sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
 
-        return sorted_scores[:self.num_of_high_scores]
+        return sorted_scores[: self.num_of_high_scores]
 
     @staticmethod
     def calculate_score(
@@ -50,10 +47,21 @@ class ScoreSystem:
         max_ghosts_per_state: int = None,
         num_of_fallen_traps: int = None,
         total_level_time: float = None,
-        level_difficulty: int = None
+        level_difficulty: int = None,
     ):
-        score = 100 * level_difficulty * (1+final_health) * \
-                np.tanh(1 + (qghosts_killed + (visible_ghosts_killed / max_ghosts_per_state) - num_of_fallen_traps)) \
-                / total_level_time
+        score = (
+            100
+            * level_difficulty
+            * (1 + final_health)
+            * np.tanh(
+                1
+                + (
+                    qghosts_killed
+                    + (visible_ghosts_killed / max_ghosts_per_state)
+                    - num_of_fallen_traps
+                )
+            )
+            / total_level_time
+        )
 
         return int(score)

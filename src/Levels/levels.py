@@ -18,7 +18,7 @@ class CatacombLevel(BaseLevel):
         player_channel: Channel = None,
         enemies_channel: Channel = None,
         ghost_parameters: GhostParameters = None,
-        score_system: ScoreSystem = None
+        score_system: ScoreSystem = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -30,7 +30,7 @@ class CatacombLevel(BaseLevel):
             enemies_channel=enemies_channel,
             ghost_parameters=ghost_parameters,
             score_system=score_system,
-            difficulty=ghost_parameters.difficulty
+            difficulty=ghost_parameters.difficulty,
         )
         self.level_name = "src/Levels/levels/catacombs.tmx"
         self.level_title = "The Catacombs"
@@ -48,16 +48,16 @@ class CatacombLevel(BaseLevel):
 
 class TheMazeLevel(BaseLevel):
     def __init__(
-            self,
-            cellSize: Vector2 = None,
-            worldSize: Vector2 = None,
-            window: Surface = None,
-            level_channel: Channel = None,
-            extra_level_channel: Channel = None,
-            player_channel: Channel = None,
-            enemies_channel: Channel = None,
-            ghost_parameters: GhostParameters = None,
-            score_system: ScoreSystem = None
+        self,
+        cellSize: Vector2 = None,
+        worldSize: Vector2 = None,
+        window: Surface = None,
+        level_channel: Channel = None,
+        extra_level_channel: Channel = None,
+        player_channel: Channel = None,
+        enemies_channel: Channel = None,
+        ghost_parameters: GhostParameters = None,
+        score_system: ScoreSystem = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -69,7 +69,7 @@ class TheMazeLevel(BaseLevel):
             enemies_channel=enemies_channel,
             ghost_parameters=ghost_parameters,
             score_system=score_system,
-            difficulty=ghost_parameters.difficulty
+            difficulty=ghost_parameters.difficulty,
         )
         self.level_name = "src/Levels/levels/the_maze.tmx"
         self.level_title = "The Maze"
@@ -108,7 +108,7 @@ class IntoTheCavesLevel(BaseLevel):
             enemies_channel=enemies_channel,
             ghost_parameters=ghost_parameters,
             score_system=score_system,
-            difficulty=ghost_parameters.difficulty
+            difficulty=ghost_parameters.difficulty,
         )
         self.level_name = "src/Levels/levels/into_the_caves.tmx"
         self.level_title = "Into The Caves"
@@ -126,16 +126,16 @@ class IntoTheCavesLevel(BaseLevel):
 
 class TheCavesLevel(BaseLevel):
     def __init__(
-            self,
-            cellSize: Vector2 = None,
-            worldSize: Vector2 = None,
-            window: Surface = None,
-            level_channel: Channel = None,
-            extra_level_channel: Channel = None,
-            player_channel: Channel = None,
-            enemies_channel: Channel = None,
-            ghost_parameters: GhostParameters = None,
-            score_system: ScoreSystem = None,
+        self,
+        cellSize: Vector2 = None,
+        worldSize: Vector2 = None,
+        window: Surface = None,
+        level_channel: Channel = None,
+        extra_level_channel: Channel = None,
+        player_channel: Channel = None,
+        enemies_channel: Channel = None,
+        ghost_parameters: GhostParameters = None,
+        score_system: ScoreSystem = None,
     ):
         super().__init__(
             cellSize=cellSize,
@@ -147,7 +147,7 @@ class TheCavesLevel(BaseLevel):
             enemies_channel=enemies_channel,
             ghost_parameters=ghost_parameters,
             score_system=score_system,
-            difficulty=ghost_parameters.difficulty
+            difficulty=ghost_parameters.difficulty,
         )
         self.level_name = "src/Levels/levels/the_caves.tmx"
         self.level_title = "The Caves"

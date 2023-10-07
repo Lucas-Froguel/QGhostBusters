@@ -23,7 +23,7 @@ class ScreenSoundManager(BaseSoundManager):
 class MenuSoundManager(ScreenSoundManager):
     def __init__(self, channel: Channel = None):
         super().__init__(channel=channel)
-        self.music = "src/SoundEffects/sound_effects/top-down-fantasy-1.mp31"
+        self.music = "src/SoundEffects/sound_effects/top-down-fantasy-1.ogg"
         self.select_menu_item = Sound(
             "src/SoundEffects/sound_effects/select_menu_item.wav"
         )
